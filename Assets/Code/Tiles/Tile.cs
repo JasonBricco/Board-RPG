@@ -11,8 +11,9 @@ using UnityEngine;
 public class Tile  
 {
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
-	protected ushort tileID;
-	protected byte meshIndex;
+	protected ushort tileID = 0;
+	protected byte meshIndex = 0;
+	protected bool isOverlay = false;
 
 	public ushort ID
 	{
@@ -24,8 +25,13 @@ public class Tile
 		get { return meshIndex; }
 	}
 
-	public virtual void Build(int x, int z, MeshData data)
+	public bool IsOverlay
 	{
-		meshBuilder.BuildSquare(meshIndex, x, z, data);
+		get { return isOverlay; }
+	}
+
+	public virtual void Build(int x, int z, MeshData data, bool overlay)
+	{
+		meshBuilder.BuildSquare(meshIndex, x, z, data, overlay);
 	}
 }

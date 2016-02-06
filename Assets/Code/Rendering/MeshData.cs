@@ -29,11 +29,8 @@ public class MeshData
 		}
 	}
 
-	public void AddVertex(byte index, Vector3 vertex, int x, int y) 
+	public void AddVertex(byte index, Vector3 vertex) 
 	{
-		vertex.x += x;
-		vertex.y += y;
-
 		vertices[index].Add(vertex);
 	}
 

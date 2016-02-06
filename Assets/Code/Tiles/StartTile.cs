@@ -12,5 +12,6 @@ public sealed class StartTile : Tile
 	{
 		tileID = 2;
 		meshIndex = 1;
+		isOverlay = true;
 	}
 }

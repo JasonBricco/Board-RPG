@@ -83,15 +83,14 @@ public sealed class BoardEditor : IUpdatable
 
 	private void SetTile(bool deleting)
 	{
-		Tile tile = deleting ? TileType.Air : activeTile;
-
 		Vector2i tilePos = GetCursorTilePos();
 
 		if (boardManager.InTileBounds(tilePos.x, tilePos.y))
 		{
-			boardManager.SetTileSafe(tilePos, tile);
+			if (deleting) boardManager.DeleteTile(tilePos);
+			else boardManager.SetTile(tilePos, activeTile);
+		
 			boardManager.FlagChunkForRebuild(tilePos);
-
 			boardManager.RebuildChunks();
 		}
 	}

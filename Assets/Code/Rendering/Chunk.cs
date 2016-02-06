@@ -54,9 +54,27 @@ public sealed class Chunk
 		return tiles[(y * Size) + x];
 	}
 
+	public Tile GetOverlayTile(int x, int y)
+	{
+		return overlayTiles[(y * Size) + x];
+	}
+
 	public void SetTile(int x, int y, Tile tile)
 	{
-		tiles[(y * Size) + x] = tile;
+		if (tile.IsOverlay)
+			overlayTiles[(y * Size) + x] = tile;
+		else
+			tiles[(y * Size) + x] = tile;
+	}
+
+	public void DeleteTile(int x, int y)
+	{
+		int index = (y * Size) + x;
+
+		if (overlayTiles[index].ID != 0)
+			overlayTiles[index] = TileType.Air;
+		else
+			tiles[index] = TileType.Air;
 	}
 
 	public void BuildMesh()
@@ -68,9 +86,13 @@ public sealed class Chunk
 			for (int y = 0; y < Size; y++)
 			{
 				Tile tile = GetTile(x, y);
+				Tile overlay = GetOverlayTile(x, y);
 
 				if (tile.ID != 0)
-					tile.Build(x, y, meshData);
+					tile.Build(x, y, meshData, false);
+
+				if (overlay.ID != 0)
+					overlay.Build(x, y, meshData, true);
 			}
 		}
 

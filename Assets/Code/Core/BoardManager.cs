@@ -30,24 +30,19 @@ public sealed class BoardManager
 		return materials[index];
 	}
 
-	public Tile GetTileSafe(int x, int y)
+	public Tile GetTile(int x, int y)
 	{
 		return GetChunkSafe(x, y).GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
 	}
 
-	public void SetTileSafe(Vector2i pos, Tile tile)
+	public void SetTile(Vector2i pos, Tile tile)
 	{
 		GetChunkSafe(pos.x, pos.y).SetTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1, tile);
 	}
 
-	public Tile GetTile(int x, int y)
+	public void DeleteTile(Vector2i pos)
 	{
-		return GetChunk(x, y).GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
-	}
-
-	public void SetTile(Vector2i pos, Tile tile)
-	{
-		GetChunk(pos.x, pos.y).SetTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1, tile);
+		GetChunkSafe(pos.x, pos.y).DeleteTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1);
 	}
 
 	private Chunk GetChunk(int worldX, int worldY)

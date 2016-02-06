@@ -11,6 +11,5 @@ public sealed class GrassTile : Tile
 	public GrassTile()
 	{
 		tileID = 1;
-		meshIndex = 0;
 	}
 }
