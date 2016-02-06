@@ -32,12 +32,18 @@ public sealed class GridDrawer : IUpdatable
 			int newHeight = (Screen.width >> 2) * 3;
 			Screen.SetResolution(Screen.width, newHeight, false);
 			grid.Draw();
+
+			lastWidth = Screen.width;
+			lastHeight = Screen.height;
 		}
 		else if (Screen.height != lastHeight)
 		{
 			int newWidth = (Screen.height / 3) * 4;
 			Screen.SetResolution(newWidth, Screen.height, false);
 			grid.Draw();
+
+			lastWidth = Screen.width;
+			lastHeight = Screen.height;
 		}
 	}
 		

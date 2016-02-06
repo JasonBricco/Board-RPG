@@ -7,6 +7,7 @@
 //
 
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public sealed class BoardEditor : IUpdatable
@@ -18,6 +19,7 @@ public sealed class BoardEditor : IUpdatable
 	private float time = 0.0f;
 
 	private Tile activeTile = TileType.Grass;
+	private Tile[,] surroundingTiles = new Tile[3, 3];
 
 	public BoardEditor(BoardManager boardManager, UIManager UIManager)
 	{
@@ -87,11 +89,61 @@ public sealed class BoardEditor : IUpdatable
 
 		if (boardManager.InTileBounds(tilePos.x, tilePos.y))
 		{
-			if (deleting) boardManager.DeleteTile(tilePos);
-			else boardManager.SetTile(tilePos, activeTile);
-		
-			boardManager.FlagChunkForRebuild(tilePos);
-			boardManager.RebuildChunks();
+			if (IsValidEdit(tilePos, deleting ? TileType.Air : activeTile))
+			{
+				if (deleting) boardManager.DeleteTile(tilePos);
+				else boardManager.SetTile(tilePos, activeTile);
+			
+				boardManager.FlagChunkForRebuild(tilePos);
+				boardManager.RebuildChunks();
+			}
 		}
+	}
+
+	private bool IsValidEdit(Vector2i tilePos, Tile tile)
+	{
+		if (tile.ID == 0) return true;
+
+		int xOffset, yOffset;
+		surroundingTiles[1, 1] = tile;
+
+		for (int x = 0; x < 3; x++)
+		{
+			for (int y = 0; y < 3; y++)
+			{
+				if (x == 1 && y == 1) continue;
+
+				xOffset = x - 1;
+				yOffset = y - 1;
+
+				surroundingTiles[x, y] = boardManager.GetTile(tilePos.x + xOffset, tilePos.y + yOffset);
+			}
+		}
+
+		bool validA = AreaValid(0, 0);
+		bool validB = AreaValid(1, 0);
+		bool validC = AreaValid(0, 1);
+		bool validD = AreaValid(1, 1);
+
+		if (!validA || !validB || !validC || !validD)
+			return false;
+
+		return true;
+	}
+
+	private bool AreaValid(int startX, int startY)
+	{
+		int tilesFound = 0;
+
+		for (int x = startX; x <= startX + 1; x++)
+		{
+			for (int y = startY; y <= startY + 1; y++)
+			{
+				if (surroundingTiles[x, y].ID != 0)
+					tilesFound++;
+			}
+		}
+
+		return tilesFound != 4;
 	}
 }

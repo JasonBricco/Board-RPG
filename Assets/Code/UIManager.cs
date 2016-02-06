@@ -19,6 +19,15 @@ public sealed class UIManager
 			this.graphics.Add(graphics[i].name, graphics[i]);
 	}
 
+	public GameObject GetGraphic(string name)
+	{
+		if (graphics.ContainsKey(name))
+			return graphics[name];
+
+		Debug.Log("Could not find a graphic with the name: " + name);
+		return null;
+	}
+
 	public void EnableGraphic(string name)
 	{
 		if (graphics.ContainsKey(name))

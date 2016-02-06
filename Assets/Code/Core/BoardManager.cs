@@ -32,7 +32,8 @@ public sealed class BoardManager
 
 	public Tile GetTile(int x, int y)
 	{
-		return GetChunkSafe(x, y).GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
+		Chunk chunk = chunks[x >> Chunk.SizeBits, y >> Chunk.SizeBits];
+		return chunk == null ? TileType.Air : chunk.GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
 	}
 
 	public void SetTile(Vector2i pos, Tile tile)
