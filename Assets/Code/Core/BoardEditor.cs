@@ -89,7 +89,7 @@ public sealed class BoardEditor : IUpdatable
 
 		if (boardManager.InTileBounds(tilePos.x, tilePos.y))
 		{
-			boardManager.SetTile(tilePos, tile);
+			boardManager.SetTileSafe(tilePos, tile);
 			boardManager.FlagChunkForRebuild(tilePos);
 
 			boardManager.RebuildChunks();

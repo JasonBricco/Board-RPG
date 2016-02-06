@@ -29,7 +29,12 @@ public sealed class ChunkRenderer : IUpdatable
 			for (int y = cY - 1; y <= cY + 1; y++)
 			{
 				if (boardManager.InChunkBounds(x, y))
-					boardManager.GetChunkDirect(x, y).Render();
+				{
+					Chunk chunkToRender = boardManager.GetChunkDirect(x, y);
+
+					if (chunkToRender != null)
+						chunkToRender.Render();
+				}
 			}
 		}
 	}

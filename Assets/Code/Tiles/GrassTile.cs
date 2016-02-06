@@ -6,8 +6,6 @@
 //  Copyright © 2016 Jason Bricco. All rights reserved.
 //
 
-using UnityEngine;
-
 public sealed class GrassTile : Tile 
 {
 	public GrassTile()

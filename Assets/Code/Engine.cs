@@ -16,12 +16,13 @@ public sealed class Engine : MonoBehaviour
 	[SerializeField] private GameObject[] graphics;
 
 	private BoardEditor boardEditor;
+	private UIManager UIManager;
 
 	private List<IUpdatable> updateList = new List<IUpdatable>();
 
 	private void Awake()
 	{
-		UIManager UIManager = new UIManager(graphics);
+		UIManager = new UIManager(graphics);
 		BoardManager boardManager = new BoardManager(materials);
 
 		boardEditor = new BoardEditor(boardManager, UIManager);
@@ -41,5 +42,6 @@ public sealed class Engine : MonoBehaviour
 	public void TileButtonPressed(GameObject button)
 	{
 		boardEditor.SetActiveTile(TileType.GetTileByName(button.name));
+		UIManager.DisableGraphic("TilePanel");
 	}
 }

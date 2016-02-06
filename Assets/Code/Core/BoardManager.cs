@@ -11,28 +11,18 @@ using System.Collections.Generic;
 
 public sealed class BoardManager 
 {
-	public const int Size = 1024;
+	public const int Size = 512;
 	public const int WidthInChunks = Size / Chunk.Size;
 
 	private Material[] materials;
 
 	private Chunk[,] chunks = new Chunk[WidthInChunks, WidthInChunks];
-	private Tile[] tiles = new Tile[Size * Size];
 
 	private List<Chunk> chunksToRebuild = new List<Chunk>();
 
 	public BoardManager(Material[] materials)
 	{
 		this.materials = materials;
-
-		for (int i = 0; i < tiles.Length; i++)
-			tiles[i] = TileType.Air;
-
-		for (int x = 0; x < chunks.GetLength(0); x++)
-		{
-			for (int y = 0; y < chunks.GetLength(1); y++)
-				chunks[x, y] = new Chunk(x, y, this);
-		}
 	}
 
 	public Material GetMaterial(int index)
@@ -40,19 +30,43 @@ public sealed class BoardManager
 		return materials[index];
 	}
 
+	public Tile GetTileSafe(int x, int y)
+	{
+		return GetChunkSafe(x, y).GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
+	}
+
+	public void SetTileSafe(Vector2i pos, Tile tile)
+	{
+		GetChunkSafe(pos.x, pos.y).SetTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1, tile);
+	}
+
 	public Tile GetTile(int x, int y)
 	{
-		return tiles[(y * Size) + x];
+		return GetChunk(x, y).GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
 	}
 
 	public void SetTile(Vector2i pos, Tile tile)
 	{
-		tiles[(pos.y * Size) + pos.x] = tile;
+		GetChunk(pos.x, pos.y).SetTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1, tile);
 	}
 
-	public Chunk GetChunk(int worldX, int worldY)
+	private Chunk GetChunk(int worldX, int worldY)
 	{
 		return chunks[worldX >> Chunk.SizeBits, worldY >> Chunk.SizeBits];
+	}
+
+	private Chunk GetChunkSafe(int worldX, int worldY)
+	{
+		Vector2i pos = new Vector2i(worldX >> Chunk.SizeBits, worldY >> Chunk.SizeBits);
+		Chunk chunk = chunks[pos.x, pos.y];
+
+		if (chunk == null)
+		{
+			chunk = new Chunk(pos.x, pos.y, this);
+			chunks[pos.x, pos.y] = chunk;
+		}
+
+		return chunk;
 	}
 
 	public Chunk GetChunkDirect(int chunkX, int chunkY)
