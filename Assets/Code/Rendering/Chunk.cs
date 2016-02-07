@@ -67,14 +67,20 @@ public sealed class Chunk
 			tiles[(y * Size) + x] = tile;
 	}
 
-	public void DeleteTile(int x, int y)
+	public void DeleteTile(int x, int y, int wX, int wY)
 	{
 		int index = (y * Size) + x;
 
 		if (overlayTiles[index].ID != 0)
+		{
+			overlayTiles[index].OnDeleted(boardManager.GetData(), new Vector2i(wX, wY));
 			overlayTiles[index] = TileType.Air;
+		}
 		else
+		{
+			tiles[index].OnDeleted(boardManager.GetData(), new Vector2i(wX, wY));
 			tiles[index] = TileType.Air;
+		}
 	}
 
 	public void BuildMesh()

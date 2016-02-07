@@ -26,4 +26,12 @@ public class Tile
 	{
 		meshBuilder.BuildSquare(meshIndex, x, z, data, overlay);
 	}
+
+	public virtual void OnAdded(BoardData data, Vector2i pos)
+	{
+	}
+
+	public virtual void OnDeleted(BoardData data, Vector2i pos)
+	{
+	}
 }

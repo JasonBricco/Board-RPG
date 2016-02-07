@@ -20,6 +20,8 @@ public sealed class BoardManager
 
 	private List<Chunk> chunksToRebuild = new List<Chunk>();
 
+	private BoardData boardData = new BoardData();
+
 	public BoardManager(Material[] materials)
 	{
 		this.materials = materials;
@@ -28,6 +30,11 @@ public sealed class BoardManager
 	public Material GetMaterial(int index)
 	{
 		return materials[index];
+	}
+
+	public BoardData GetData()
+	{
+		return boardData;
 	}
 
 	public Tile GetTileSafe(int x, int y)
@@ -44,12 +51,14 @@ public sealed class BoardManager
 
 	public void SetTile(Vector2i pos, Tile tile)
 	{
+		tile.OnAdded(boardData, pos);
 		GetChunkSafe(pos.x, pos.y).SetTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1, tile);
 	}
 
 	public void DeleteTile(Vector2i pos)
 	{
-		GetChunkSafe(pos.x, pos.y).DeleteTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1);
+		int localX = pos.x & Chunk.Size - 1, localY = pos.y & Chunk.Size - 1;
+		GetChunkSafe(pos.x, pos.y).DeleteTile(localX, localY, pos.x, pos.y);
 	}
 
 	private Chunk GetChunk(int worldX, int worldY)

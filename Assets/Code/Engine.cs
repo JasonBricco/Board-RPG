@@ -7,6 +7,7 @@
 //
 
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public sealed class Engine : MonoBehaviour
@@ -14,6 +15,9 @@ public sealed class Engine : MonoBehaviour
 	[SerializeField] private CameraControl camControl;
 	[SerializeField] private Material[] materials;
 	[SerializeField] private GameObject[] graphics;
+
+	[SerializeField] private GameObject player;
+	[SerializeField] private GameObject enemy;
 
 	private BoardEditor boardEditor;
 	private UIManager UIManager;
@@ -31,6 +35,7 @@ public sealed class Engine : MonoBehaviour
 		updateList.Add(new GridDrawer());
 		updateList.Add(boardEditor);
 		updateList.Add(new ChunkRenderer(boardManager));
+		updateList.Add(new PlayerManager(player, enemy, boardManager));
 	}
 
 	private void Update()
@@ -43,5 +48,10 @@ public sealed class Engine : MonoBehaviour
 	{
 		boardEditor.SetActiveTile(TileType.GetTileByName(button.name));
 		UIManager.DisableGraphic("TilePanel");
+	}
+
+	public void ButtonPressed(string buttonEvent)
+	{
+		EventManager.TriggerEvent(buttonEvent, null);
 	}
 }
