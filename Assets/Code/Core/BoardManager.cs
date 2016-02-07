@@ -30,10 +30,14 @@ public sealed class BoardManager
 		return materials[index];
 	}
 
-	public Tile GetTile(int x, int y)
+	public Tile GetTileSafe(int x, int y)
 	{
 		if (!InTileBounds(x, y)) return TileType.Air;
+		return GetTile(x, y);
+	}
 
+	public Tile GetTile(int x, int y)
+	{
 		Chunk chunk = chunks[x >> Chunk.SizeBits, y >> Chunk.SizeBits];
 		return chunk == null ? TileType.Air : chunk.GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
 	}

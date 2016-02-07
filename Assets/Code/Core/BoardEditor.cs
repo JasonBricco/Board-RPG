@@ -103,6 +103,12 @@ public sealed class BoardEditor : IUpdatable
 	{
 		if (tile.ID == 0) return true;
 
+		if (tile.IsOverlay)
+		{
+			if (boardManager.GetTile(tilePos.x, tilePos.y).ID == 0)
+				return false;
+		}
+
 		int xOffset, yOffset;
 		surroundingTiles[1, 1] = tile;
 
@@ -115,7 +121,7 @@ public sealed class BoardEditor : IUpdatable
 				xOffset = x - 1;
 				yOffset = y - 1;
 
-				surroundingTiles[x, y] = boardManager.GetTile(tilePos.x + xOffset, tilePos.y + yOffset);
+				surroundingTiles[x, y] = boardManager.GetTileSafe(tilePos.x + xOffset, tilePos.y + yOffset);
 			}
 		}
 
