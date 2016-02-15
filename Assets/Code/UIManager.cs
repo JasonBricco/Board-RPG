@@ -21,37 +21,38 @@ public sealed class UIManager
 
 	public GameObject GetGraphic(string name)
 	{
-		if (graphics.ContainsKey(name))
-			return graphics[name];
+		GameObject graphic;
 
-		Debug.Log("Could not find a graphic with the name: " + name);
-		return null;
+		if (graphics.TryGetValue(name, out graphic))
+			return graphic;
+		else
+		{
+			Debug.LogError("Could not find a graphic with the name: " + name);
+			return null;
+		}
+	}
+
+	public T GetGraphic<T>(string name)
+	{
+		return GetGraphic(name).GetComponent<T>();
 	}
 
 	public void EnableGraphic(string name)
 	{
-		if (graphics.ContainsKey(name))
-			graphics[name].SetActive(true);
-		else
-			Debug.Log("Failed to enable graphic. " + name + " doesn't exist.");
+		GetGraphic(name).SetActive(true);
 	}
 
 	public void DisableGraphic(string name)
 	{
-		if (graphics.ContainsKey(name))
-			graphics[name].SetActive(false);
-		else
-			Debug.Log("Failed to disable graphic. " + name + " doesn't exist.");
+		GameObject graphic = GetGraphic(name);
+
+		if (graphic.activeSelf)
+			graphic.SetActive(false);
 	}
 
 	public void ToggleGraphic(string name)
 	{
-		if (graphics.ContainsKey(name))
-		{
-			GameObject graphic = graphics[name];
-			graphic.SetActive(!graphic.activeSelf);
-		}
-		else
-			Debug.Log("Failed to toggle graphic. " + name + " doesn't exist.");
+		GameObject graphic = GetGraphic(name);
+		graphic.SetActive(!graphic.activeSelf);
 	}
 }

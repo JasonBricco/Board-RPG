@@ -10,32 +10,38 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+public delegate void Callback();
+
 public sealed class Engine : MonoBehaviour
 {
 	[SerializeField] private CameraControl camControl;
 	[SerializeField] private Material[] materials;
 	[SerializeField] private GameObject[] graphics;
 
-	[SerializeField] private GameObject player;
-	[SerializeField] private GameObject enemy;
-
 	private BoardEditor boardEditor;
 	private UIManager UIManager;
 
 	private List<IUpdatable> updateList = new List<IUpdatable>();
 
+	private static Engine instance;
+	public static Engine Instance { get { return instance; } }
+
 	private void Awake()
 	{
+		instance = this;
+		StateManager.ChangeState(GameState.Editing);
+
 		UIManager = new UIManager(graphics);
 		BoardManager boardManager = new BoardManager(materials);
 
 		boardEditor = new BoardEditor(boardManager, UIManager);
 
+		updateList.Add(new ErrorHandler());
 		updateList.Add(camControl);
 		updateList.Add(new GridDrawer());
 		updateList.Add(boardEditor);
 		updateList.Add(new ChunkRenderer(boardManager));
-		updateList.Add(new PlayerManager(player, enemy, boardManager));
+		updateList.Add(new PlayerManager(boardManager, UIManager));
 	}
 
 	private void Update()

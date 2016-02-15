@@ -28,6 +28,8 @@ public sealed class BoardEditor : IUpdatable
 
 	public void UpdateTick()
 	{
+		if (StateManager.CurrentState == GameState.Playing) return;
+
 		HandleModeInput();
 
 		if (EventSystem.current.IsPointerOverGameObject())

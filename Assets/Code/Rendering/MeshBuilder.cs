@@ -15,7 +15,7 @@ public sealed class MeshBuilder
 	{
 		AddSquareIndices(meshIndex, meshData);
 
-		float z = overlay ? 0.0f : 1.0f;
+		float z = overlay ? 1.0f : 2.0f;
 
 		meshData.AddVertex(meshIndex, new Vector3(x + 0.5f, y - 0.5f, z));
 		meshData.AddVertex(meshIndex, new Vector3(x + 0.5f, y + 0.5f, z));

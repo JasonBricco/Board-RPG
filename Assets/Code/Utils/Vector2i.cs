@@ -31,12 +31,6 @@ public struct Vector2i : System.IEquatable<Vector2i>
 		this.y = z;
 	}
 
-	public Vector2i(Vector2 vector)
-	{
-		this.x = Mathf.RoundToInt(vector.x);
-		this.y = Mathf.RoundToInt(vector.y);
-	}
-
 	public Vector2i(Vector3 vector)
 	{
 		this.x = Mathf.RoundToInt(vector.x);
@@ -71,9 +65,9 @@ public struct Vector2i : System.IEquatable<Vector2i>
 		return "(" + x + ", " + y + ")";
 	}
 
-	public Vector2 ToVector2()
+	public Vector3 ToVector3()
 	{
-		return new Vector2(x, y);
+		return new Vector3(x, y);
 	}
 
 	public static Vector2i Min(Vector2i a, Vector2i b) 
@@ -84,6 +78,11 @@ public struct Vector2i : System.IEquatable<Vector2i>
 	public static Vector2i Max(Vector2i a, Vector2i b) 
 	{
 		return new Vector2i(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+	}
+
+	public static Vector2i operator - (Vector2i a) 
+	{
+		return new Vector2i(-a.x, -a.y);
 	}
 
 	public static Vector2i operator - (Vector2i a, Vector2i b) 

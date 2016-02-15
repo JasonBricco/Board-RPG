@@ -28,7 +28,7 @@ public sealed class Event
 
 	public void Invoke(object data)
 	{
-		action.Invoke(data);
+		if (action != null) action.Invoke(data);
 	}
 }
 

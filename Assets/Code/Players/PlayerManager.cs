@@ -7,21 +7,43 @@
 //
 
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 public sealed class PlayerManager : IUpdatable
 {
-	private GameObject playerObject, enemyObject;
-	private Entity player, enemy;
 	private BoardManager boardManager;
+	private UIManager UI;
 
-	public PlayerManager(GameObject player, GameObject enemy, BoardManager boardManager)
+	private Sprite playerSprite, enemySprite;
+
+	private List<Entity> entityList = new List<Entity>();
+
+	private int lastTurn = -1;
+
+	public PlayerManager(BoardManager boardManager, UIManager UI)
 	{
-		this.playerObject = player;
-		this.enemyObject = enemy;
 		this.boardManager = boardManager;
+		this.UI = UI;
+
+		playerSprite = Resources.Load<Sprite>("Textures/Player");
+		enemySprite = Resources.Load<Sprite>("Textures/Enemy");
 
 		EventManager.StartListening("PlayPressed", PlayPressedHandler);
+	}
+
+	private Entity CreateEntity(string name, System.Type type, Sprite sprite)
+	{
+		GameObject entityObj = new GameObject(name);
+		SpriteRenderer rend = entityObj.AddComponent<SpriteRenderer>();
+		entityObj.AddComponent(type);
+		rend.sprite = sprite;
+
+		Entity entity = entityObj.GetComponent<Entity>();
+		entity.SetReferences(UI, boardManager, this);
+
+		return entity;
 	}
 
 	private void PlayPressedHandler(object data)
@@ -31,17 +53,21 @@ public sealed class PlayerManager : IUpdatable
 		if (startTiles.Count == 0)
 			return;
 
-		player = GameObject.Instantiate(playerObject).GetComponent<Entity>();
-		enemy = GameObject.Instantiate(enemyObject).GetComponent<Entity>();
+		StateManager.ChangeState(GameState.Playing);
+		UI.DisableGraphic("PlayButton");
+		UI.DisableGraphic("TilePanel");
+
+		entityList.Add(CreateEntity("Player", typeof(Player), playerSprite));
+		entityList.Add(CreateEntity("Enemy", typeof(Enemy), enemySprite));
 
 		int initialIndex = Random.Range(0, startTiles.Count);
 		Vector2i playerTile = startTiles[initialIndex];
 
-		Vector3 playerPos = new Vector3(playerTile.x, playerTile.y, -2.0f);
-		player.SetTo(playerPos);
+		Vector3 playerPos = new Vector3(playerTile.x, playerTile.y, 0.0f);
+		entityList[0].SetTo(playerPos);
 
 		if (startTiles.Count == 1)
-			enemy.SetTo(playerPos);
+			entityList[1].SetTo(playerPos);
 		else
 		{
 			int newIndex;
@@ -50,12 +76,43 @@ public sealed class PlayerManager : IUpdatable
 			while (newIndex == initialIndex);
 
 			Vector2i newPos = startTiles[newIndex];
-			enemy.SetTo(new Vector3(newPos.x, newPos.y, -2.0f));
+			entityList[1].SetTo(new Vector3(newPos.x, newPos.y, 0.0f));
 		}
+			
+		NextTurn();
 	}
 
 	public void UpdateTick()
 	{
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			for (int i = 0; i < entityList.Count; i++)
+				entityList[i].Delete();
 
+			entityList.Clear();
+
+			StateManager.ChangeState(GameState.Editing);
+			UI.EnableGraphic("PlayButton");
+		}
+	}
+
+	public void NextTurn()
+	{
+		int turnIndex = lastTurn == -1 ? Random.Range(0, entityList.Count) : (lastTurn + 1) % entityList.Count;
+		lastTurn = turnIndex;
+
+		Engine.Instance.StartCoroutine(CallTurn(entityList[turnIndex]));
+	}
+
+	private IEnumerator CallTurn(Entity entity)
+	{
+		Text turnText = UI.GetGraphic<Text>("TurnText");
+		turnText.text = entity.name + "'s Turn";
+
+		UI.EnableGraphic("TurnDisplayPanel");
+		yield return new WaitForSeconds(1.5f);
+		UI.DisableGraphic("TurnDisplayPanel");
+
+		entity.BeginTurn();
 	}
 }

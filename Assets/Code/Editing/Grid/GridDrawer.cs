@@ -18,11 +18,29 @@ public sealed class GridDrawer : IUpdatable
 
 	public GridDrawer()
 	{
+		EventManager.StartListening("StateChanged", StateChangedHandler);
+
 		lastWidth = Screen.width;
 		lastHeight = Screen.height;
 
 		grid = new VectorLine("Grid", gridPoints, 1.0f);
 		CreateGrid();
+	}
+
+	private void StateChangedHandler(object data)
+	{
+		GameState state = (GameState)data;
+
+		switch (state)
+		{
+		case GameState.Editing:
+			grid.Active = true;
+			break;
+
+		case GameState.Playing:
+			grid.Active = false;
+			break;
+		}
 	}
 
 	public void UpdateTick()
