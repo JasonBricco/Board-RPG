@@ -23,6 +23,8 @@ public sealed class Engine : MonoBehaviour
 
 	private List<IUpdatable> updateList = new List<IUpdatable>();
 
+	private string eventToCall;
+
 	private static Engine instance;
 	public static Engine Instance { get { return instance; } }
 
@@ -56,8 +58,13 @@ public sealed class Engine : MonoBehaviour
 		UIManager.DisableGraphic("TilePanel");
 	}
 
-	public void ButtonPressed(string buttonEvent)
+	public void ButtonPressedPrimer(string buttonEvent)
 	{
-		EventManager.TriggerEvent(buttonEvent, null);
+		eventToCall = buttonEvent;
+	}
+
+	public void ButtonPressed(string data)
+	{
+		EventManager.TriggerEvent(eventToCall, data);
 	}
 }

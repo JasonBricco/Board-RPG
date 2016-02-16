@@ -18,10 +18,11 @@ public class Entity : MonoBehaviour
 
 	private float speed = 5.0f;
 
-	private Vector2i lastDirection = Vector2i.zero;
-	private List<Vector2i> possibleMoves = new List<Vector2i>();
+	protected Vector2i lastDirection = Vector2i.zero;
+	protected List<Vector2i> possibleMoves = new List<Vector2i>();
 
 	protected bool beingDeleted = false;
+	protected int remainingMoves = 0;
 
 	public void SetReferences(UIManager UI, BoardManager boardManager, PlayerManager playerManager)
 	{
@@ -35,24 +36,7 @@ public class Entity : MonoBehaviour
 		return Random.Range(1, 7);
 	}
 
-	public IEnumerator Move(int distance)
-	{
-		for (int i = 0; i < distance; i++)
-		{
-			Vector2i current = new Vector2i(transform.position);
-
-			Vector2i move = GetMoveDirection(current);
-
-			if (move.Equals(Vector2i.zero)) continue; 
-
-			lastDirection = -move;
-			Vector3 target = (current + move).ToVector3();
-
-			yield return StartCoroutine(MoveToPosition(transform.position, target));
-		}
-	}
-
-	private IEnumerator MoveToPosition(Vector3 current, Vector3 target)
+	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)
 	{
 		float t = 0.0f;
 
@@ -75,7 +59,7 @@ public class Entity : MonoBehaviour
 	{
 	}
 
-	protected Vector2i GetMoveDirection(Vector2i current)
+	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)
 	{
 		possibleMoves.Clear();
 
@@ -97,14 +81,22 @@ public class Entity : MonoBehaviour
 		switch (possibleMoves.Count)
 		{
 		case 0:
-			return lastDirection;
+			dir = lastDirection;
+			return true;
 
 		case 1:
-			return possibleMoves[0];
+			dir = possibleMoves[0];
+			return true;
 
-		default: 
-			return Vector2i.zero;
+		default:
+			return HandleSplitPath(out dir);
 		}
+	}
+
+	public virtual bool HandleSplitPath(out Vector2i dir)
+	{
+		dir = Vector2i.zero;
+		return false;
 	}
 
 	public virtual void Delete()

@@ -14,12 +14,41 @@ public sealed class Enemy : Entity
 	public override void BeginTurn()
 	{
 		if (!beingDeleted)
-			StartCoroutine(Move());
+			StartCoroutine(DoMove());
 	}
 
-	private IEnumerator Move()
+	private IEnumerator DoMove()
 	{
-		yield return StartCoroutine(base.Move(GetDieRoll()));
+		remainingMoves = GetDieRoll();
+
+		while (remainingMoves > 0)
+		{
+			Vector2i current = new Vector2i(transform.position);
+			Vector2i move;
+
+			GetMoveDirection(current, out move);
+
+			if (move.Equals(Vector2i.zero)) 
+			{
+				remainingMoves = 0;
+				yield break;
+			}
+
+			lastDirection = -move;
+			Vector3 target = (current + move).ToVector3();
+
+			yield return StartCoroutine(MoveToPosition(transform.position, target));
+
+			remainingMoves--;
+		}
+
 		playerManager.NextTurn();
+	}
+
+	public override bool HandleSplitPath(out Vector2i dir)
+	{
+		int result = Random.Range(0, possibleMoves.Count);
+		dir = possibleMoves[result];
+		return true;
 	}
 }
