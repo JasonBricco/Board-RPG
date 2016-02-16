@@ -17,10 +17,10 @@ public sealed class MeshBuilder
 
 		float z = overlay ? 1.0f : 2.0f;
 
-		meshData.AddVertex(meshIndex, new Vector3(x + 0.5f, y - 0.5f, z));
-		meshData.AddVertex(meshIndex, new Vector3(x + 0.5f, y + 0.5f, z));
-		meshData.AddVertex(meshIndex, new Vector3(x - 0.5f, y + 0.5f, z));
-		meshData.AddVertex(meshIndex, new Vector3(x - 0.5f, y - 0.5f, z));
+		meshData.AddVertex(meshIndex, new Vector3(x + Tile.HalfSize, y - Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(x + Tile.HalfSize, y + Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(x - Tile.HalfSize, y + Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(x - Tile.HalfSize, y - Tile.HalfSize, z));
 
 		AddSquareUVs(meshIndex, meshData);
 	}

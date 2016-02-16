@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 public sealed class BoardManager 
 {
-	public const int Size = 512;
+	public const int Size = 512 * Tile.Size;
 	public const int WidthInChunks = Size / Chunk.Size;
 
 	private Material[] materials;
@@ -39,14 +39,14 @@ public sealed class BoardManager
 
 	public Tile GetTileSafe(int x, int y)
 	{
-		if (!InTileBounds(x, y)) return TileType.Air;
+		if (!InTileBounds(x, y)) return TileStore.Air;
 		return GetTile(x, y);
 	}
 
 	public Tile GetTile(int x, int y)
 	{
 		Chunk chunk = chunks[x >> Chunk.SizeBits, y >> Chunk.SizeBits];
-		return chunk == null ? TileType.Air : chunk.GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
+		return chunk == null ? TileStore.Air : chunk.GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
 	}
 
 	public void SetTile(Vector2i pos, Tile tile)

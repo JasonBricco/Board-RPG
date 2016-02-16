@@ -12,7 +12,7 @@ using UnityEngine.Events;
 public sealed class CameraControl : MonoBehaviour, IUpdatable
 {
 	private Transform player;
-
+	private float speed = 10.0f * Tile.Size;
 	private float minX, maxX, minZ, maxZ;
 
 	private void Start()
@@ -20,10 +20,10 @@ public sealed class CameraControl : MonoBehaviour, IUpdatable
 		float vertical = Camera.main.orthographicSize;
 		float horizontal = vertical * Screen.width / Screen.height;
 
-		minX = horizontal - 0.5f;
-		maxX = BoardManager.Size - horizontal - 0.5f;;
-		minZ = vertical - 0.5f;
-		maxZ = BoardManager.Size - vertical - 0.5f;
+		minX = horizontal - Tile.HalfSize;
+		maxX = BoardManager.Size - horizontal - Tile.HalfSize;
+		minZ = vertical - Tile.HalfSize;
+		maxZ = BoardManager.Size - vertical - Tile.HalfSize;
 	}
 
 	public void UpdateTick()
@@ -31,7 +31,7 @@ public sealed class CameraControl : MonoBehaviour, IUpdatable
 		float x = Input.GetAxis("Horizontal");
 		float y = Input.GetAxis("Vertical");
 
-		Vector3 move = new Vector3(x, y, 0.0f) * 10.0f * Time.deltaTime;
+		Vector3 move = new Vector3(x, y, 0.0f) * speed * Time.deltaTime;
 		transform.Translate(move);
 
 		Vector3 pos = transform.position;

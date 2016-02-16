@@ -17,13 +17,42 @@ public sealed class BoardEditor : IUpdatable
 	public const float PlaceLimit = 0.03f;
 	private float time = 0.0f;
 
-	private Tile activeTile = TileType.Grass;
+	private Tile activeTile = TileStore.Grass;
 	private Tile[,] surroundingTiles = new Tile[3, 3];
+
+	private GameObject reticle;
 
 	public BoardEditor(BoardManager boardManager, UIManager UIManager)
 	{
 		this.boardManager = boardManager;
 		this.UIManager = UIManager;
+
+		CreateReticle();
+		EventManager.StartListening("StateChanged", StateChangedHandler);
+	}
+
+	private void StateChangedHandler(object state)
+	{
+		GameState newState = (GameState)state;
+
+		switch (newState)
+		{
+		case GameState.Editing:
+			reticle.SetActive(true);
+			break;
+
+		case GameState.Playing:
+			reticle.SetActive(false);
+			break;
+		}
+	}
+
+	private void CreateReticle()
+	{
+		reticle = new GameObject("Reticle");
+		reticle.transform.localScale = new Vector3(32.0f, 32.0f);
+		SpriteRenderer rend = reticle.AddComponent<SpriteRenderer>();
+		rend.sprite = Resources.Load<Sprite>("Textures/Reticle");
 	}
 
 	public void UpdateTick()
@@ -33,8 +62,12 @@ public sealed class BoardEditor : IUpdatable
 		HandleModeInput();
 
 		if (EventSystem.current.IsPointerOverGameObject())
+		{
+			if (reticle.activeSelf) reticle.SetActive(false);
 			return;
+		}
 
+		DisplayReticle();
 		HandleEditInput();
 	}
 
@@ -78,10 +111,22 @@ public sealed class BoardEditor : IUpdatable
 		activeTile = tile;
 	}
 
+	private void DisplayReticle()
+	{
+		if (!reticle.activeSelf) reticle.SetActive(true);
+
+		Vector2i tilePos = GetCursorTilePos();
+		reticle.transform.position = new Vector3(tilePos.x, tilePos.y);
+	}
+
 	private Vector2i GetCursorTilePos()
 	{
 		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		return new Vector2i(pos);
+
+		int x = Utils.RoundToNearest(pos.x, Tile.Size);
+		int y = Utils.RoundToNearest(pos.y, Tile.Size);
+
+		return new Vector2i(x, y);
 	}
 
 	private void SetTile(bool deleting)
@@ -90,7 +135,7 @@ public sealed class BoardEditor : IUpdatable
 
 		if (boardManager.InTileBounds(tilePos.x, tilePos.y))
 		{
-			if (IsValidEdit(tilePos, deleting ? TileType.Air : activeTile))
+			if (IsValidEdit(tilePos, deleting ? TileStore.Air : activeTile))
 			{
 				if (deleting) boardManager.DeleteTile(tilePos);
 				else boardManager.SetTile(tilePos, activeTile);
@@ -120,8 +165,8 @@ public sealed class BoardEditor : IUpdatable
 			{
 				if (x == 1 && y == 1) continue;
 
-				xOffset = x - 1;
-				yOffset = y - 1;
+				xOffset = (x * Tile.Size) - Tile.Size;
+				yOffset = (y * Tile.Size) - Tile.Size;
 
 				surroundingTiles[x, y] = boardManager.GetTileSafe(tilePos.x + xOffset, tilePos.y + yOffset);
 			}

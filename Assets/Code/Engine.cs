@@ -40,10 +40,11 @@ public sealed class Engine : MonoBehaviour
 
 		updateList.Add(new ErrorHandler());
 		updateList.Add(camControl);
-		updateList.Add(new GridDrawer());
 		updateList.Add(boardEditor);
 		updateList.Add(new ChunkRenderer(boardManager));
 		updateList.Add(new PlayerManager(boardManager, UIManager));
+
+		EventManager.StartListening("ExitPressed", ExitPressedHandler);
 	}
 
 	private void Update()
@@ -54,7 +55,7 @@ public sealed class Engine : MonoBehaviour
 
 	public void TileButtonPressed(GameObject button)
 	{
-		boardEditor.SetActiveTile(TileType.GetTileByName(button.name));
+		boardEditor.SetActiveTile(TileStore.GetTileByName(button.name));
 		UIManager.DisableGraphic("TilePanel");
 	}
 
@@ -66,5 +67,10 @@ public sealed class Engine : MonoBehaviour
 	public void ButtonPressed(string data)
 	{
 		EventManager.TriggerEvent(eventToCall, data);
+	}
+
+	private void ExitPressedHandler(object data)
+	{
+		Application.Quit();
 	}
 }

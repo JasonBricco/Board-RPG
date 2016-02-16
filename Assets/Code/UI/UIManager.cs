@@ -17,6 +17,8 @@ public sealed class UIManager
 	{
 		for (int i = 0; i < graphics.Length; i++)
 			this.graphics.Add(graphics[i].name, graphics[i]);
+
+		EventManager.StartListening("StateChanged", StateChangedHandler);
 	}
 
 	public GameObject GetGraphic(string name)
@@ -54,5 +56,24 @@ public sealed class UIManager
 	{
 		GameObject graphic = GetGraphic(name);
 		graphic.SetActive(!graphic.activeSelf);
+	}
+
+	private void StateChangedHandler(object state)
+	{
+		GameState newState = (GameState)state;
+
+		switch (newState)
+		{
+		case GameState.Editing:
+			EnableGraphic("PlayButton");
+			EnableGraphic("ExitButton");
+			break;
+
+		case GameState.Playing:
+			DisableGraphic("PlayButton");
+			DisableGraphic("ExitButton");
+			DisableGraphic("TilePanel");
+			break;
+		}
 	}
 }

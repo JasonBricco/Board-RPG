@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 public class MeshData 
 {
-	public const int MaxMeshes = 2;
+	public static readonly int MaxMeshes = TileStore.Count - 1;
 
 	private List<Vector3>[] vertices = new List<Vector3>[MaxMeshes];
 	private List<Vector2>[] uvs = new List<Vector2>[MaxMeshes];

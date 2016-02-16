@@ -10,7 +10,7 @@ using UnityEngine;
 
 public sealed class Chunk
 {
-	public const int SizeBits = 4;
+	public const int SizeBits = 9;
 	public const int Size = 1 << SizeBits;
 
 	private Tile[] tiles;
@@ -39,8 +39,8 @@ public sealed class Chunk
 
 		for (int i = 0; i < tiles.Length; i++)
 		{
-			tiles[i] = TileType.Air;
-			overlayTiles[i] = TileType.Air;
+			tiles[i] = TileStore.Air;
+			overlayTiles[i] = TileStore.Air;
 		}
 		
 		this.boardManager = boardManager;
@@ -74,12 +74,12 @@ public sealed class Chunk
 		if (overlayTiles[index].ID != 0)
 		{
 			overlayTiles[index].OnDeleted(boardManager.GetData(), new Vector2i(wX, wY));
-			overlayTiles[index] = TileType.Air;
+			overlayTiles[index] = TileStore.Air;
 		}
 		else
 		{
 			tiles[index].OnDeleted(boardManager.GetData(), new Vector2i(wX, wY));
-			tiles[index] = TileType.Air;
+			tiles[index] = TileStore.Air;
 		}
 	}
 

@@ -10,6 +10,9 @@ using UnityEngine;
 
 public class Tile  
 {
+	public const int Size = 32;
+	public const int HalfSize = Size / 2;
+
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
 
 	protected string name = "Unassigned";

@@ -36,6 +36,7 @@ public sealed class PlayerManager : IUpdatable
 	private Entity CreateEntity(string name, System.Type type, Sprite sprite)
 	{
 		GameObject entityObj = new GameObject(name);
+		entityObj.transform.localScale = new Vector3(32.0f, 32.0f);
 		SpriteRenderer rend = entityObj.AddComponent<SpriteRenderer>();
 		entityObj.AddComponent(type);
 		rend.sprite = sprite;
@@ -54,8 +55,6 @@ public sealed class PlayerManager : IUpdatable
 			return;
 
 		StateManager.ChangeState(GameState.Playing);
-		UI.DisableGraphic("PlayButton");
-		UI.DisableGraphic("TilePanel");
 
 		entityList.Add(CreateEntity("Player", typeof(Player), playerSprite));
 		entityList.Add(CreateEntity("Enemy", typeof(Enemy), enemySprite));
@@ -92,7 +91,6 @@ public sealed class PlayerManager : IUpdatable
 			entityList.Clear();
 
 			StateManager.ChangeState(GameState.Editing);
-			UI.EnableGraphic("PlayButton");
 		}
 	}
 
