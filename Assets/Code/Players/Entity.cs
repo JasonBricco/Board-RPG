@@ -36,6 +36,11 @@ public class Entity : MonoBehaviour
 		return Random.Range(1, 7);
 	}
 
+	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)
+	{
+		return (current + (direction * Tile.Size)).ToVector3();
+	}
+
 	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)
 	{
 		float t = 0.0f;
@@ -61,6 +66,13 @@ public class Entity : MonoBehaviour
 
 	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)
 	{
+//		Debug.Log("Current position in W coords: " + current);
+
+		current.x >>= Tile.SizeBits;
+		current.y >>= Tile.SizeBits;
+
+//		Debug.Log("Converted to T coords: " + current);
+
 		possibleMoves.Clear();
 
 		for (int i = 0; i < 4; i++)
@@ -73,6 +85,8 @@ public class Entity : MonoBehaviour
 
 				Tile tile = boardManager.GetTileSafe(newPos.x, newPos.y);
 
+//				Debug.Log("Looking in direction: " + direction + ", we find: " + tile.Name);
+
 				if (tile.ID != 0)
 					possibleMoves.Add(direction);
 			}
@@ -81,14 +95,17 @@ public class Entity : MonoBehaviour
 		switch (possibleMoves.Count)
 		{
 		case 0:
+//			Debug.Log("Found 0 possible moves.");
 			dir = lastDirection;
 			return true;
 
 		case 1:
+//			Debug.Log("Found 1 possible move.");
 			dir = possibleMoves[0];
 			return true;
 
 		default:
+//			Debug.Log("Found a split path.");
 			return HandleSplitPath(out dir);
 		}
 	}

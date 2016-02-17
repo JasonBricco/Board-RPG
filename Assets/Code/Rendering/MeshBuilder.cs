@@ -11,16 +11,16 @@ using System.Collections.Generic;
 
 public sealed class MeshBuilder
 {
-	public void BuildSquare(byte meshIndex, int x, int y, MeshData meshData, bool overlay)
+	public void BuildSquare(byte meshIndex, int tX, int tY, MeshData meshData, bool overlay)
 	{
 		AddSquareIndices(meshIndex, meshData);
 
 		float z = overlay ? 1.0f : 2.0f;
 
-		meshData.AddVertex(meshIndex, new Vector3(x + Tile.HalfSize, y - Tile.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(x + Tile.HalfSize, y + Tile.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(x - Tile.HalfSize, y + Tile.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(x - Tile.HalfSize, y - Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX + Tile.HalfSize, tY - Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX + Tile.HalfSize, tY + Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX - Tile.HalfSize, tY + Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX - Tile.HalfSize, tY - Tile.HalfSize, z));
 
 		AddSquareUVs(meshIndex, meshData);
 	}

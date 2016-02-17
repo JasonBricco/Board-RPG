@@ -16,6 +16,11 @@ public sealed class TileStore
 	public static readonly Tile Stone = new StoneTile();
 	public static readonly Tile Sand = new SandTile();
 
+	private static readonly List<Tile> tilesList = new List<Tile>()
+	{
+		Air, Grass, Start, Stone, Sand
+	};
+
 	private static readonly Dictionary<string, Tile> tilesByName = new Dictionary<string, Tile>()
 	{
 		{ "Air", Air },
@@ -30,5 +35,10 @@ public sealed class TileStore
 	public static Tile GetTileByName(string name)
 	{
 		return tilesByName[name];
+	}
+
+	public static Tile GetTileByID(int ID)
+	{
+		return tilesList[ID];
 	}
 }

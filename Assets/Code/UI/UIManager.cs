@@ -65,14 +65,11 @@ public sealed class UIManager
 		switch (newState)
 		{
 		case GameState.Editing:
-			EnableGraphic("PlayButton");
-			EnableGraphic("ExitButton");
+			EnableGraphic("MainButtons");
 			break;
 
 		case GameState.Playing:
-			DisableGraphic("PlayButton");
-			DisableGraphic("ExitButton");
-			DisableGraphic("TilePanel");
+			DisableGraphic("MainButtons");
 			break;
 		}
 	}

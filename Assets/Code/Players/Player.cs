@@ -40,28 +40,26 @@ public sealed class Player : Entity
 		while (remainingMoves > 0)
 		{
 			Vector2i current = new Vector2i(transform.position);
-			Vector2i move;
+			Vector2i dir;
 
 			if (forcedDirections.Count > 0)
-				move = forcedDirections.Dequeue();
+				dir = forcedDirections.Dequeue();
 			else
 			{
-				bool success = GetMoveDirection(current, out move);
+				bool success = GetMoveDirection(current, out dir);
 
 				if (!success) yield break;
 
-				if (move.Equals(Vector2i.zero)) 
+				if (dir.Equals(Vector2i.zero)) 
 				{
 					remainingMoves = 0;
 					yield break;
 				}
 			}
+				
+			yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
 
-			lastDirection = -move;
-			Vector3 target = (current + move).ToVector3();
-
-			yield return StartCoroutine(MoveToPosition(transform.position, target));
-
+			lastDirection = -dir;
 			remainingMoves--;
 		}
 			

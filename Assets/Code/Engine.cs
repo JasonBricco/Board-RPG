@@ -8,6 +8,7 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Assertions;
 using System.Collections.Generic;
 
 public delegate void Callback();
@@ -72,5 +73,10 @@ public sealed class Engine : MonoBehaviour
 	private void ExitPressedHandler(object data)
 	{
 		Application.Quit();
+	}
+
+	private void OnApplicationQuit()
+	{
+		EventManager.TriggerEvent("Quit", null);
 	}
 }

@@ -61,12 +61,12 @@ public sealed class PlayerManager : IUpdatable
 
 		int initialIndex = Random.Range(0, startTiles.Count);
 		Vector2i playerTile = startTiles[initialIndex];
+		Vector3 worldPos = Utils.WorldFromTileCoords(playerTile);
 
-		Vector3 playerPos = new Vector3(playerTile.x, playerTile.y, 0.0f);
-		entityList[0].SetTo(playerPos);
+		entityList[0].SetTo(worldPos);
 
 		if (startTiles.Count == 1)
-			entityList[1].SetTo(playerPos);
+			entityList[1].SetTo(worldPos);
 		else
 		{
 			int newIndex;
@@ -74,7 +74,7 @@ public sealed class PlayerManager : IUpdatable
 			do { newIndex = Random.Range(0, startTiles.Count); }
 			while (newIndex == initialIndex);
 
-			Vector2i newPos = startTiles[newIndex];
+			Vector3 newPos = Utils.WorldFromTileCoords(startTiles[newIndex]);
 			entityList[1].SetTo(new Vector3(newPos.x, newPos.y, 0.0f));
 		}
 			

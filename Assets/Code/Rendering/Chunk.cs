@@ -10,7 +10,7 @@ using UnityEngine;
 
 public sealed class Chunk
 {
-	public const int SizeBits = 9;
+	public const int SizeBits = 4;
 	public const int Size = 1 << SizeBits;
 
 	private Tile[] tiles;
@@ -18,8 +18,8 @@ public sealed class Chunk
 
 	private BoardManager boardManager;
 
-	private Vector2i worldPos;
-	private Vector3 fWorldPos;
+	private Vector2i chunkPos;
+	private Vector3 worldPos;
 
 	private static MeshData meshData = new MeshData();
 
@@ -27,12 +27,12 @@ public sealed class Chunk
 
 	public bool FlaggedForUpdate { get; set; }
 	 
-	public Vector2i Position
+	public Vector3 Position
 	{
 		get { return worldPos; }
 	}
 
-	public Chunk(int chunkX, int chunkZ, BoardManager boardManager)
+	public Chunk(int cX, int cY, BoardManager boardManager)
 	{
 		tiles = new Tile[Size * Size];
 		overlayTiles = new Tile[Size * Size];
@@ -45,40 +45,40 @@ public sealed class Chunk
 		
 		this.boardManager = boardManager;
 
-		worldPos = new Vector2i(chunkX * Size, chunkZ * Size);
-		fWorldPos = new Vector3(worldPos.x, worldPos.y);
+		chunkPos = new Vector2i(cX, cY);
+		worldPos = Utils.WorldFromChunkCoords(chunkPos);
 	}
 
-	public Tile GetTile(int x, int y)
+	public Tile GetTile(int lX, int lY)
 	{
-		return tiles[(y * Size) + x];
+		return tiles[(lY * Size) + lX];
 	}
 
-	public Tile GetOverlayTile(int x, int y)
+	public Tile GetOverlayTile(int lX, int lY)
 	{
-		return overlayTiles[(y * Size) + x];
+		return overlayTiles[(lY * Size) + lX];
 	}
 
-	public void SetTile(int x, int y, Tile tile)
+	public void SetTile(int lX, int lY, Tile tile)
 	{
 		if (tile.IsOverlay)
-			overlayTiles[(y * Size) + x] = tile;
+			overlayTiles[(lY * Size) + lX] = tile;
 		else
-			tiles[(y * Size) + x] = tile;
+			tiles[(lY * Size) + lX] = tile;
 	}
 
-	public void DeleteTile(int x, int y, int wX, int wY)
+	public void DeleteTile(int lX, int lY, int tX, int tY)
 	{
-		int index = (y * Size) + x;
+		int index = (lY * Size) + lX;
 
 		if (overlayTiles[index].ID != 0)
 		{
-			overlayTiles[index].OnDeleted(boardManager.GetData(), new Vector2i(wX, wY));
+			overlayTiles[index].OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
 			overlayTiles[index] = TileStore.Air;
 		}
 		else
 		{
-			tiles[index].OnDeleted(boardManager.GetData(), new Vector2i(wX, wY));
+			tiles[index].OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
 			tiles[index] = TileStore.Air;
 		}
 	}
@@ -87,18 +87,20 @@ public sealed class Chunk
 	{
 		FlaggedForUpdate = false;
 
-		for (int x = 0; x < Size; x++)
+		for (int lX = 0; lX < Size; lX++)
 		{
-			for (int y = 0; y < Size; y++)
+			for (int lY = 0; lY < Size; lY++)
 			{
-				Tile tile = GetTile(x, y);
-				Tile overlay = GetOverlayTile(x, y);
+				int tX = lX * Tile.Size, tY = lY * Tile.Size;
+
+				Tile tile = GetTile(lX, lY);
+				Tile overlay = GetOverlayTile(lX, lY);
 
 				if (tile.ID != 0)
-					tile.Build(x, y, meshData, false);
+					tile.Build(tX, tY, meshData, false);
 
 				if (overlay.ID != 0)
-					overlay.Build(x, y, meshData, true);
+					overlay.Build(tX, tY, meshData, true);
 			}
 		}
 
@@ -116,7 +118,36 @@ public sealed class Chunk
 		for (int i = 0; i < meshes.Length; i++)
 		{
 			if (meshes[i] != null)
-				Graphics.DrawMesh(meshes[i], fWorldPos, Quaternion.identity, boardManager.GetMaterial(i), 0);
+				Graphics.DrawMesh(meshes[i], worldPos, Quaternion.identity, boardManager.GetMaterial(i), 0);
 		}
+	}
+
+	public void Destroy()
+	{
+		for (int i = 0; i < meshes.Length; i++)
+			GameObject.Destroy(meshes[i]);
+	}
+
+	public void Save(BoardData data)
+	{
+		int pos = (chunkPos.y * BoardManager.WidthInChunks) + chunkPos.x;
+		data.savedChunks.Add(pos);
+
+		ChunkData saveData = new ChunkData();
+		Encoder.Encode(tiles, saveData, 0);
+		Encoder.Encode(overlayTiles, saveData, 1);
+
+		string chunkData = JsonUtility.ToJson(saveData);
+		data.chunkData.Add(chunkData);
+	}
+
+	public void Load(string data)
+	{
+		ChunkData loadedData = JsonUtility.FromJson<ChunkData>(data);
+
+		Encoder.Decode(tiles, loadedData, 0);
+		Encoder.Decode(overlayTiles, loadedData, 1);
+
+		BuildMesh();
 	}
 }

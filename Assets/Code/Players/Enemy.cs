@@ -24,21 +24,19 @@ public sealed class Enemy : Entity
 		while (remainingMoves > 0)
 		{
 			Vector2i current = new Vector2i(transform.position);
-			Vector2i move;
+			Vector2i dir;
 
-			GetMoveDirection(current, out move);
+			GetMoveDirection(current, out dir);
 
-			if (move.Equals(Vector2i.zero)) 
+			if (dir.Equals(Vector2i.zero)) 
 			{
 				remainingMoves = 0;
 				yield break;
 			}
 
-			lastDirection = -move;
-			Vector3 target = (current + move).ToVector3();
+			yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
 
-			yield return StartCoroutine(MoveToPosition(transform.position, target));
-
+			lastDirection = -dir;
 			remainingMoves--;
 		}
 

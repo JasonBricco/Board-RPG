@@ -10,6 +10,8 @@ using UnityEngine;
 
 public sealed class ChunkRenderer : IUpdatable
 {
+	private const int WToXShift = Chunk.SizeBits + Tile.SizeBits;
+
 	private BoardManager boardManager;
 
 	public ChunkRenderer(BoardManager boardManager)
@@ -22,7 +24,7 @@ public sealed class ChunkRenderer : IUpdatable
 		Vector3 middle = new Vector3(Screen.width >> 1, Screen.height >> 1);
 		Vector3 point = Camera.main.ScreenToWorldPoint(middle);
 
-		int cX = (int)point.x >> Chunk.SizeBits, cY = (int)point.y >> Chunk.SizeBits;
+		int cX = (int)point.x >> WToXShift, cY = (int)point.y >> WToXShift;
 
 		for (int x = cX - 1; x <= cX + 1; x++)
 		{

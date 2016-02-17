@@ -8,10 +8,11 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 
 public sealed class BoardManager 
 {
-	public const int Size = 512 * Tile.Size;
+	public const int Size = 512;
 	public const int WidthInChunks = Size / Chunk.Size;
 
 	private Material[] materials;
@@ -25,6 +26,10 @@ public sealed class BoardManager
 	public BoardManager(Material[] materials)
 	{
 		this.materials = materials;
+		EventManager.StartListening("Quit", SaveBoard);
+		EventManager.StartListening("ClearPressed", ClearBoard);
+
+		LoadBoard();
 	}
 
 	public Material GetMaterial(int index)
@@ -37,38 +42,38 @@ public sealed class BoardManager
 		return boardData;
 	}
 
-	public Tile GetTileSafe(int x, int y)
+	public Tile GetTileSafe(int tX, int tY)
 	{
-		if (!InTileBounds(x, y)) return TileStore.Air;
-		return GetTile(x, y);
+		if (!InTileBounds(tX, tY)) return TileStore.Air;
+		return GetTile(tX, tY);
 	}
 
-	public Tile GetTile(int x, int y)
+	public Tile GetTile(int tX, int tY)
 	{
-		Chunk chunk = chunks[x >> Chunk.SizeBits, y >> Chunk.SizeBits];
-		return chunk == null ? TileStore.Air : chunk.GetTile(x & Chunk.Size - 1, y & Chunk.Size - 1);
+		Chunk chunk = GetChunk(tX, tY);
+		return chunk == null ? TileStore.Air : chunk.GetTile(tX & Chunk.Size - 1, tY & Chunk.Size - 1);
 	}
 
-	public void SetTile(Vector2i pos, Tile tile)
+	public void SetTile(Vector2i tPos, Tile tile)
 	{
-		tile.OnAdded(boardData, pos);
-		GetChunkSafe(pos.x, pos.y).SetTile(pos.x & Chunk.Size - 1, pos.y & Chunk.Size - 1, tile);
+		tile.OnAdded(boardData, tPos);
+		GetChunkSafe(tPos.x, tPos.y).SetTile(tPos.x & Chunk.Size - 1, tPos.y & Chunk.Size - 1, tile);
 	}
 
-	public void DeleteTile(Vector2i pos)
+	public void DeleteTile(Vector2i tPos)
 	{
-		int localX = pos.x & Chunk.Size - 1, localY = pos.y & Chunk.Size - 1;
-		GetChunkSafe(pos.x, pos.y).DeleteTile(localX, localY, pos.x, pos.y);
+		int localX = tPos.x & Chunk.Size - 1, localY = tPos.y & Chunk.Size - 1;
+		GetChunkSafe(tPos.x, tPos.y).DeleteTile(localX, localY, tPos.x, tPos.y);
 	}
 
-	private Chunk GetChunk(int worldX, int worldY)
+	private Chunk GetChunk(int tX, int tY)
 	{
-		return chunks[worldX >> Chunk.SizeBits, worldY >> Chunk.SizeBits];
+		return chunks[tX >> Chunk.SizeBits, tY >> Chunk.SizeBits];
 	}
 
-	private Chunk GetChunkSafe(int worldX, int worldY)
+	private Chunk GetChunkSafe(int tX, int tY)
 	{
-		Vector2i pos = new Vector2i(worldX >> Chunk.SizeBits, worldY >> Chunk.SizeBits);
+		Vector2i pos = new Vector2i(tX >> Chunk.SizeBits, tY >> Chunk.SizeBits);
 		Chunk chunk = chunks[pos.x, pos.y];
 
 		if (chunk == null)
@@ -85,9 +90,9 @@ public sealed class BoardManager
 		return chunks[chunkX, chunkY];
 	}
 
-	public void FlagChunkForRebuild(Vector2i worldPos)
+	public void FlagChunkForRebuild(Vector2i tPos)
 	{
-		Chunk chunk = GetChunk(worldPos.x, worldPos.y);
+		Chunk chunk = GetChunk(tPos.x, tPos.y);
 
 		if (!chunk.FlaggedForUpdate)
 		{
@@ -112,5 +117,71 @@ public sealed class BoardManager
 	public bool InChunkBounds(int x, int y)
 	{
 		return x >= 0 && y >= 0 && x < WidthInChunks && y < WidthInChunks; 
+	}
+
+	private void ClearBoard(object state)
+	{
+		for (int x = 0; x < chunks.GetLength(0); x++)
+		{
+			for (int y = 0; y < chunks.GetLength(0); y++)
+			{
+				Chunk chunk = chunks[x, y];
+
+				if (chunk != null)
+					chunk.Destroy();
+
+				chunks[x, y] = null;
+			}
+		}
+
+		boardData.startTiles.Clear();
+	}
+
+	private void SaveBoard(object state)
+	{
+		for (int x = 0; x < chunks.GetLength(0); x++)
+		{
+			for (int y = 0; y < chunks.GetLength(1); y++)
+			{
+				Chunk chunk = chunks[x, y];
+
+				if (chunk != null)
+					chunk.Save(boardData);
+			}
+		}
+
+		FileStream stream = new FileStream(Application.persistentDataPath + "/Data.txt", FileMode.Create);
+		StreamWriter dataWriter = new StreamWriter(stream);
+
+		string json = JsonUtility.ToJson(boardData);
+		dataWriter.Write(json);
+		dataWriter.Close();
+	}
+
+	private void LoadBoard()
+	{
+		string path = Application.persistentDataPath + "/Data.txt";
+
+		if (File.Exists(path))
+		{
+			StreamReader reader = new StreamReader(path);
+			string json = reader.ReadToEnd();
+			boardData = JsonUtility.FromJson<BoardData>(json);
+			reader.Close();
+
+			for (int i = 0; i < boardData.savedChunks.Count; i++)
+			{
+				int pos = boardData.savedChunks[i];
+				int cX = pos & (BoardManager.WidthInChunks - 1);
+				int cY = (pos >> Tile.SizeBits) & (BoardManager.WidthInChunks - 1);
+
+				Chunk chunk = new Chunk(cX, cY, this);
+				chunks[cX, cY] = chunk;
+
+				chunk.Load(boardData.chunkData[i]);
+			}
+
+			boardData.ClearChunkData();
+		}
 	}
 }

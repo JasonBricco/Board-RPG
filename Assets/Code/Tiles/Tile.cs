@@ -10,7 +10,8 @@ using UnityEngine;
 
 public class Tile  
 {
-	public const int Size = 32;
+	public const int SizeBits = 5;
+	public const int Size = 1 << SizeBits;
 	public const int HalfSize = Size / 2;
 
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
@@ -25,9 +26,14 @@ public class Tile
 	public byte MeshIndex { get { return meshIndex; } }
 	public bool IsOverlay { get { return isOverlay; } }
 
-	public virtual void Build(int x, int z, MeshData data, bool overlay)
+	public virtual void Build(int tX, int tY, MeshData data, bool overlay)
 	{
-		meshBuilder.BuildSquare(meshIndex, x, z, data, overlay);
+		meshBuilder.BuildSquare(meshIndex, tX, tY, data, overlay);
+	}
+
+	public virtual bool CanAdd(BoardData data, Vector2i pos)
+	{
+		return true;
 	}
 
 	public virtual void OnAdded(BoardData data, Vector2i pos)

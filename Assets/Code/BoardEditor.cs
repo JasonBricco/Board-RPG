@@ -115,11 +115,17 @@ public sealed class BoardEditor : IUpdatable
 	{
 		if (!reticle.activeSelf) reticle.SetActive(true);
 
-		Vector2i tilePos = GetCursorTilePos();
+		Vector2i tilePos = GetCursorWorldPos();
 		reticle.transform.position = new Vector3(tilePos.x, tilePos.y);
 	}
 
 	private Vector2i GetCursorTilePos()
+	{
+		Vector2i wPos = GetCursorWorldPos();
+		return new Vector2i(wPos.x >> Tile.SizeBits, wPos.y >> Tile.SizeBits);
+	}
+
+	private Vector2i GetCursorWorldPos()
 	{
 		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -138,7 +144,11 @@ public sealed class BoardEditor : IUpdatable
 			if (IsValidEdit(tilePos, deleting ? TileStore.Air : activeTile))
 			{
 				if (deleting) boardManager.DeleteTile(tilePos);
-				else boardManager.SetTile(tilePos, activeTile);
+				else 
+				{
+					if (activeTile.CanAdd(boardManager.GetData(), tilePos))
+						boardManager.SetTile(tilePos, activeTile);
+				}
 			
 				boardManager.FlagChunkForRebuild(tilePos);
 				boardManager.RebuildChunks();
@@ -165,8 +175,8 @@ public sealed class BoardEditor : IUpdatable
 			{
 				if (x == 1 && y == 1) continue;
 
-				xOffset = (x * Tile.Size) - Tile.Size;
-				yOffset = (y * Tile.Size) - Tile.Size;
+				xOffset = x - 1;
+				yOffset = y - 1;
 
 				surroundingTiles[x, y] = boardManager.GetTileSafe(tilePos.x + xOffset, tilePos.y + yOffset);
 			}

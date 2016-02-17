@@ -8,16 +8,17 @@
 
 using UnityEngine;
 
+[System.Serializable]
 public struct Vector2i : System.IEquatable<Vector2i>
 {
 	public int x, y;
 
 	public static readonly Vector2i zero = new Vector2i(0, 0);
-	public static readonly Vector2i one = new Vector2i(Tile.Size, Tile.Size);
-	public static readonly Vector2i up = new Vector2i(0, Tile.Size);
-	public static readonly Vector2i down = new Vector2i(0, -Tile.Size);
-	public static readonly Vector2i left = new Vector2i(-Tile.Size, 0);
-	public static readonly Vector2i right = new Vector2i(Tile.Size, 0);
+	public static readonly Vector2i one = new Vector2i(1, 1);
+	public static readonly Vector2i up = new Vector2i(0, 1);
+	public static readonly Vector2i down = new Vector2i(0, -1);
+	public static readonly Vector2i left = new Vector2i(-1, 0);
+	public static readonly Vector2i right = new Vector2i(1, 0);
 
 	public static readonly Vector2i[] directions = new Vector2i[] 
 	{

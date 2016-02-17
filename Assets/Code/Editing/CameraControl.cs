@@ -21,9 +21,9 @@ public sealed class CameraControl : MonoBehaviour, IUpdatable
 		float horizontal = vertical * Screen.width / Screen.height;
 
 		minX = horizontal - Tile.HalfSize;
-		maxX = BoardManager.Size - horizontal - Tile.HalfSize;
+		maxX = (BoardManager.Size * Tile.Size) - horizontal - Tile.HalfSize;
 		minZ = vertical - Tile.HalfSize;
-		maxZ = BoardManager.Size - vertical - Tile.HalfSize;
+		maxZ = (BoardManager.Size * Tile.Size) - vertical - Tile.HalfSize;
 	}
 
 	public void UpdateTick()
