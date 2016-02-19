@@ -8,18 +8,13 @@
 
 using UnityEngine;
 
-public sealed class ChunkRenderer : IUpdatable
+public sealed class ChunkRenderer : MonoBehaviour
 {
 	private const int WToXShift = Chunk.SizeBits + Tile.SizeBits;
 
-	private BoardManager boardManager;
+	[SerializeField] private BoardManager boardManager;
 
-	public ChunkRenderer(BoardManager boardManager)
-	{
-		this.boardManager = boardManager;
-	}
-
-	public void UpdateTick()
+	private void Update()
 	{
 		Vector3 middle = new Vector3(Screen.width >> 1, Screen.height >> 1);
 		Vector3 point = Camera.main.ScreenToWorldPoint(middle);

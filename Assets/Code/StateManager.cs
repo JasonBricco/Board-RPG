@@ -8,8 +8,6 @@
 
 using UnityEngine;
 
-public enum GameState { Playing, Editing }
-
 public static class StateManager  
 {
 	private static GameState state = GameState.Editing;
@@ -18,6 +16,6 @@ public static class StateManager
 	public static void ChangeState(GameState newState)
 	{
 		state = newState;
-		EventManager.TriggerEvent("StateChanged", newState);
+		EventManager.TriggerEvent("StateChanged", (int)newState);
 	}
 }

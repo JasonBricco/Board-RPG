@@ -43,4 +43,8 @@ public class Tile
 	public virtual void OnDeleted(BoardData data, Vector2i pos)
 	{
 	}
+
+	public virtual void OnFunction()
+	{
+	}
 }

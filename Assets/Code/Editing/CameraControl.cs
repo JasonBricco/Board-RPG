@@ -9,7 +9,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public sealed class CameraControl : MonoBehaviour, IUpdatable
+public sealed class CameraControl : MonoBehaviour
 {
 	private Transform player;
 	private float speed = 10.0f * Tile.Size;
@@ -26,8 +26,10 @@ public sealed class CameraControl : MonoBehaviour, IUpdatable
 		maxZ = (BoardManager.Size * Tile.Size) - vertical - Tile.HalfSize;
 	}
 
-	public void UpdateTick()
+	private void Update()
 	{
+		if (StateManager.CurrentState == GameState.Window) return;
+
 		float x = Input.GetAxis("Horizontal");
 		float y = Input.GetAxis("Vertical");
 

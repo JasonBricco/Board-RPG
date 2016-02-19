@@ -12,7 +12,6 @@ using System.Collections.Generic;
 
 public class Entity : MonoBehaviour
 {
-	protected UIManager UI;
 	protected BoardManager boardManager;
 	protected PlayerManager playerManager;
 
@@ -24,16 +23,15 @@ public class Entity : MonoBehaviour
 	protected bool beingDeleted = false;
 	protected int remainingMoves = 0;
 
-	public void SetReferences(UIManager UI, BoardManager boardManager, PlayerManager playerManager)
+	public void SetReferences(BoardManager boardManager, PlayerManager playerManager)
 	{
-		this.UI = UI;
 		this.boardManager = boardManager;
 		this.playerManager = playerManager;
 	}
 
 	protected int GetDieRoll()
 	{
-		return Random.Range(1, 7);
+		return Random.Range(50, 50);
 	}
 
 	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)
@@ -66,12 +64,8 @@ public class Entity : MonoBehaviour
 
 	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)
 	{
-//		Debug.Log("Current position in W coords: " + current);
-
 		current.x >>= Tile.SizeBits;
 		current.y >>= Tile.SizeBits;
-
-//		Debug.Log("Converted to T coords: " + current);
 
 		possibleMoves.Clear();
 
@@ -85,8 +79,6 @@ public class Entity : MonoBehaviour
 
 				Tile tile = boardManager.GetTileSafe(newPos.x, newPos.y);
 
-//				Debug.Log("Looking in direction: " + direction + ", we find: " + tile.Name);
-
 				if (tile.ID != 0)
 					possibleMoves.Add(direction);
 			}
@@ -95,17 +87,14 @@ public class Entity : MonoBehaviour
 		switch (possibleMoves.Count)
 		{
 		case 0:
-//			Debug.Log("Found 0 possible moves.");
 			dir = lastDirection;
 			return true;
 
 		case 1:
-//			Debug.Log("Found 1 possible move.");
 			dir = possibleMoves[0];
 			return true;
 
 		default:
-//			Debug.Log("Found a split path.");
 			return HandleSplitPath(out dir);
 		}
 	}

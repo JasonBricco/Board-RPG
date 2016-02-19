@@ -9,26 +9,21 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public sealed class ArrowManager : MonoBehaviour 
+public sealed class ArrowManager 
 {
-	[SerializeField] private Button left;
-	[SerializeField] private Button right;
-	[SerializeField] private Button up;
-	[SerializeField] private Button down;
-
 	public void EnableArrow(Vector2i direction)
 	{
-		if (direction.Equals(Vector2i.left)) left.interactable = true;
-		else if (direction.Equals(Vector2i.right)) right.interactable = true;
-		else if (direction.Equals(Vector2i.up)) up.interactable = true;
-		else if (direction.Equals(Vector2i.down)) down.interactable = true;
+		if (direction.Equals(Vector2i.left)) UIManager.SetInteractable("LeftArrow", true);
+		else if (direction.Equals(Vector2i.right)) UIManager.SetInteractable("RightArrow", true);
+		else if (direction.Equals(Vector2i.up)) UIManager.SetInteractable("UpArrow", true);
+		else if (direction.Equals(Vector2i.down)) UIManager.SetInteractable("DownArrow", true);
 	}
 
 	public void DisableArrows()
 	{
-		left.interactable = false;
-		right.interactable = false;
-		up.interactable = false;
-		down.interactable = false;
+		UIManager.SetInteractable("LeftArrow", false);
+		UIManager.SetInteractable("RightArrow", false);
+		UIManager.SetInteractable("UpArrow", false);
+		UIManager.SetInteractable("DownArrow", false);
 	}
 }

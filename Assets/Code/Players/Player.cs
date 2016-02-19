@@ -12,6 +12,7 @@ using System.Collections.Generic;
 
 public sealed class Player : Entity
 {
+	private ArrowManager arrowManager = new ArrowManager();
 	private Queue<Vector2i> forcedDirections = new Queue<Vector2i>();
 
 	private void Awake()
@@ -25,12 +26,12 @@ public sealed class Player : Entity
 	public override void BeginTurn()
 	{
 		if (!beingDeleted)
-			UI.EnableGraphic("ActionPanel");
+			UIManager.EnableGraphic("ActionPanel");
 	}
 
-	private void MoveHandler(object state)
+	private void MoveHandler(int data)
 	{
-		UI.DisableGraphic("ActionPanel");
+		UIManager.DisableGraphic("ActionPanel");
 		remainingMoves = GetDieRoll();
 		StartCoroutine(DoMove());
 	}
@@ -66,13 +67,13 @@ public sealed class Player : Entity
 		playerManager.NextTurn();
 	}
 
-	private void AttackHandler(object state)
+	private void AttackHandler(int data)
 	{
 	}
 
-	private void PassHandler(object state)
+	private void PassHandler(int data)
 	{
-		UI.DisableGraphic("ActionPanel");
+		UIManager.DisableGraphic("ActionPanel");
 		playerManager.NextTurn();
 	}
 
@@ -80,39 +81,37 @@ public sealed class Player : Entity
 	{
 		dir = Vector2i.zero;
 
-		ArrowManager arrowManager = UI.GetGraphic<ArrowManager>("DirectionArrows");
 		arrowManager.DisableArrows();
 
 		for (int i = 0; i < possibleMoves.Count; i++)
 			arrowManager.EnableArrow(possibleMoves[i]);
-		
-		UI.EnableGraphic("DirectionArrows");
 
+		UIManager.EnableGraphic("DirectionArrows");
 		return false;
 	}
 
-	private void DirectionArrowPressed(object direction)
+	private void DirectionArrowPressed(int direction)
 	{
-		switch ((string)direction)
+		switch ((Direction)direction)
 		{
-		case "Left":
+		case Direction.Left:
 			forcedDirections.Enqueue(Vector2i.left);
 			break;
 
-		case "Right":
+		case Direction.Right:
 			forcedDirections.Enqueue(Vector2i.right);
 			break;
 
-		case "Up":
+		case Direction.Up:
 			forcedDirections.Enqueue(Vector2i.up);
 			break;
 
-		case "Down":
+		case Direction.Down:
 			forcedDirections.Enqueue(Vector2i.down);
 			break;
 		}
 
-		UI.DisableGraphic("DirectionArrows");
+		UIManager.DisableGraphic("DirectionArrows");
 		StartCoroutine(DoMove());
 	}
 
@@ -123,8 +122,9 @@ public sealed class Player : Entity
 		EventManager.StopListening("PassPressed", PassHandler);
 		EventManager.StopListening("DirectionArrowPressed", DirectionArrowPressed);
 
-		UI.DisableGraphic("ActionPanel");
-		UI.DisableGraphic("DirectionArrows");
+		UIManager.DisableGraphic("ActionPanel");
+		UIManager.DisableGraphic("DirectionArrows");
+
 		base.Delete();
 	}
 }

@@ -9,10 +9,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public sealed class BoardEditor : IUpdatable
+public sealed class BoardEditor : MonoBehaviour
 {
-	private BoardManager boardManager;
-	private UIManager UIManager;
+	[SerializeField] private BoardManager boardManager;
 
 	public const float PlaceLimit = 0.03f;
 	private float time = 0.0f;
@@ -20,29 +19,24 @@ public sealed class BoardEditor : IUpdatable
 	private Tile activeTile = TileStore.Grass;
 	private Tile[,] surroundingTiles = new Tile[3, 3];
 
+	private Vector2i lastFunctionPos;
+
 	private GameObject reticle;
 
-	public BoardEditor(BoardManager boardManager, UIManager UIManager)
+	private void Awake()
 	{
-		this.boardManager = boardManager;
-		this.UIManager = UIManager;
-
 		CreateReticle();
+
 		EventManager.StartListening("StateChanged", StateChangedHandler);
+		EventManager.StartListening("TileButtonPressed", TileButtonPressed);
 	}
 
-	private void StateChangedHandler(object state)
+	private void StateChangedHandler(int state)
 	{
-		GameState newState = (GameState)state;
-
-		switch (newState)
+		switch ((GameState)state)
 		{
 		case GameState.Editing:
 			reticle.SetActive(true);
-			break;
-
-		case GameState.Playing:
-			reticle.SetActive(false);
 			break;
 		}
 	}
@@ -55,15 +49,13 @@ public sealed class BoardEditor : IUpdatable
 		rend.sprite = Resources.Load<Sprite>("Textures/Reticle");
 	}
 
-	public void UpdateTick()
+	private void Update()
 	{
-		if (StateManager.CurrentState == GameState.Playing) return;
-
 		HandleModeInput();
 
-		if (EventSystem.current.IsPointerOverGameObject())
+		if (StateManager.CurrentState != GameState.Editing || EventSystem.current.IsPointerOverGameObject())
 		{
-			if (reticle.activeSelf) reticle.SetActive(false);
+			DisableReticle();
 			return;
 		}
 
@@ -71,15 +63,26 @@ public sealed class BoardEditor : IUpdatable
 		HandleEditInput();
 	}
 
+	private void TileButtonPressed(int data)
+	{
+		SetActiveTile(TileStore.GetTileByID(data));
+		UIManager.DisableWindow("TilePanel", GameState.Editing);
+	}
+
 	private void HandleModeInput()
 	{
+		if (StateManager.CurrentState == GameState.Playing) return;
+
 		if (Input.GetKeyDown(KeyCode.Alpha2))
-			UIManager.ToggleGraphic("TilePanel");
+			UIManager.ToggleWindow("TilePanel", GameState.Editing);
 	}
 
 	private void HandleEditInput()
 	{
 		time += Time.deltaTime;
+
+		if (Input.GetKeyDown(KeyCode.F))
+			GetFunction();
 
 		if (Input.GetMouseButtonDown(0))
 			SetTile(false);
@@ -111,12 +114,33 @@ public sealed class BoardEditor : IUpdatable
 		activeTile = tile;
 	}
 
+	public Vector2i LastFunctionPos()
+	{
+		return lastFunctionPos;
+	}
+
+	private void GetFunction()
+	{
+		Vector2i tPos = GetCursorTilePos();
+		boardManager.GetOverlayTileSafe(tPos.x, tPos.y).OnFunction();
+		lastFunctionPos = tPos;
+	}
+
 	private void DisplayReticle()
 	{
-		if (!reticle.activeSelf) reticle.SetActive(true);
-
+		EnableReticle();
 		Vector2i tilePos = GetCursorWorldPos();
 		reticle.transform.position = new Vector3(tilePos.x, tilePos.y);
+	}
+
+	private void EnableReticle()
+	{
+		if (!reticle.activeSelf) reticle.SetActive(true);
+	}
+
+	private void DisableReticle()
+	{
+		if (reticle.activeSelf) reticle.SetActive(false);
 	}
 
 	private Vector2i GetCursorTilePos()

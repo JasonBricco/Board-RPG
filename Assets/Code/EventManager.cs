@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
-public delegate void EventDelegate(object data);
+public delegate void EventDelegate(int data);
 
 public sealed class Event
 {
@@ -26,7 +26,7 @@ public sealed class Event
 		action -= listener;
 	}
 
-	public void Invoke(object data)
+	public void Invoke(int data)
 	{
 		if (action != null) action.Invoke(data);
 	}
@@ -58,7 +58,7 @@ public sealed class EventManager
 			thisEvent.RemoveListener(listener);
 	}
 
-	public static void TriggerEvent(string eventName, object data)
+	public static void TriggerEvent(string eventName, int data = 0)
 	{
 		Event thisEvent;
 

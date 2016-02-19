@@ -10,12 +10,12 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 
-public sealed class BoardManager 
+public sealed class BoardManager : MonoBehaviour
 {
 	public const int Size = 512;
 	public const int WidthInChunks = Size / Chunk.Size;
 
-	private Material[] materials;
+	[SerializeField] private Material[] materials;
 
 	private Chunk[,] chunks = new Chunk[WidthInChunks, WidthInChunks];
 
@@ -23,10 +23,9 @@ public sealed class BoardManager
 
 	private BoardData boardData = new BoardData();
 
-	public BoardManager(Material[] materials)
+	private void Start()
 	{
-		this.materials = materials;
-		EventManager.StartListening("Quit", SaveBoard);
+ 		EventManager.StartListening("Quit", SaveBoard);
 		EventManager.StartListening("ClearPressed", ClearBoard);
 
 		LoadBoard();
@@ -48,10 +47,22 @@ public sealed class BoardManager
 		return GetTile(tX, tY);
 	}
 
+	public Tile GetOverlayTileSafe(int tX, int tY)
+	{
+		if (!InTileBounds(tX, tY)) return TileStore.Air;
+		return GetOverlayTile(tX, tY);
+	}
+
 	public Tile GetTile(int tX, int tY)
 	{
 		Chunk chunk = GetChunk(tX, tY);
 		return chunk == null ? TileStore.Air : chunk.GetTile(tX & Chunk.Size - 1, tY & Chunk.Size - 1);
+	}
+
+	public Tile GetOverlayTile(int tX, int tY)
+	{
+		Chunk chunk = GetChunk(tX, tY);
+		return chunk == null ? TileStore.Air : chunk.GetOverlayTile(tX & Chunk.Size - 1, tY & Chunk.Size - 1);
 	}
 
 	public void SetTile(Vector2i tPos, Tile tile)
@@ -119,7 +130,7 @@ public sealed class BoardManager
 		return x >= 0 && y >= 0 && x < WidthInChunks && y < WidthInChunks; 
 	}
 
-	private void ClearBoard(object state)
+	private void ClearBoard(int data)
 	{
 		for (int x = 0; x < chunks.GetLength(0); x++)
 		{
@@ -137,7 +148,7 @@ public sealed class BoardManager
 		boardData.startTiles.Clear();
 	}
 
-	private void SaveBoard(object state)
+	private void SaveBoard(int data)
 	{
 		for (int x = 0; x < chunks.GetLength(0); x++)
 		{
@@ -153,7 +164,7 @@ public sealed class BoardManager
 		FileStream stream = new FileStream(Application.persistentDataPath + "/Data.txt", FileMode.Create);
 		StreamWriter dataWriter = new StreamWriter(stream);
 
-		string json = JsonUtility.ToJson(boardData);
+		string json = JsonUtility.ToJson(boardData, true);
 		dataWriter.Write(json);
 		dataWriter.Close();
 	}

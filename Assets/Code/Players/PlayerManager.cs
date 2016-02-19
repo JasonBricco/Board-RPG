@@ -11,10 +11,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public sealed class PlayerManager : IUpdatable
+public sealed class PlayerManager : MonoBehaviour
 {
-	private BoardManager boardManager;
-	private UIManager UI;
+	[SerializeField] private BoardManager boardManager;
 
 	private Sprite playerSprite, enemySprite;
 
@@ -22,11 +21,8 @@ public sealed class PlayerManager : IUpdatable
 
 	private int lastTurn = -1;
 
-	public PlayerManager(BoardManager boardManager, UIManager UI)
+	private void Awake()
 	{
-		this.boardManager = boardManager;
-		this.UI = UI;
-
 		playerSprite = Resources.Load<Sprite>("Textures/Player");
 		enemySprite = Resources.Load<Sprite>("Textures/Enemy");
 
@@ -42,12 +38,15 @@ public sealed class PlayerManager : IUpdatable
 		rend.sprite = sprite;
 
 		Entity entity = entityObj.GetComponent<Entity>();
-		entity.SetReferences(UI, boardManager, this);
-
 		return entity;
 	}
 
-	private void PlayPressedHandler(object data)
+	public Entity GetEntity(int entityID)
+	{
+		return entityList[entityID];
+	}
+
+	private void PlayPressedHandler(int data)
 	{
 		List<Vector2i> startTiles = boardManager.GetData().startTiles;
 
@@ -81,7 +80,7 @@ public sealed class PlayerManager : IUpdatable
 		NextTurn();
 	}
 
-	public void UpdateTick()
+	private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
@@ -99,17 +98,16 @@ public sealed class PlayerManager : IUpdatable
 		int turnIndex = lastTurn == -1 ? Random.Range(0, entityList.Count) : (lastTurn + 1) % entityList.Count;
 		lastTurn = turnIndex;
 
-		Engine.Instance.StartCoroutine(CallTurn(entityList[turnIndex]));
+		StartCoroutine(CallTurn(entityList[turnIndex]));
 	}
 
 	private IEnumerator CallTurn(Entity entity)
 	{
-		Text turnText = UI.GetGraphic<Text>("TurnText");
-		turnText.text = entity.name + "'s Turn";
+		UIManager.SetText("TurnText", entity.name + "'s Turn");
 
-		UI.EnableGraphic("TurnDisplayPanel");
+		UIManager.EnableGraphic("TurnDisplayPanel");
 		yield return new WaitForSeconds(1.5f);
-		UI.DisableGraphic("TurnDisplayPanel");
+		UIManager.DisableGraphic("TurnDisplayPanel");
 
 		entity.BeginTurn();
 	}
