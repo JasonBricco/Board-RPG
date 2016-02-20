@@ -47,21 +47,20 @@ public sealed class Player : Entity
 				dir = forcedDirections.Dequeue();
 			else
 			{
-				bool success = GetMoveDirection(current, out dir);
-
-				if (!success) yield break;
-
-				if (dir.Equals(Vector2i.zero)) 
-				{
-					remainingMoves = 0;
+				if (!GetMoveDirection(current, out dir))
 					yield break;
-				}
 			}
 				
-			yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
+			if (!dir.Equals(Vector2i.zero))
+			{
+				yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
 
-			lastDirection = -dir;
-			remainingMoves--;
+				lastDirection = -dir;
+				remainingMoves--;
+				TriggerTileFunction();
+			}
+			else
+				remainingMoves = 0;
 		}
 			
 		playerManager.NextTurn();

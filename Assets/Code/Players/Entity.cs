@@ -54,13 +54,18 @@ public class Entity : MonoBehaviour
 		}
 
 		transform.position = target;
+	}
 
+	protected void TriggerTileFunction()
+	{
 		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
 		boardManager.GetOverlayTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, entityID, remainingMoves);
+		boardManager.GetTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, entityID, remainingMoves);
 	}
 
 	public void SetTo(Vector3 position)
 	{
+		lastDirection = Vector2i.zero;
 		transform.position = position;
 	}
 

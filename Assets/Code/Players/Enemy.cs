@@ -28,16 +28,16 @@ public sealed class Enemy : Entity
 
 			GetMoveDirection(current, out dir);
 
-			if (dir.Equals(Vector2i.zero)) 
+			if (!dir.Equals(Vector2i.zero)) 
 			{
-				remainingMoves = 0;
-				yield break;
+				yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
+
+				lastDirection = -dir;
+				remainingMoves--;
+				TriggerTileFunction();
 			}
-
-			yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
-
-			lastDirection = -dir;
-			remainingMoves--;
+			else
+				remainingMoves = 0;
 		}
 
 		playerManager.NextTurn();
