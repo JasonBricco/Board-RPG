@@ -8,6 +8,7 @@
 
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class Function
 {
@@ -24,12 +25,12 @@ public class Function
 		}
 	}
 
-	public virtual CommandError ValidateArguments(string[] args)
+	public virtual bool ValidateArguments(string[] args, List<Value> values)
 	{
-		return CommandError.None;
+		return true;
 	}
 
-	public virtual void Compute(Value[] input)
+	public virtual void Compute(List<Value> input)
 	{
 	}
 }

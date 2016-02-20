@@ -9,6 +9,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Text))]
 public sealed class FPS : MonoBehaviour 
 {
 	[SerializeField] private float updateInterval = 0.5f; 
@@ -17,11 +18,6 @@ public sealed class FPS : MonoBehaviour
 	private float accum = 0; 
 	private int frames = 0;
 	private float timeleft = 0.5f;
-
-	private void Awake()
-	{
-		Application.targetFrameRate = 60;
-	}
 
 	private void Update()
 	{

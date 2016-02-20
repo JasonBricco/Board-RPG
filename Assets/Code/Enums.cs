@@ -20,11 +20,4 @@ public enum Direction
 	Up,
 	Down
 }
-
-public enum CommandError
-{
-	None,
-	InvalidArgCount,
-	InvalidArgType,
-	InvalidArgValue
-}
+	

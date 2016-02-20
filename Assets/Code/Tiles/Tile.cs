@@ -47,4 +47,8 @@ public class Tile
 	public virtual void OnFunction()
 	{
 	}
+
+	public virtual void OnEnter(int tX, int tY, int entityID, int movesLeft)
+	{
+	}
 }

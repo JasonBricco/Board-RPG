@@ -146,6 +146,7 @@ public sealed class BoardManager : MonoBehaviour
 		}
 
 		boardData.startTiles.Clear();
+		boardData.triggerData.Clear();
 	}
 
 	private void SaveBoard(int data)
@@ -164,7 +165,7 @@ public sealed class BoardManager : MonoBehaviour
 		FileStream stream = new FileStream(Application.persistentDataPath + "/Data.txt", FileMode.Create);
 		StreamWriter dataWriter = new StreamWriter(stream);
 
-		string json = JsonUtility.ToJson(boardData);
+		string json = JsonUtility.ToJson(boardData, true);
 		dataWriter.Write(json);
 		dataWriter.Close();
 	}

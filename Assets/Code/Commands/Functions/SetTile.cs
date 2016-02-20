@@ -8,41 +8,44 @@
 
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public sealed class SetTile : Function
 {
-	private BoardManager boardManager;
+	private BoardEditor boardEditor;
 
 	public SetTile()
 	{
-		boardManager = Engine.GetComponent<BoardManager>();
+		boardEditor = Engine.GetComponent<BoardEditor>();
 	}
 
-	public override CommandError ValidateArguments(string[] args)
+	public override bool ValidateArguments(string[] args, List<Value> values)
 	{
-		if (args.Length != 4) return CommandError.InvalidArgCount;
+		if (args.Length != 4) return false;
 
 		int x, y;
 
 		if (!int.TryParse(args[1], out x))
-			return CommandError.InvalidArgType;
+			return false;
 
 		if (!int.TryParse(args[2], out y))
-			return CommandError.InvalidArgType;
-
-		if (!boardManager.InTileBounds(x, y))
-			return CommandError.InvalidArgValue;
+			return false;
 
 		Tile tile = TileStore.GetTileByName(args[3]);
 
 		if (tile == null)
-			return CommandError.InvalidArgValue;
+			return false;
 
-		return CommandError.None;
+		values.Add(new Value(x));
+		values.Add(new Value(y));
+		values.Add(new Value(tile));
+
+		return true;
 	}
 
-	public override void Compute(Value[] input)
+	public override void Compute(List<Value> input)
 	{
-		boardManager.SetTile(new Vector2i(input[0].Int, input[1].Int), TileStore.GetTileByName(input[2].String));
+		Vector2i pos = new Vector2i(input[0].Int, input[1].Int);
+		boardEditor.SetTile(pos, input[2].tile);
 	}
 }

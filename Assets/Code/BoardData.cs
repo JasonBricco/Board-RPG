@@ -17,9 +17,9 @@ public class BoardData : ISerializationCallbackReceiver
 	public List<Vector2i> startTiles = new List<Vector2i>();
 
 	public List<Vector2i> triggerKeys = new List<Vector2i>();
-	public List<TriggerData> triggerValues = new List<TriggerData>();
+	public List<string> triggerValues = new List<string>();
 
-	public Dictionary<Vector2i, TriggerData> triggerData = new Dictionary<Vector2i, TriggerData>();
+	public Dictionary<Vector2i, string> triggerData = new Dictionary<Vector2i, string>();
 
 	public void OnBeforeSerialize()
 	{

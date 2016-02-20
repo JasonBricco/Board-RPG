@@ -9,7 +9,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public sealed class BoardEditor : MonoBehaviour
+public sealed class BoardEditor : MonoBehaviour, IUpdatable
 {
 	[SerializeField] private BoardManager boardManager;
 
@@ -25,6 +25,8 @@ public sealed class BoardEditor : MonoBehaviour
 
 	private void Awake()
 	{
+		Engine.StartUpdating(this);
+
 		CreateReticle();
 
 		EventManager.StartListening("StateChanged", StateChangedHandler);
@@ -49,18 +51,14 @@ public sealed class BoardEditor : MonoBehaviour
 		rend.sprite = Resources.Load<Sprite>("Textures/Reticle");
 	}
 
-	private void Update()
+	public void UpdateFrame()
 	{
-		if (Input.GetKeyDown(KeyCode.Escape))
-			UIManager.DisableWindow("TilePanel", GameState.Editing);
-		
 		if (StateManager.CurrentState != GameState.Editing || EventSystem.current.IsPointerOverGameObject())
 		{
 			DisableReticle();
 			return;
 		}
 
-		HandleModeInput();
 		DisplayReticle();
 		HandleEditInput();
 	}
@@ -68,13 +66,7 @@ public sealed class BoardEditor : MonoBehaviour
 	private void TileButtonPressed(int data)
 	{
 		SetActiveTile(TileStore.GetTileByID(data));
-		UIManager.DisableWindow("TilePanel", GameState.Editing);
-	}
-
-	private void HandleModeInput()
-	{
-		if (Input.GetKeyDown(KeyCode.Alpha2))
-			UIManager.ToggleWindow("TilePanel", GameState.Editing);
+		UIManager.DisableGraphic("TilePanel");
 	}
 
 	private void HandleEditInput()
@@ -85,16 +77,16 @@ public sealed class BoardEditor : MonoBehaviour
 			GetFunction();
 
 		if (Input.GetMouseButtonDown(0))
-			SetTile(false);
+			SetTile(GetCursorTilePos(), activeTile);
 
 		if (Input.GetMouseButtonDown(1))
-			SetTile(true);
+			SetTile(GetCursorTilePos(), TileStore.Air);
 
 		if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
 		{
 			if (time >= PlaceLimit)
 			{
-				SetTile(false);
+				SetTile(GetCursorTilePos(), activeTile);
 				time -= PlaceLimit;
 			}
 		}
@@ -103,7 +95,7 @@ public sealed class BoardEditor : MonoBehaviour
 		{
 			if (time >= PlaceLimit)
 			{
-				SetTile(true);
+				SetTile(GetCursorTilePos(), TileStore.Air);
 				time -= PlaceLimit;
 			}
 		}
@@ -143,13 +135,13 @@ public sealed class BoardEditor : MonoBehaviour
 		if (reticle.activeSelf) reticle.SetActive(false);
 	}
 
-	private Vector2i GetCursorTilePos()
+	public Vector2i GetCursorTilePos()
 	{
 		Vector2i wPos = GetCursorWorldPos();
 		return new Vector2i(wPos.x >> Tile.SizeBits, wPos.y >> Tile.SizeBits);
 	}
 
-	private Vector2i GetCursorWorldPos()
+	public Vector2i GetCursorWorldPos()
 	{
 		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -159,22 +151,23 @@ public sealed class BoardEditor : MonoBehaviour
 		return new Vector2i(x, y);
 	}
 
-	private void SetTile(bool deleting)
+	public void SetTile(Vector2i tPos, Tile tile)
 	{
-		Vector2i tilePos = GetCursorTilePos();
+		bool deleting = tile.ID == 0;
 
-		if (boardManager.InTileBounds(tilePos.x, tilePos.y))
+		if (boardManager.InTileBounds(tPos.x, tPos.y))
 		{
-			if (IsValidEdit(tilePos, deleting ? TileStore.Air : activeTile))
+			if (IsValidEdit(tPos, deleting ? TileStore.Air : tile))
 			{
-				if (deleting) boardManager.DeleteTile(tilePos);
+				if (deleting) 
+					boardManager.DeleteTile(tPos);
 				else 
 				{
-					if (activeTile.CanAdd(boardManager.GetData(), tilePos))
-						boardManager.SetTile(tilePos, activeTile);
+					if (activeTile.CanAdd(boardManager.GetData(), tPos))
+						boardManager.SetTile(tPos, tile);
 				}
 			
-				boardManager.FlagChunkForRebuild(tilePos);
+				boardManager.FlagChunkForRebuild(tPos);
 				boardManager.RebuildChunks();
 			}
 		}

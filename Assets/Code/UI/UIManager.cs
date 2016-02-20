@@ -35,7 +35,7 @@ public sealed class UIManager : MonoBehaviour
 			GetGraphic("MainButtons").SetActive(true);
 			break;
 
-		case GameState.Playing:
+		default:
 			GetGraphic("MainButtons").SetActive(false);
 			break;
 		}
@@ -72,34 +72,6 @@ public sealed class UIManager : MonoBehaviour
 		}
 
 		return false;
-	}
-
-	public static void EnableWindow(string name)
-	{
-		EnableGraphic(name);
-		StateManager.ChangeState(GameState.Window);
-	}
-
-	public static void DisableWindow(string name, GameState returnState)
-	{
-		if (DisableGraphic(name))
-			StateManager.ChangeState(returnState);
-	}
-
-	public static void ToggleWindow(string name, GameState returnState)
-	{
-		GameObject window = GetGraphic(name);
-
-		if (window.activeSelf)
-		{
-			window.SetActive(false);
-			StateManager.ChangeState(returnState);
-		}
-		else
-		{
-			window.SetActive(true);
-			StateManager.ChangeState(GameState.Window);
-		}
 	}
 
 	public static void SetText(string name, string text)

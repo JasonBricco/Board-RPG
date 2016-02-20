@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 public sealed class CommandProcessor : MonoBehaviour
@@ -25,135 +26,107 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private void Awake()
 	{
-		EventManager.StartListening("LoadCode", LoadCode);
 		EventManager.StartListening("SaveCode", SaveCode);
-		EventManager.StartListening("CancelCode", CancelCode);
 		EventManager.StartListening("Quit", QuitHandler);
 
 		commandField = UIManager.GetGraphic<InputField>("CodeEditor");
 	}
 
-	private void LoadCode(int data)
+	private string LoadCommands(Vector2i pos)
 	{
-		UIManager.EnableWindow("CodeEditor");
-		editorOpen = true;
-	
 		var triggerDict = boardManager.GetData().triggerData;
 
-		TriggerData triggerData;
+		string triggerData;
 
-		if (triggerDict.TryGetValue(boardEditor.LastFunctionPos(), out triggerData))
-			commandField.text = triggerData.triggerCode;
+		if (triggerDict.TryGetValue(pos, out triggerData))
+			return triggerData;
+
+		return String.Empty;
+	}
+
+	public void LoadEditor()
+	{
+		UIManager.EnableGraphic("CodeEditor");
+		editorOpen = true;
+	
+		commandField.text = LoadCommands(boardEditor.LastFunctionPos());
+
+		commandField.ActivateInputField();
+		commandField.Select();
+		StartCoroutine(MoveTextToEnd());
+	}
+
+	private IEnumerator MoveTextToEnd()
+	{
+		yield return new WaitForEndOfFrame();
+		commandField.MoveTextEnd(false);
 	}
 
 	private void SaveCode(int data)
 	{
-		Process(commandField.text);
-	}
-
-	private void CancelCode(int data)
-	{
-		CreateTriggerData(boardEditor.LastFunctionPos(), null);
+		CreateTriggerData(boardEditor.LastFunctionPos(), commandField.text);
 		commandField.text = String.Empty;
-		UIManager.DisableWindow("CodeEditor", GameState.Editing);
+		UIManager.DisableGraphic("CodeEditor");
 		editorOpen = false;
 	}
 
 	private void QuitHandler(int data)
 	{
-		if (editorOpen) CreateTriggerData(boardEditor.LastFunctionPos(), null);
+		if (editorOpen) SaveCode(0);
 	}
 
-	private void Process(string commandText)
+	public void Process(int tX, int tY, int entityID, int movesLeft)
 	{
-		UIManager.DisableGraphic("CommandError");
-
-		List<string[]> functions = new List<string[]>();
+		string commands = LoadCommands(new Vector2i(tX, tY));
 
 		int commandCount = 0;
 
-		for (int i = 0; i < commandText.Length; i++)
+		for (int i = 0; i < commands.Length; i++)
 		{
-			if (commandText[i] == ')')
+			if (commands[i] == ')')
 				commandCount++;
 		}
 
-		if (commandCount == 0)
-		{
-			DisplayError("No commands found!");
+		if (commandCount == 0) 
 			return;
-		}
 
-		StringBuilder[] commands = new StringBuilder[commandCount];
+		StringBuilder[] commandList = new StringBuilder[commandCount];
+
+		for (int i = 0; i < commandList.Length; i++)
+			commandList[i] = new StringBuilder();
+		
 		int count = 0;
 
-		for (int i = 0; i < commandText.Length; i++)
+		for (int i = 0; i < commands.Length; i++)
 		{
-			Char nextChar = commandText[i];
+			Char nextChar = commands[i];
 
 			if (!Char.IsWhiteSpace(nextChar))
-				commands[count].Append(commandText[i]);
+				commandList[count].Append(commands[i]);
 
 			if (nextChar == ')')
 				count++;
 		}
 
-		for (int i = 0; i < commands.Length; i++)
+		for (int i = 0; i < commandList.Length; i++)
 		{
-			string[] args = commands[i].ToString().Split(delimiters);
+			string[] args = commandList[i].ToString().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
 			Function function;
 			bool success = library.TryGetFunction(args[0], out function);
 
-			if (success)
-			{
-				CommandError error = function.ValidateArguments(args);
+			if (!success) continue;
 
-				switch (error)
-				{
-				case CommandError.InvalidArgCount:
-					DisplayError("Invalid number of arguments found.");
-					return;
+			List<Value> values = new List<Value>();
 
-				case CommandError.InvalidArgType:
-					DisplayError("Invalid argument types supplied.");
-					return;
-
-				case CommandError.InvalidArgValue:
-					DisplayError("Invalid value for an argument found.");
-					return;
-
-				default:
-					functions.Add(args);
-					break;
-				}
-			}
-			else
-			{
-				DisplayError("Function doesn't exist.");
-				return;
-			}
+			if (function.ValidateArguments(args, values))
+				function.Compute(values);
 		}
-
-		CreateTriggerData(boardEditor.LastFunctionPos(), functions);
-		UIManager.DisableWindow("CodeEditor", GameState.Editing);
 	}
 
-	private void CreateTriggerData(Vector2i pos, List<string[]> functions)
+	private void CreateTriggerData(Vector2i pos, string commands)
 	{
-		BoardData boardData = boardManager.GetData();
-
-		TriggerData triggerData = new TriggerData();
-		triggerData.triggerCode = String.Copy(commandField.text);
-		triggerData.functions = functions;
-
-		boardData.triggerData[pos] = triggerData;
-	}
-
-	private void DisplayError(string message)
-	{
-		GameObject error = UIManager.GetGraphic("CommandError");
-		error.SetActive(true);
-		error.GetComponent<Text>().text = message;
+		var triggerDict = boardManager.GetData().triggerData;
+		triggerDict[pos] = String.Copy(commandField.text);
 	}
 }

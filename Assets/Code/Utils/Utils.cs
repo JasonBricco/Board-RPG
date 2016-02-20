@@ -15,14 +15,19 @@ public static class Utils
 		return nearest * ((int)(value + nearest * 0.5f) >> 5);
 	}
 
-	public static Vector3 WorldFromTileCoords(Vector2i tPos)
+	public static Vector3 WorldFromTilePos(Vector2i tPos)
 	{
 		return new Vector3(tPos.x * Tile.Size, tPos.y * Tile.Size);
 	}
 
-	public static Vector3 WorldFromChunkCoords(Vector2i cPos)
+	public static Vector3 WorldFromChunkPos(Vector2i cPos)
 	{
-		return WorldFromTileCoords(new Vector2i(cPos.x * Chunk.Size, cPos.y * Chunk.Size));
+		return WorldFromTilePos(new Vector2i(cPos.x * Chunk.Size, cPos.y * Chunk.Size));
+	}
+
+	public static Vector2i TileFromWorldPos(Vector3 wPos)
+	{
+		return new Vector2i((int)wPos.x >> Tile.SizeBits, (int)wPos.y >> Tile.SizeBits);
 	}
 }
 		

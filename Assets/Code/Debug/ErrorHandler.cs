@@ -10,13 +10,15 @@ using UnityEngine;
 using System.Text;
 using System.IO;
 
-public sealed class ErrorHandler : MonoBehaviour
+public sealed class ErrorHandler : MonoBehaviour, IUpdatable
 {
 	private string dataPath;
 	private bool quit = false;
 
 	private void Awake()
 	{
+		Engine.StartUpdating(this);
+
 		dataPath = Application.persistentDataPath;
 		Application.logMessageReceived += HandleError;
 	}
@@ -40,7 +42,7 @@ public sealed class ErrorHandler : MonoBehaviour
 		File.AppendAllText(dataPath + "/Log.txt", text.ToString() + System.Environment.NewLine);
 	}
 
-	private void Update()
+	public void UpdateFrame()
 	{
 		if (quit) Application.Quit();
 	}

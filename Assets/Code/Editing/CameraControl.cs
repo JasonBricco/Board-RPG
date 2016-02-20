@@ -9,6 +9,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(Camera))]
 public sealed class CameraControl : MonoBehaviour
 {
 	private Transform player;

@@ -7,6 +7,7 @@
 //
 
 using UnityEngine;
+using System.Collections.Generic;
 
 public sealed class Chunk
 {
@@ -22,6 +23,8 @@ public sealed class Chunk
 	private Vector3 worldPos;
 
 	private static MeshData meshData = new MeshData();
+
+	private Queue<Mesh> unloadQueue = new Queue<Mesh>();
 
 	private Mesh[] meshes = new Mesh[MeshData.MaxMeshes];
 
@@ -46,7 +49,7 @@ public sealed class Chunk
 		this.boardManager = boardManager;
 
 		chunkPos = new Vector2i(cX, cY);
-		worldPos = Utils.WorldFromChunkCoords(chunkPos);
+		worldPos = Utils.WorldFromChunkPos(chunkPos);
 	}
 
 	public Tile GetTile(int lX, int lY)
@@ -106,7 +109,7 @@ public sealed class Chunk
 
 		for (int i = 0; i < meshes.Length; i++)
 		{
-			GameObject.Destroy(meshes[i]);
+			unloadQueue.Enqueue(meshes[i]);
 			meshes[i] = meshData.GetMesh(i);
 		}
 
@@ -120,6 +123,9 @@ public sealed class Chunk
 			if (meshes[i] != null)
 				Graphics.DrawMesh(meshes[i], worldPos, Quaternion.identity, boardManager.GetMaterial(i), 0);
 		}
+
+		while (unloadQueue.Count > 0)
+			GameObject.Destroy(unloadQueue.Dequeue());
 	}
 
 	public void Destroy()

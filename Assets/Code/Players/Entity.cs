@@ -12,6 +12,8 @@ using System.Collections.Generic;
 
 public class Entity : MonoBehaviour
 {
+	protected int entityID; 
+
 	protected BoardManager boardManager;
 	protected PlayerManager playerManager;
 
@@ -23,15 +25,16 @@ public class Entity : MonoBehaviour
 	protected bool beingDeleted = false;
 	protected int remainingMoves = 0;
 
-	public void SetReferences(BoardManager boardManager, PlayerManager playerManager)
+	public void SetReferences(int entityID, BoardManager boardManager, PlayerManager playerManager)
 	{
+		this.entityID = entityID;
 		this.boardManager = boardManager;
 		this.playerManager = playerManager;
 	}
 
 	protected int GetDieRoll()
 	{
-		return Random.Range(50, 50);
+		return Random.Range(1, 7);
 	}
 
 	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)
@@ -51,6 +54,9 @@ public class Entity : MonoBehaviour
 		}
 
 		transform.position = target;
+
+		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
+		boardManager.GetOverlayTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, entityID, remainingMoves);
 	}
 
 	public void SetTo(Vector3 position)
