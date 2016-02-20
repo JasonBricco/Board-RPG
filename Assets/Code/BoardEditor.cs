@@ -51,14 +51,16 @@ public sealed class BoardEditor : MonoBehaviour
 
 	private void Update()
 	{
-		HandleModeInput();
-
+		if (Input.GetKeyDown(KeyCode.Escape))
+			UIManager.DisableWindow("TilePanel", GameState.Editing);
+		
 		if (StateManager.CurrentState != GameState.Editing || EventSystem.current.IsPointerOverGameObject())
 		{
 			DisableReticle();
 			return;
 		}
 
+		HandleModeInput();
 		DisplayReticle();
 		HandleEditInput();
 	}
@@ -71,8 +73,6 @@ public sealed class BoardEditor : MonoBehaviour
 
 	private void HandleModeInput()
 	{
-		if (StateManager.CurrentState == GameState.Playing) return;
-
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 			UIManager.ToggleWindow("TilePanel", GameState.Editing);
 	}
@@ -122,8 +122,8 @@ public sealed class BoardEditor : MonoBehaviour
 	private void GetFunction()
 	{
 		Vector2i tPos = GetCursorTilePos();
-		boardManager.GetOverlayTileSafe(tPos.x, tPos.y).OnFunction();
 		lastFunctionPos = tPos;
+		boardManager.GetOverlayTileSafe(tPos.x, tPos.y).OnFunction();
 	}
 
 	private void DisplayReticle()

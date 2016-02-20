@@ -61,12 +61,17 @@ public sealed class UIManager : MonoBehaviour
 		GetGraphic(name).SetActive(true);
 	}
 
-	public static void DisableGraphic(string name)
+	public static bool DisableGraphic(string name)
 	{
 		GameObject graphic = GetGraphic(name);
 
 		if (graphic.activeSelf)
+		{
 			graphic.SetActive(false);
+			return true;
+		}
+
+		return false;
 	}
 
 	public static void EnableWindow(string name)
@@ -77,8 +82,8 @@ public sealed class UIManager : MonoBehaviour
 
 	public static void DisableWindow(string name, GameState returnState)
 	{
-		DisableGraphic(name);
-		StateManager.ChangeState(returnState);
+		if (DisableGraphic(name))
+			StateManager.ChangeState(returnState);
 	}
 
 	public static void ToggleWindow(string name, GameState returnState)

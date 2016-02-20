@@ -34,6 +34,9 @@ public class BoardData : ISerializationCallbackReceiver
 	{
 		for (int i = 0; i < triggerKeys.Count; i++)
 			triggerData.Add(triggerKeys[i], triggerValues[i]);
+
+		triggerKeys.Clear();
+		triggerValues.Clear();
 	}
 
 	public void ClearChunkData()
