@@ -16,7 +16,11 @@ public sealed class SetMovesFunc : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (args.Length != 3) return;
+		if (args.Length != 3)
+		{
+			ErrorHandler.LogText("Command Error: invalid argument count for SetMoves.", "Usage: SetMoves(entityID, moves)");
+			return;
+		}
 
 		int entityID, moves;
 
@@ -25,11 +29,17 @@ public sealed class SetMovesFunc : Function
 		else
 		{
 			if (!GetInteger(args[1], out entityID))
+			{
+				ErrorHandler.LogText("Command Error: entity ID must be an integer (SetMoves).");
 				return;
+			}
 		}
 
 		if (!GetInteger(args[2], out moves))
+		{
+			ErrorHandler.LogText("Command Error: move count must be an integer (SetMoves).");
 			return;
+		}
 
 		moves = Mathf.Clamp(moves, 0, 100);
 
@@ -37,5 +47,7 @@ public sealed class SetMovesFunc : Function
 
 		if (entityFromID != null)
 			entityFromID.RemainingMoves = moves;
+		else
+			ErrorHandler.LogText("Command Error: could not find the entity with ID " + entityID + " (SetMoves).");
 	}
 }

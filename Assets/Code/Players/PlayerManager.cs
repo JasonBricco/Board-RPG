@@ -21,6 +21,13 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 
 	private int lastTurn = -1;
 
+	private Entity currentEntity;
+
+	public Entity CurrentEntity 
+	{
+		get { return currentEntity; }
+	}
+
 	private void Awake()
 	{
 		Engine.StartUpdating(this);
@@ -59,8 +66,6 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 		if (startTiles.Count == 0)
 			return;
 
-		StateManager.ChangeState(GameState.Playing);
-
 		entityList.Add(CreateEntity("Player", typeof(Player), playerSprite, 0));
 		entityList.Add(CreateEntity("Enemy", typeof(Enemy), enemySprite, 1));
 
@@ -83,7 +88,11 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 			entityList[1].SetTo(new Vector3(newPos.x, newPos.y, 0.0f));
 		}
 			
-		NextTurn();
+		int turnIndex = Random.Range(0, entityList.Count);
+		currentEntity = entityList[turnIndex];
+
+		StateManager.ChangeState(GameState.Playing);
+		NextTurn(turnIndex);
 	}
 
 	public void UpdateFrame()
@@ -102,12 +111,15 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 		}
 	}
 
-	public void NextTurn()
+	public void NextTurn(int forcedTurn = -1)
 	{
-		int turnIndex = lastTurn == -1 ? Random.Range(0, entityList.Count) : (lastTurn + 1) % entityList.Count;
+		if (lastTurn != -1) EventManager.TriggerEvent("NewTurn", entityList[lastTurn].EntityID);
+
+		int turnIndex = forcedTurn == -1 ? (lastTurn + 1) % entityList.Count : forcedTurn;
 		lastTurn = turnIndex;
 
-		StartCoroutine(CallTurn(entityList[turnIndex]));
+		currentEntity = entityList[turnIndex];
+		StartCoroutine(CallTurn(currentEntity));
 	}
 
 	private IEnumerator CallTurn(Entity entity)

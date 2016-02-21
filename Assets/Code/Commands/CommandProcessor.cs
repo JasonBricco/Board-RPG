@@ -88,7 +88,10 @@ public sealed class CommandProcessor : MonoBehaviour
 		}
 
 		if (commandCount == 0) 
+		{
+			ErrorHandler.LogText("Command Error: no commands found!");
 			return;
+		}
 
 		StringBuilder[] commandList = new StringBuilder[commandCount];
 
@@ -107,6 +110,12 @@ public sealed class CommandProcessor : MonoBehaviour
 				if (nextChar == '[') foundBracket = true;
 				if (nextChar == ']') foundBracket = false;
 
+				if (foundBracket && nextChar == '[')
+				{
+					ErrorHandler.LogText("Command Error: found an opening bracket before closing the previous.");
+					return;
+				}
+				
 				if (foundBracket && nextChar == ',')
 					commandList[count].Append('/');
 				else
@@ -124,7 +133,11 @@ public sealed class CommandProcessor : MonoBehaviour
 			Function function;
 			bool success = library.TryGetFunction(args[0], out function);
 
-			if (!success) continue;
+			if (!success) 
+			{
+				ErrorHandler.LogText("Command Error: function doesn't exist: " + args[0] + ".");
+				continue;
+			}
 
 			function.Compute(args, entity);
 		}

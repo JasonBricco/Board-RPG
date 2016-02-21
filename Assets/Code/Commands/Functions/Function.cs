@@ -16,28 +16,19 @@ public class Function
 
 	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
 
-	private static GameObject Engine
-	{
-		get 
-		{
-			if (engine == null) engine = GameObject.FindWithTag("Engine");
-			return engine;
-		}
-	}
-
 	protected PlayerManager playerManager
 	{
-		get { return Engine.GetComponent<PlayerManager>(); }
+		get { return Engine.Instance.GetComponent<PlayerManager>(); }
 	}
 
 	protected BoardManager boardManager
 	{
-		get { return Engine.GetComponent<BoardManager>(); }
+		get { return Engine.Instance.GetComponent<BoardManager>(); }
 	}
 
 	protected BoardEditor boardEditor
 	{
-		get { return Engine.GetComponent<BoardEditor>(); }
+		get { return Engine.Instance.GetComponent<BoardEditor>(); }
 	}
 
 	public Function(FunctionLibrary library)

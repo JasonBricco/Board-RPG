@@ -17,8 +17,13 @@ public sealed class Engine : MonoBehaviour
 
 	private static List<IUpdatable> updateList = new List<IUpdatable>();
 
+	private static GameObject instance;
+	public static GameObject Instance { get { return instance; } }
+
 	private void Awake()
 	{
+		instance = gameObject;
+	
 		StateManager.ChangeState(GameState.Editing);
 		EventManager.StartListening("ExitPressed", ExitPressedHandler);
 	}

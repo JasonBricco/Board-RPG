@@ -35,7 +35,10 @@ public class Entity : MonoBehaviour
 
 	protected int GetDieRoll()
 	{
-		return Random.Range(1, 7);
+		if (RemainingMoves == 0)
+			return Random.Range(1, 7);
+
+		return RemainingMoves;
 	}
 
 	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)

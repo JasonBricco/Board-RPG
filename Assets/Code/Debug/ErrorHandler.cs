@@ -12,7 +12,7 @@ using System.IO;
 
 public sealed class ErrorHandler : MonoBehaviour, IUpdatable
 {
-	private string dataPath;
+	private static string dataPath;
 	private bool quit = false;
 
 	private void Awake()
@@ -32,7 +32,7 @@ public sealed class ErrorHandler : MonoBehaviour, IUpdatable
 		}
 	}
 
-	private void LogText(params string[] items)
+	public static void LogText(params string[] items)
 	{
 		StringBuilder text = new StringBuilder(System.DateTime.Now.ToString() + System.Environment.NewLine);
 

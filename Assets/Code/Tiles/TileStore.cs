@@ -16,10 +16,11 @@ public sealed class TileStore
 	public static readonly Tile Stone = new StoneTile();
 	public static readonly Tile Sand = new SandTile();
 	public static readonly Tile Trigger = new TriggerTile();
+	public static readonly Tile LandTrigger = new LandTriggerTile();
 
 	private static readonly List<Tile> tilesList = new List<Tile>()
 	{
-		Air, Grass, Start, Stone, Sand, Trigger
+		Air, Grass, Start, Stone, Sand, Trigger, LandTrigger
 	};
 
 	private static readonly Dictionary<string, Tile> tilesByName = new Dictionary<string, Tile>()
@@ -29,7 +30,8 @@ public sealed class TileStore
 		{ "Start", Start },
 		{ "Stone", Stone },
 		{ "Sand", Sand },
-		{ "Trigger", Trigger }
+		{ "Trigger", Trigger },
+		{ "LandTrigger", LandTrigger }
 	};
 
 	public static int Count { get { return tilesByName.Count; } }

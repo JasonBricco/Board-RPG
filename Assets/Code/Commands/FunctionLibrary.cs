@@ -21,6 +21,9 @@ public sealed class FunctionLibrary : MonoBehaviour
 		functions.Add("SetMoves", new SetMovesFunc(this));
 		functions.Add("Random", new RandomFunc(this));
 		functions.Add("RandomTeleport", new RandomTeleportFunc(this));
+		functions.Add("Timer", new TimerFunc(this));
+		functions.Add("SetLine", new SetLineFunc(this));
+		functions.Add("SetSquare", new SetSquareFunc(this));
 	}
 
 	public bool TryGetFunction(string name, out Function function)

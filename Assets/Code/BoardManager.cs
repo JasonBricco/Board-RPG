@@ -153,7 +153,7 @@ public sealed class BoardManager : MonoBehaviour
 		FileStream stream = new FileStream(Application.persistentDataPath + "/Data.txt", FileMode.Create);
 		StreamWriter dataWriter = new StreamWriter(stream);
 
-		string json = JsonUtility.ToJson(boardData, true);
+		string json = JsonUtility.ToJson(boardData);
 		dataWriter.Write(json);
 		dataWriter.Close();
 	}

@@ -1,14 +1,14 @@
 ﻿//
-//  ButtonTile.cs
+//  LandTriggerTile.cs
 //  BoardRPG
 //
-//  Created by Jason Bricco on 2/18/16.
+//  Created by Jason Bricco on 2/21/16.
 //  Copyright © 2016 Jason Bricco. All rights reserved.
 //
 
 using UnityEngine;
 
-public class TriggerTile : Tile 
+public class LandTriggerTile : Tile 
 {
 	private CommandProcessor commandProcessor;
 
@@ -23,11 +23,11 @@ public class TriggerTile : Tile
 		}
 	}
 
-	public TriggerTile()
+	public LandTriggerTile()
 	{
-		name = "Trigger";
-		tileID = 5;
-		meshIndex = 4;
+		name = "Land Trigger";
+		tileID = 6;
+		meshIndex = 5;
 		posIndex = 1;
 	}
 
@@ -38,7 +38,8 @@ public class TriggerTile : Tile
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		Processor.Process(tX, tY, entity);
+		if (entity.RemainingMoves == 0)
+			Processor.Process(tX, tY, entity);
 	}
 
 	public override void OnDeleted(BoardData data, Vector2i pos)

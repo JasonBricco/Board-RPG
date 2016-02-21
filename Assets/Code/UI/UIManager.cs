@@ -33,10 +33,12 @@ public sealed class UIManager : MonoBehaviour
 		{
 		case GameState.Editing:
 			GetGraphic("MainButtons").SetActive(true);
+			GetGraphic("CameraToggle").SetActive(false);
 			break;
 
 		default:
 			GetGraphic("MainButtons").SetActive(false);
+			GetGraphic("CameraToggle").SetActive(true);
 			break;
 		}
 	}

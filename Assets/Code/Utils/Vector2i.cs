@@ -32,6 +32,12 @@ public struct Vector2i : System.IEquatable<Vector2i>
 		this.y = z;
 	}
 
+	public Vector2i(Vector2 vector)
+	{
+		this.x = Mathf.RoundToInt(vector.x);
+		this.y = Mathf.RoundToInt(vector.y);
+	}
+
 	public Vector2i(Vector3 vector)
 	{
 		this.x = Mathf.RoundToInt(vector.x);

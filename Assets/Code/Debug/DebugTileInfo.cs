@@ -9,11 +9,10 @@ public class DebugTileInfo : MonoBehaviour
 	[SerializeField] private Text nameLabel;
 	[SerializeField] private Text posLabel;
 
-	private void Awake()
+	private void Start()
 	{
-		GameObject engine = GameObject.FindWithTag("Engine");
-		boardEditor = engine.GetComponent<BoardEditor>();
-		boardManager = engine.GetComponent<BoardManager>();
+		boardEditor = Engine.Instance.GetComponent<BoardEditor>();
+		boardManager = Engine.Instance.GetComponent<BoardManager>();
 	}
 
 	private void StateChangedHandler(int state)

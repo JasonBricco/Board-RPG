@@ -16,19 +16,35 @@ public sealed class SetTileFunc : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (args.Length != 4) return;
+		if (args.Length != 4)
+		{
+			ErrorHandler.LogText("Command Error: invalid argument count for SetTile.", "Usage: SetTile(x, y, tile)");
+			return;
+		}
 
 		int x, y;
 
-		if (!GetInteger(args[1], out x)) return;
-		if (!GetInteger(args[2], out y)) return;
+		if (!GetInteger(args[1], out x))
+		{
+			ErrorHandler.LogText("Command Error: x coordinate must be an integer (SetTile).");
+			return;
+		}
+
+		if (!GetInteger(args[2], out y))
+		{
+			ErrorHandler.LogText("Command Error: y coordinate must be an integer (SetTile).");
+			return;
+		}
 
 		Tile tile = TileStore.GetTileByName(args[3]);
 
 		if (tile == null)
+		{
+			ErrorHandler.LogText("Command Error: could not find tile with name: " + args[5] + " (SetTile).");
 			return;
+		}
 
 		Vector2i pos = new Vector2i(x, y);
-		boardEditor.SetTile(pos, tile);
+		boardEditor.SetSingleTile(pos, tile);
 	}
 }

@@ -8,6 +8,7 @@
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public sealed class BoardEditor : MonoBehaviour, IUpdatable
 {
@@ -77,16 +78,16 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 			GetFunction();
 
 		if (Input.GetMouseButtonDown(0))
-			SetTile(GetCursorTilePos(), activeTile);
+			SetSingleTile(GetCursorTilePos(), activeTile);
 
 		if (Input.GetMouseButtonDown(1))
-			SetTile(GetCursorTilePos(), TileStore.Air);
+			SetSingleTile(GetCursorTilePos(), TileStore.Air);
 
 		if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
 		{
 			if (time >= PlaceLimit)
 			{
-				SetTile(GetCursorTilePos(), activeTile);
+				SetSingleTile(GetCursorTilePos(), activeTile);
 				time -= PlaceLimit;
 			}
 		}
@@ -95,7 +96,7 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		{
 			if (time >= PlaceLimit)
 			{
-				SetTile(GetCursorTilePos(), TileStore.Air);
+				SetSingleTile(GetCursorTilePos(), TileStore.Air);
 				time -= PlaceLimit;
 			}
 		}
@@ -151,7 +152,21 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		return new Vector2i(x, y);
 	}
 
-	public void SetTile(Vector2i tPos, Tile tile)
+	public void SetSingleTile(Vector2i tPos, Tile tile)
+	{
+		SetTile(tPos, tile);
+		boardManager.RebuildChunks();
+	}
+
+	public void SetMultipleTiles(List<Vector2i> tPositions, Tile tile)
+	{
+		for (int i = 0; i < tPositions.Count; i++)
+			SetTile(tPositions[i], tile);
+
+		boardManager.RebuildChunks();
+	}
+
+	private void SetTile(Vector2i tPos, Tile tile)
 	{
 		bool deleting = tile.ID == 0;
 
@@ -169,9 +184,8 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 					if (activeTile.CanAdd(data, tPos))
 						boardManager.SetTile(tPos, tile);
 				}
-			
+
 				boardManager.FlagChunkForRebuild(tPos);
-				boardManager.RebuildChunks();
 			}
 		}
 	}
