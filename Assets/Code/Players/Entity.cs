@@ -24,7 +24,7 @@ public class Entity : MonoBehaviour
 	protected List<Vector2i> possibleMoves = new List<Vector2i>();
 
 	protected bool beingDeleted = false;
-	protected int remainingMoves = 0;
+	public int RemainingMoves { get; set; }
 
 	public void SetReferences(int entityID, BoardManager boardManager, PlayerManager playerManager)
 	{
@@ -60,8 +60,8 @@ public class Entity : MonoBehaviour
 	protected void TriggerTileFunction()
 	{
 		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
-		boardManager.GetOverlayTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
-		boardManager.GetTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTile(0, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTile(1, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
 	}
 
 	public void SetTo(Vector3 position)
@@ -89,7 +89,7 @@ public class Entity : MonoBehaviour
 			{
 				Vector2i newPos = current + direction;
 
-				Tile tile = boardManager.GetTileSafe(newPos.x, newPos.y);
+				Tile tile = boardManager.GetTileSafe(0, newPos.x, newPos.y);
 
 				if (tile.ID != 0)
 					possibleMoves.Add(direction);

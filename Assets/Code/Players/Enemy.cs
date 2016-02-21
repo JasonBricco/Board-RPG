@@ -19,9 +19,9 @@ public sealed class Enemy : Entity
 
 	private IEnumerator DoMove()
 	{
-		remainingMoves = GetDieRoll();
+		RemainingMoves = GetDieRoll();
 
-		while (remainingMoves > 0)
+		while (RemainingMoves > 0)
 		{
 			Vector2i current = new Vector2i(transform.position);
 			Vector2i dir;
@@ -33,11 +33,11 @@ public sealed class Enemy : Entity
 				yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
 
 				lastDirection = -dir;
-				remainingMoves--;
+				RemainingMoves--;
 				TriggerTileFunction();
 			}
 			else
-				remainingMoves = 0;
+				RemainingMoves = 0;
 		}
 
 		playerManager.NextTurn();

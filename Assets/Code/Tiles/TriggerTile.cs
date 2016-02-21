@@ -28,7 +28,7 @@ public class TriggerTile : Tile
 		name = "Trigger";
 		tileID = 5;
 		meshIndex = 4;
-		isOverlay = true;
+		posIndex = 1;
 	}
 
 	public override void OnFunction()

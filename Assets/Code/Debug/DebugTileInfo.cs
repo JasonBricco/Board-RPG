@@ -38,7 +38,7 @@ public class DebugTileInfo : MonoBehaviour
 		if (StateManager.CurrentState != GameState.Editing) return;
 
 		Vector2i pos = boardEditor.GetCursorTilePos();
-		Tile tile = boardManager.GetTileSafe(pos.x, pos.y);
+		Tile tile = boardManager.GetTileSafe(0, pos.x, pos.y);
 
 		nameLabel.text = "Tile: " + tile.Name;
 		posLabel.text = "Position: " + pos.x + ", " + pos.y;

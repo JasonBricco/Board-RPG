@@ -6,27 +6,16 @@
 //  Copyright © 2016 Jason Bricco. All rights reserved.
 //
 
-using UnityEngine;
-using System.Collections;
-
 public sealed class Value
 {
 	public int Int;
-	public string String;
-	public Tile tile;
+
+	public Value()
+	{
+	}
 
 	public Value(int value)
 	{
 		Int = value;
-	}
-
-	public Value(string value)
-	{
-		String = value;
-	}
-
-	public Value(Tile value)
-	{
-		tile = value;
 	}
 }

@@ -15,7 +15,7 @@ public sealed class StartTile : Tile
 		name = "Start";
 		tileID = 2;
 		meshIndex = 1;
-		isOverlay = true;
+		posIndex = 1;
 	}
 
 	public override bool CanAdd(BoardData data, Vector2i pos)

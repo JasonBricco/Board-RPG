@@ -8,29 +8,73 @@
 
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 
 public class Function
 {
+	protected FunctionLibrary library;
 	private static GameObject engine;
 
-	protected static GameObject Engine
+	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
+
+	private static GameObject Engine
 	{
 		get 
 		{
-			if (engine == null)
-				engine = GameObject.FindWithTag("Engine");
-
+			if (engine == null) engine = GameObject.FindWithTag("Engine");
 			return engine;
 		}
 	}
 
-	public virtual bool ValidateArguments(string[] args, Entity entity, List<Value> values)
+	protected PlayerManager playerManager
 	{
+		get { return Engine.GetComponent<PlayerManager>(); }
+	}
+
+	protected BoardManager boardManager
+	{
+		get { return Engine.GetComponent<BoardManager>(); }
+	}
+
+	protected BoardEditor boardEditor
+	{
+		get { return Engine.GetComponent<BoardEditor>(); }
+	}
+
+	public Function(FunctionLibrary library)
+	{
+		this.library = library;
+	}
+
+	public virtual void Compute(string[] args, Entity entity)
+	{
+	}
+
+	public virtual bool GetValue(string[] args, out Value value)
+	{
+		value = new Value();
 		return true;
 	}
 
-	public virtual void Compute(List<Value> input)
+	protected bool GetInteger(string arg, out int num)
 	{
+		if (int.TryParse(arg, out num))
+			return true;
+
+		string[] args = arg.Split(bracketSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+		Function function;
+		Value value;
+
+		if (library.TryGetFunction(args[0], out function))
+		{
+			if (function.GetValue(args, out value))
+			{
+				num = value.Int;
+				return true;
+			}
+		}
+
+		num = 0;
+		return false;
 	}
 }

@@ -46,6 +46,9 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 
 	public Entity GetEntity(int entityID)
 	{
+		if (entityID < 0 || entityID >= entityList.Count)
+			return null;
+		
 		return entityList[entityID];
 	}
 

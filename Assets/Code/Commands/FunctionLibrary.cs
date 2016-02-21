@@ -16,8 +16,11 @@ public sealed class FunctionLibrary : MonoBehaviour
 
 	private void Awake()
 	{
-		functions.Add("MoveEntity", new MoveEntity());
-		functions.Add("SetTile", new SetTile());
+		functions.Add("MoveEntity", new MoveEntityFunc(this));
+		functions.Add("SetTile", new SetTileFunc(this));
+		functions.Add("SetMoves", new SetMovesFunc(this));
+		functions.Add("Random", new RandomFunc(this));
+		functions.Add("RandomTeleport", new RandomTeleportFunc(this));
 	}
 
 	public bool TryGetFunction(string name, out Function function)

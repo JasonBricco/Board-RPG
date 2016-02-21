@@ -19,12 +19,12 @@ public class Tile
 	protected string name = "Unassigned";
 	protected ushort tileID = 0;
 	protected byte meshIndex = 0;
-	protected bool isOverlay = false;
+	protected int posIndex = 0;
 
 	public string Name { get { return name; } }
 	public ushort ID { get { return tileID; } }
 	public byte MeshIndex { get { return meshIndex; } }
-	public bool IsOverlay { get { return isOverlay; } }
+	public int PosIndex { get { return posIndex; } }
 
 	public virtual void Build(int tX, int tY, MeshData data, bool overlay)
 	{

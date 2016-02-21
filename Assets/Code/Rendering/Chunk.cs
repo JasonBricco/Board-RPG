@@ -14,8 +14,7 @@ public sealed class Chunk
 	public const int SizeBits = 4;
 	public const int Size = 1 << SizeBits;
 
-	private Tile[] tiles;
-	private Tile[] overlayTiles;
+	private Tile[][] tiles = new Tile[2][];
 
 	private BoardManager boardManager;
 
@@ -37,13 +36,13 @@ public sealed class Chunk
 
 	public Chunk(int cX, int cY, BoardManager boardManager)
 	{
-		tiles = new Tile[Size * Size];
-		overlayTiles = new Tile[Size * Size];
+		tiles[0] = new Tile[Size * Size];
+		tiles[1] = new Tile[Size * Size];
 
-		for (int i = 0; i < tiles.Length; i++)
+		for (int i = 0; i < tiles[0].Length; i++)
 		{
-			tiles[i] = TileStore.Air;
-			overlayTiles[i] = TileStore.Air;
+			tiles[0][i] = TileStore.Air;
+			tiles[1][i] = TileStore.Air;
 		}
 		
 		this.boardManager = boardManager;
@@ -52,37 +51,29 @@ public sealed class Chunk
 		worldPos = Utils.WorldFromChunkPos(chunkPos);
 	}
 
-	public Tile GetTile(int lX, int lY)
+	public Tile GetTile(int index, int lX, int lY)
 	{
-		return tiles[(lY * Size) + lX];
-	}
-
-	public Tile GetOverlayTile(int lX, int lY)
-	{
-		return overlayTiles[(lY * Size) + lX];
+		return tiles[index][(lY * Size) + lX];
 	}
 
 	public void SetTile(int lX, int lY, Tile tile)
 	{
-		if (tile.IsOverlay)
-			overlayTiles[(lY * Size) + lX] = tile;
-		else
-			tiles[(lY * Size) + lX] = tile;
+		tiles[tile.PosIndex][(lY * Size) + lX] = tile;
 	}
 
 	public void DeleteTile(int lX, int lY, int tX, int tY)
 	{
 		int index = (lY * Size) + lX;
 
-		if (overlayTiles[index].ID != 0)
+		if (tiles[1][index].ID != 0)
 		{
-			overlayTiles[index].OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
-			overlayTiles[index] = TileStore.Air;
+			tiles[1][index].OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
+			tiles[1][index] = TileStore.Air;
 		}
 		else
 		{
-			tiles[index].OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
-			tiles[index] = TileStore.Air;
+			tiles[0][index].OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
+			tiles[0][index] = TileStore.Air;
 		}
 	}
 
@@ -96,8 +87,8 @@ public sealed class Chunk
 			{
 				int tX = lX * Tile.Size, tY = lY * Tile.Size;
 
-				Tile tile = GetTile(lX, lY);
-				Tile overlay = GetOverlayTile(lX, lY);
+				Tile tile = GetTile(0, lX, lY);
+				Tile overlay = GetTile(1, lX, lY);
 
 				if (tile.ID != 0)
 					tile.Build(tX, tY, meshData, false);
@@ -140,8 +131,8 @@ public sealed class Chunk
 		data.savedChunks.Add(pos);
 
 		ChunkData saveData = new ChunkData();
-		Encoder.Encode(tiles, saveData, 0);
-		Encoder.Encode(overlayTiles, saveData, 1);
+		Encoder.Encode(tiles[0], saveData, 0);
+		Encoder.Encode(tiles[1], saveData, 1);
 
 		string chunkData = JsonUtility.ToJson(saveData);
 		data.chunkData.Add(chunkData);
@@ -151,8 +142,8 @@ public sealed class Chunk
 	{
 		ChunkData loadedData = JsonUtility.FromJson<ChunkData>(data);
 
-		Encoder.Decode(tiles, loadedData, 0);
-		Encoder.Decode(overlayTiles, loadedData, 1);
+		Encoder.Decode(tiles[0], loadedData, 0);
+		Encoder.Decode(tiles[1], loadedData, 1);
 
 		BuildMesh();
 	}

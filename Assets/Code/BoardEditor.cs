@@ -115,7 +115,7 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 	{
 		Vector2i tPos = GetCursorTilePos();
 		lastFunctionPos = tPos;
-		boardManager.GetOverlayTileSafe(tPos.x, tPos.y).OnFunction();
+		boardManager.GetTileSafe(1, tPos.x, tPos.y).OnFunction();
 	}
 
 	private void DisplayReticle()
@@ -157,13 +157,16 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 
 		if (boardManager.InTileBounds(tPos.x, tPos.y))
 		{
-			if (IsValidEdit(tPos, deleting ? TileStore.Air : tile))
+			if (IsValidEdit(tPos, tile))
 			{
 				if (deleting) 
 					boardManager.DeleteTile(tPos);
 				else 
 				{
-					if (activeTile.CanAdd(boardManager.GetData(), tPos))
+					BoardData data = boardManager.GetData();
+					boardManager.GetTile(tile.PosIndex, tPos.x, tPos.y).OnDeleted(data, tPos);
+
+					if (activeTile.CanAdd(data, tPos))
 						boardManager.SetTile(tPos, tile);
 				}
 			
@@ -177,9 +180,9 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 	{
 		if (tile.ID == 0) return true;
 
-		if (tile.IsOverlay)
+		if (tile.PosIndex == 1)
 		{
-			if (boardManager.GetTile(tilePos.x, tilePos.y).ID == 0)
+			if (boardManager.GetTile(0, tilePos.x, tilePos.y).ID == 0)
 				return false;
 		}
 
@@ -195,7 +198,7 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 				xOffset = x - 1;
 				yOffset = y - 1;
 
-				surroundingTiles[x, y] = boardManager.GetTileSafe(tilePos.x + xOffset, tilePos.y + yOffset);
+				surroundingTiles[x, y] = boardManager.GetTileSafe(0, tilePos.x + xOffset, tilePos.y + yOffset);
 			}
 		}
 

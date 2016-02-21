@@ -41,28 +41,16 @@ public sealed class BoardManager : MonoBehaviour
 		return boardData;
 	}
 
-	public Tile GetTileSafe(int tX, int tY)
+	public Tile GetTileSafe(int index, int tX, int tY)
 	{
 		if (!InTileBounds(tX, tY)) return TileStore.Air;
-		return GetTile(tX, tY);
+		return GetTile(index, tX, tY);
 	}
 
-	public Tile GetOverlayTileSafe(int tX, int tY)
-	{
-		if (!InTileBounds(tX, tY)) return TileStore.Air;
-		return GetOverlayTile(tX, tY);
-	}
-
-	public Tile GetTile(int tX, int tY)
+	public Tile GetTile(int index, int tX, int tY)
 	{
 		Chunk chunk = GetChunk(tX, tY);
-		return chunk == null ? TileStore.Air : chunk.GetTile(tX & Chunk.Size - 1, tY & Chunk.Size - 1);
-	}
-
-	public Tile GetOverlayTile(int tX, int tY)
-	{
-		Chunk chunk = GetChunk(tX, tY);
-		return chunk == null ? TileStore.Air : chunk.GetOverlayTile(tX & Chunk.Size - 1, tY & Chunk.Size - 1);
+		return chunk == null ? TileStore.Air : chunk.GetTile(index, tX & Chunk.Size - 1, tY & Chunk.Size - 1);
 	}
 
 	public void SetTile(Vector2i tPos, Tile tile)

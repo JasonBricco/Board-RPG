@@ -96,13 +96,22 @@ public sealed class CommandProcessor : MonoBehaviour
 			commandList[i] = new StringBuilder();
 		
 		int count = 0;
+		bool foundBracket = false;
 
 		for (int i = 0; i < commands.Length; i++)
 		{
 			Char nextChar = commands[i];
 
 			if (!Char.IsWhiteSpace(nextChar))
-				commandList[count].Append(commands[i]);
+			{
+				if (nextChar == '[') foundBracket = true;
+				if (nextChar == ']') foundBracket = false;
+
+				if (foundBracket && nextChar == ',')
+					commandList[count].Append('/');
+				else
+					commandList[count].Append(commands[i]);
+			}
 
 			if (nextChar == ')')
 				count++;
@@ -117,10 +126,7 @@ public sealed class CommandProcessor : MonoBehaviour
 
 			if (!success) continue;
 
-			List<Value> values = new List<Value>();
-
-			if (function.ValidateArguments(args, entity, values))
-				function.Compute(values);
+			function.Compute(args, entity);
 		}
 	}
 
