@@ -75,7 +75,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		if (editorOpen) SaveCode(0);
 	}
 
-	public void Process(int tX, int tY, int entityID, int movesLeft)
+	public void Process(int tX, int tY, Entity entity)
 	{
 		string commands = LoadCommands(new Vector2i(tX, tY));
 
@@ -119,7 +119,7 @@ public sealed class CommandProcessor : MonoBehaviour
 
 			List<Value> values = new List<Value>();
 
-			if (function.ValidateArguments(args, values))
+			if (function.ValidateArguments(args, entity, values))
 				function.Compute(values);
 		}
 	}

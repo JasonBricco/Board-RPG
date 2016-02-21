@@ -13,6 +13,7 @@ using System.Collections.Generic;
 public class Entity : MonoBehaviour
 {
 	protected int entityID; 
+	public int EntityID { get { return entityID; } }
 
 	protected BoardManager boardManager;
 	protected PlayerManager playerManager;
@@ -59,8 +60,8 @@ public class Entity : MonoBehaviour
 	protected void TriggerTileFunction()
 	{
 		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
-		boardManager.GetOverlayTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, entityID, remainingMoves);
-		boardManager.GetTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, entityID, remainingMoves);
+		boardManager.GetOverlayTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTile(tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
 	}
 
 	public void SetTo(Vector3 position)

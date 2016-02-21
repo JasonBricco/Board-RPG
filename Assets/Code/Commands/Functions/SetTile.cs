@@ -19,7 +19,7 @@ public sealed class SetTile : Function
 		boardEditor = Engine.GetComponent<BoardEditor>();
 	}
 
-	public override bool ValidateArguments(string[] args, List<Value> values)
+	public override bool ValidateArguments(string[] args, Entity entity, List<Value> values)
 	{
 		if (args.Length != 4) return false;
 

@@ -21,14 +21,19 @@ public sealed class MoveEntity : Function
 		playerManager = Engine.GetComponent<PlayerManager>();
 	}
 
-	public override bool ValidateArguments(string[] args, List<Value> values)
+	public override bool ValidateArguments(string[] args, Entity entity, List<Value> values)
 	{
 		if (args.Length != 4) return false;
 
 		int entityID, x, y;
 
-		if (!int.TryParse(args[1], out entityID))
-			return false;
+		if (args[1] == "@")
+			entityID = entity.EntityID;
+		else
+		{
+			if (!int.TryParse(args[1], out entityID))
+				return false;
+		}
 
 		if (!int.TryParse(args[2], out x))
 			return false;

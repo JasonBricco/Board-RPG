@@ -48,7 +48,7 @@ public class Tile
 	{
 	}
 
-	public virtual void OnEnter(int tX, int tY, int entityID, int movesLeft)
+	public virtual void OnEnter(int tX, int tY, Entity entity)
 	{
 	}
 }

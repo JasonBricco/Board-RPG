@@ -36,9 +36,9 @@ public class TriggerTile : Tile
 		Processor.LoadEditor();
 	}
 
-	public override void OnEnter(int tX, int tY, int entityID, int movesLeft)
+	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		Processor.Process(tX, tY, entityID, movesLeft);
+		Processor.Process(tX, tY, entity);
 	}
 
 	public override void OnDeleted(BoardData data, Vector2i pos)

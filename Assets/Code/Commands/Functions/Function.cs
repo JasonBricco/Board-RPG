@@ -25,7 +25,7 @@ public class Function
 		}
 	}
 
-	public virtual bool ValidateArguments(string[] args, List<Value> values)
+	public virtual bool ValidateArguments(string[] args, Entity entity, List<Value> values)
 	{
 		return true;
 	}
