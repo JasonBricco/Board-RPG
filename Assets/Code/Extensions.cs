@@ -11,6 +11,11 @@ public static class Extensions
 		return newObj;
 	}
 
+	public static GameObject FindChild(this GameObject obj, string name)
+	{
+		return obj.transform.Find(name).gameObject;
+	}
+
 	public static void SetXY(this Transform t, Vector3 newPos)
 	{
 		Vector3 pos = t.position;

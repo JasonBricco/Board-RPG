@@ -1,12 +1,4 @@
-﻿//
-//  Entity.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/6/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -22,15 +14,24 @@ public class Entity : MonoBehaviour
 
 	protected Vector2i lastDirection = Vector2i.zero;
 	protected List<Vector2i> possibleMoves = new List<Vector2i>();
+	protected Queue<Vector2i> forcedDirections = new Queue<Vector2i>();
+
+	private int movesBeforeFlip;
 
 	protected bool beingDeleted = false;
+
 	public int RemainingMoves { get; set; }
+	public bool Wait { get; set; }
 
 	public void SetReferences(int entityID, BoardManager boardManager, PlayerManager playerManager)
 	{
 		this.entityID = entityID;
 		this.boardManager = boardManager;
 		this.playerManager = playerManager;
+	}
+
+	public virtual void BeginTurn()
+	{
 	}
 
 	protected int GetDieRoll()
@@ -44,6 +45,27 @@ public class Entity : MonoBehaviour
 	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)
 	{
 		return (current + (direction * Tile.Size)).ToVector3();
+	}
+
+	protected IEnumerator Move(Vector2i dir, Vector2i current)
+	{
+		if (!dir.Equals(Vector2i.zero))
+		{
+			yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
+
+			lastDirection = -dir;
+			RemainingMoves--;
+			movesBeforeFlip = Mathf.Max(movesBeforeFlip - 1, -1);
+
+			if (movesBeforeFlip == 0)
+				Flip(-1, false);
+			
+			TriggerTileFunction();
+		}
+		else
+			RemainingMoves = 0;
+
+		while (Wait) yield return null;
 	}
 
 	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)
@@ -73,8 +95,14 @@ public class Entity : MonoBehaviour
 		transform.position = position;
 	}
 
-	public virtual void BeginTurn()
+	public void Flip(int moves, bool force)
 	{
+		if (moves == -1) force = false;
+
+		forcedDirections.Enqueue(lastDirection);
+		movesBeforeFlip = moves;
+
+		if (force) RemainingMoves = moves;
 	}
 
 	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)

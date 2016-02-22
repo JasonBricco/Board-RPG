@@ -1,14 +1,5 @@
-﻿//
-//  FunctionLibrary.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/18/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public sealed class FunctionLibrary : MonoBehaviour
 {
@@ -16,14 +7,15 @@ public sealed class FunctionLibrary : MonoBehaviour
 
 	private void Awake()
 	{
-		functions.Add("MoveEntity", new MoveEntityFunc(this));
-		functions.Add("SetTile", new SetTileFunc(this));
-		functions.Add("SetMoves", new SetMovesFunc(this));
-		functions.Add("Random", new RandomFunc(this));
-		functions.Add("RandomTeleport", new RandomTeleportFunc(this));
-		functions.Add("Timer", new TimerFunc(this));
-		functions.Add("SetLine", new SetLineFunc(this));
-		functions.Add("SetSquare", new SetSquareFunc(this));
+		functions.Add("MoveEntity", new MoveEntityFunction(this));
+		functions.Add("SetTile", new SetTileFunction(this));
+		functions.Add("SetMoves", new SetMovesFunction(this));
+		functions.Add("Random", new RandomFunction(this));
+		functions.Add("RandomTeleport", new RandomTeleportFunction(this));
+		functions.Add("Timer", new TimerFunction(this));
+		functions.Add("SetLine", new SetLineFunction(this));
+		functions.Add("SetSquare", new SetSquareFunction(this));
+		functions.Add("Flip", new FlipFunction(this));
 	}
 
 	public bool TryGetFunction(string name, out Function function)

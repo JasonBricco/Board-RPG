@@ -1,19 +1,17 @@
-﻿//
-//  TileWindow.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/20/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 
 public sealed class TileWindow : MonoBehaviour, IUpdatable
 {
-	private void Awake()
+	private BoardEditor boardEditor;
+
+	private void Start()
 	{
+		boardEditor = Engine.Instance.GetComponent<BoardEditor>();
+
 		Engine.StartUpdating(this);
 		gameObject.SetActive(false);
+
+		EventManager.StartListening("TileButtonPressed", TileButtonPressed);
 	}
 
 	public void OnEnable()
@@ -24,6 +22,12 @@ public sealed class TileWindow : MonoBehaviour, IUpdatable
 	public void OnDisable()
 	{
 		StateManager.ChangeState(GameState.Editing);
+	}
+
+	private void TileButtonPressed(int data)
+	{
+		boardEditor.SetActiveTile(TileStore.GetTileByID(data));
+		gameObject.SetActive(false);
 	}
 
 	public void UpdateFrame()

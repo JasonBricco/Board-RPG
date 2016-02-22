@@ -1,14 +1,5 @@
-﻿//
-//  Encoder.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/17/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
 
 public static class Encoder 
 {

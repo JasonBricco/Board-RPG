@@ -1,12 +1,4 @@
-﻿//
-//  BoardEditor.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/1/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
@@ -31,7 +23,6 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		CreateReticle();
 
 		EventManager.StartListening("StateChanged", StateChangedHandler);
-		EventManager.StartListening("TileButtonPressed", TileButtonPressed);
 	}
 
 	private void StateChangedHandler(int state)
@@ -49,7 +40,7 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		reticle = new GameObject("Reticle");
 		reticle.transform.localScale = new Vector3(32.0f, 32.0f);
 		SpriteRenderer rend = reticle.AddComponent<SpriteRenderer>();
-		rend.sprite = Resources.Load<Sprite>("Textures/Reticle");
+		rend.sprite = Resources.Load<Sprite>("Sprites/Reticle");
 	}
 
 	public void UpdateFrame()
@@ -62,12 +53,6 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 
 		DisplayReticle();
 		HandleEditInput();
-	}
-
-	private void TileButtonPressed(int data)
-	{
-		SetActiveTile(TileStore.GetTileByID(data));
-		UIManager.DisableGraphic("TilePanel");
 	}
 
 	private void HandleEditInput()

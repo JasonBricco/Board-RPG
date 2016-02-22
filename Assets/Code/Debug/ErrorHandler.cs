@@ -1,12 +1,4 @@
-﻿//
-//  ErrorHandler.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/7/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Text;
 using System.IO;
 

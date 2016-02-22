@@ -1,12 +1,4 @@
-﻿//
-//  Enemy.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/7/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public sealed class Enemy : Entity 
@@ -14,10 +6,10 @@ public sealed class Enemy : Entity
 	public override void BeginTurn()
 	{
 		if (!beingDeleted)
-			StartCoroutine(DoMove());
+			StartCoroutine(GetDirectionAndMove());
 	}
 
-	private IEnumerator DoMove()
+	private IEnumerator GetDirectionAndMove()
 	{
 		RemainingMoves = GetDieRoll();
 
@@ -26,18 +18,12 @@ public sealed class Enemy : Entity
 			Vector2i current = new Vector2i(transform.position);
 			Vector2i dir;
 
-			GetMoveDirection(current, out dir);
-
-			if (!dir.Equals(Vector2i.zero)) 
-			{
-				yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
-
-				lastDirection = -dir;
-				RemainingMoves--;
-				TriggerTileFunction();
-			}
+			if (forcedDirections.Count > 0)
+				dir = forcedDirections.Dequeue();
 			else
-				RemainingMoves = 0;
+				GetMoveDirection(current, out dir);
+
+			yield return StartCoroutine(Move(dir, current));
 		}
 
 		playerManager.NextTurn();

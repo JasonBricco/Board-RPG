@@ -1,12 +1,4 @@
-﻿//
-//  Vector2i.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/1/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 
 [System.Serializable]
 public struct Vector2i : System.IEquatable<Vector2i>

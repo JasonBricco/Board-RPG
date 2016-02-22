@@ -1,10 +1,4 @@
-﻿//
-//  Value.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/19/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
+﻿using UnityEngine;
 
 public sealed class Value
 {

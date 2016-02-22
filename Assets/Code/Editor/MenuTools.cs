@@ -1,12 +1,4 @@
-﻿//
-//  MenuTools.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/15/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System;
 using System.Reflection;

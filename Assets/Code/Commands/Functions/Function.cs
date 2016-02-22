@@ -1,12 +1,4 @@
-﻿//
-//  Function.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/19/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 public class Function
@@ -67,5 +59,45 @@ public class Function
 
 		num = 0;
 		return false;
+	}
+
+	protected bool CheckArgCount(string[] args, int required, string usage)
+	{
+		if (args.Length != required)
+		{
+			ErrorHandler.LogText("Command Error: invalid argument count.", usage);
+			return false;
+		}
+
+		return true;
+	}
+
+	protected bool TryGetEntityID(string arg, Entity entity, out int entityID)
+	{
+		if (arg == "@")
+			entityID = entity.EntityID;
+		else
+		{
+			if (!GetInteger(arg, out entityID))
+			{
+				ErrorHandler.LogText("Command Error: entity ID must be an integer or \"@\".");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	protected bool TryGetEntity(int entityID, Entity entity)
+	{
+		entity = playerManager.GetEntity(entityID);
+
+		if (entity == null)
+		{
+			ErrorHandler.LogText("Command Error: could not find the entity with ID " + entityID + ".");
+			return false;
+		}
+
+		return true;
 	}
 }

@@ -1,12 +1,4 @@
-﻿//
-//  PlayerManager.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/6/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +6,8 @@ using System.Collections.Generic;
 public sealed class PlayerManager : MonoBehaviour, IUpdatable
 {
 	[SerializeField] private BoardManager boardManager;
+	private GameObject turnDisplayPanel;
+	private Text turnText;
 
 	private Sprite playerSprite, enemySprite;
 
@@ -28,12 +22,15 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 		get { return currentEntity; }
 	}
 
-	private void Awake()
+	private void Start()
 	{
+		turnDisplayPanel = UIStore.GetGraphic("TurnDisplayPanel");
+		turnText = UIStore.GetGraphic<Text>("TurnText");
+
 		Engine.StartUpdating(this);
 
-		playerSprite = Resources.Load<Sprite>("Textures/Player");
-		enemySprite = Resources.Load<Sprite>("Textures/Enemy");
+		playerSprite = Resources.Load<Sprite>("Sprites/Player");
+		enemySprite = Resources.Load<Sprite>("Sprites/Enemy");
 
 		EventManager.StartListening("PlayPressed", PlayPressedHandler);
 	}
@@ -124,11 +121,11 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 
 	private IEnumerator CallTurn(Entity entity)
 	{
-		UIManager.SetText("TurnText", entity.name + "'s Turn");
+		turnText.text = entity.name + "'s Turn";
 
-		UIManager.EnableGraphic("TurnDisplayPanel");
+		turnDisplayPanel.SetActive(true);
 		yield return new WaitForSeconds(1.5f);
-		UIManager.DisableGraphic("TurnDisplayPanel");
+		turnDisplayPanel.SetActive(false);
 
 		entity.BeginTurn();
 	}

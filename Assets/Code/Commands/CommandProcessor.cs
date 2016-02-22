@@ -1,11 +1,4 @@
 ﻿//
-//  CommandProcessor.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/18/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
 using UnityEngine;
 using UnityEngine.UI;
 using System;
@@ -21,6 +14,7 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private Char[] delimiters = new char[] { '(', ',', ')' };
 
+	private GameObject codeEditor;
 	private InputField commandField;
 	private bool editorOpen = false;
 
@@ -29,7 +23,8 @@ public sealed class CommandProcessor : MonoBehaviour
 		EventManager.StartListening("SaveCode", SaveCode);
 		EventManager.StartListening("Quit", QuitHandler);
 
-		commandField = UIManager.GetGraphic<InputField>("CodeEditor");
+		codeEditor = UIStore.GetGraphic("CodeEditor");
+		commandField = codeEditor.GetComponent<InputField>();
 	}
 
 	private string LoadCommands(Vector2i pos)
@@ -46,7 +41,7 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	public void LoadEditor()
 	{
-		UIManager.EnableGraphic("CodeEditor");
+		codeEditor.SetActive(true);
 		editorOpen = true;
 	
 		commandField.text = LoadCommands(boardEditor.LastFunctionPos());
@@ -66,7 +61,7 @@ public sealed class CommandProcessor : MonoBehaviour
 	{
 		CreateTriggerData(boardEditor.LastFunctionPos(), commandField.text);
 		commandField.text = String.Empty;
-		UIManager.DisableGraphic("CodeEditor");
+		codeEditor.SetActive(false);
 		editorOpen = false;
 	}
 
@@ -122,8 +117,7 @@ public sealed class CommandProcessor : MonoBehaviour
 					commandList[count].Append(commands[i]);
 			}
 
-			if (nextChar == ')')
-				count++;
+			if (nextChar == ')') count++;
 		}
 
 		for (int i = 0; i < commandList.Length; i++)

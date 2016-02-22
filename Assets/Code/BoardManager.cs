@@ -1,12 +1,4 @@
-﻿//
-//  BoardManager.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/1/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 
@@ -16,6 +8,7 @@ public sealed class BoardManager : MonoBehaviour
 	public const int WidthInChunks = Size / Chunk.Size;
 
 	[SerializeField] private Material[] materials;
+	private GameObject mainButtons;
 
 	private Chunk[,] chunks = new Chunk[WidthInChunks, WidthInChunks];
 
@@ -25,10 +18,27 @@ public sealed class BoardManager : MonoBehaviour
 
 	private void Start()
 	{
+		mainButtons = UIStore.GetGraphic("MainButtons");
+
  		EventManager.StartListening("Quit", SaveBoard);
 		EventManager.StartListening("ClearPressed", ClearBoard);
+		EventManager.StartListening("StateChanged", StateChangedHandler);
 
 		LoadBoard();
+	}
+
+	private void StateChangedHandler(int state)
+	{
+		switch ((GameState)state)
+		{
+		case GameState.Editing:
+			mainButtons.SetActive(true);
+			break;
+
+		default:
+			mainButtons.SetActive(false);
+			break;
+		}
 	}
 
 	public Material GetMaterial(int index)

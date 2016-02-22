@@ -1,22 +1,25 @@
-﻿//
-//  Player.cs
-//  BoardRPG
-//
-//  Created by Jason Bricco on 2/7/16.
-//  Copyright © 2016 Jason Bricco. All rights reserved.
-//
-
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public sealed class Player : Entity
 {
-	private ArrowManager arrowManager = new ArrowManager();
-	private Queue<Vector2i> forcedDirections = new Queue<Vector2i>();
+	private GameObject actionPanel;
+	private GameObject directionArrows;
 
-	private void Awake()
+	private Button leftArrow, rightArrow, upArrow, downArrow;
+
+	private void Start()
 	{
+		actionPanel = UIStore.GetGraphic("ActionPanel");
+
+		directionArrows = UIStore.GetGraphic("DirectionArrows");
+		leftArrow = directionArrows.FindChild("LeftArrow").GetComponent<Button>();
+		rightArrow = directionArrows.FindChild("RightArrow").GetComponent<Button>();
+		upArrow = directionArrows.FindChild("UpArrow").GetComponent<Button>();
+		downArrow = directionArrows.FindChild("DownArrow").GetComponent<Button>();
+
 		EventManager.StartListening("MovePressed", MoveHandler);
 		EventManager.StartListening("AttackPressed", AttackHandler);
 		EventManager.StartListening("PassPressed", PassHandler);
@@ -26,17 +29,17 @@ public sealed class Player : Entity
 	public override void BeginTurn()
 	{
 		if (!beingDeleted)
-			UIManager.EnableGraphic("ActionPanel");
+			actionPanel.SetActive(true);
 	}
 
 	private void MoveHandler(int data)
 	{
-		UIManager.DisableGraphic("ActionPanel");
+		actionPanel.SetActive(false);
 		RemainingMoves = GetDieRoll();
-		StartCoroutine(DoMove());
+		StartCoroutine(GetDirectionAndMove());
 	}
 
-	private IEnumerator DoMove()
+	private IEnumerator GetDirectionAndMove()
 	{
 		while (RemainingMoves > 0)
 		{
@@ -51,16 +54,7 @@ public sealed class Player : Entity
 					yield break;
 			}
 				
-			if (!dir.Equals(Vector2i.zero))
-			{
-				yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
-
-				lastDirection = -dir;
-				RemainingMoves--;
-				TriggerTileFunction();
-			}
-			else
-				RemainingMoves = 0;
+			yield return StartCoroutine(Move(dir, current));
 		}
 			
 		playerManager.NextTurn();
@@ -72,7 +66,7 @@ public sealed class Player : Entity
 
 	private void PassHandler(int data)
 	{
-		UIManager.DisableGraphic("ActionPanel");
+		actionPanel.SetActive(false);
 		playerManager.NextTurn();
 	}
 
@@ -80,12 +74,12 @@ public sealed class Player : Entity
 	{
 		dir = Vector2i.zero;
 
-		arrowManager.DisableArrows();
+		DisableArrows();
 
 		for (int i = 0; i < possibleMoves.Count; i++)
-			arrowManager.EnableArrow(possibleMoves[i]);
+			EnableArrow(possibleMoves[i]);
 
-		UIManager.EnableGraphic("DirectionArrows");
+		directionArrows.SetActive(true);
 		return false;
 	}
 
@@ -110,8 +104,24 @@ public sealed class Player : Entity
 			break;
 		}
 
-		UIManager.DisableGraphic("DirectionArrows");
-		StartCoroutine(DoMove());
+		directionArrows.SetActive(false);
+		StartCoroutine(GetDirectionAndMove());
+	}
+
+	public void EnableArrow(Vector2i direction)
+	{
+		if (direction.Equals(Vector2i.left)) leftArrow.interactable = true;
+		else if (direction.Equals(Vector2i.right)) rightArrow.interactable = true;
+		else if (direction.Equals(Vector2i.up)) upArrow.interactable = true;
+		else if (direction.Equals(Vector2i.down)) downArrow.interactable = true;
+	}
+
+	public void DisableArrows()
+	{
+		leftArrow.interactable = false;
+		rightArrow.interactable = false;
+		upArrow.interactable = false;
+		downArrow.interactable = false;
 	}
 
 	public override void Delete()
@@ -121,8 +131,8 @@ public sealed class Player : Entity
 		EventManager.StopListening("PassPressed", PassHandler);
 		EventManager.StopListening("DirectionArrowPressed", DirectionArrowPressed);
 
-		UIManager.DisableGraphic("ActionPanel");
-		UIManager.DisableGraphic("DirectionArrows");
+		actionPanel.SetActive(false);
+		directionArrows.SetActive(false);
 
 		base.Delete();
 	}
