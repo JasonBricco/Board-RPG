@@ -32,7 +32,7 @@ public sealed class TimerFunction : Function
 
 		int turns;
 
-		if (!GetInteger(args[1], out turns))
+		if (!GetInteger(args[1], entity, out turns))
 		{
 			ErrorHandler.LogText("Command Error: turn count must be an integer (Timer)");
 			return;

@@ -15,13 +15,13 @@ public sealed class MoveEntityFunction : Function
 
 		if (!TryGetEntityID(args[1], entity, out entityID)) return;
 
-		if (!GetInteger(args[2], out x))
+		if (!GetInteger(args[2], entity, out x))
 		{
 			ErrorHandler.LogText("Command Error: x coordinate must be an integer (MoveEntity).");
 			return;
 		}
 			
-		if (!GetInteger(args[3], out y))
+		if (!GetInteger(args[3], entity, out y))
 		{
 			ErrorHandler.LogText("Command Error: y coordinate must be an integer (MoveEntity).");
 			return;

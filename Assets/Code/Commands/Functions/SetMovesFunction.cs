@@ -14,7 +14,7 @@ public sealed class SetMovesFunction : Function
 
 		if (!TryGetEntityID(args[1], entity, out entityID)) return;
 
-		if (!GetInteger(args[2], out moves))
+		if (!GetInteger(args[2], entity, out moves))
 		{
 			ErrorHandler.LogText("Command Error: move count must be an integer (SetMoves).");
 			return;

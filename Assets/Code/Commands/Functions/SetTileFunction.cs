@@ -13,13 +13,13 @@ public sealed class SetTileFunction : Function
 
 		int x, y;
 
-		if (!GetInteger(args[1], out x))
+		if (!GetInteger(args[1], entity, out x))
 		{
 			ErrorHandler.LogText("Command Error: x coordinate must be an integer (SetTile).");
 			return;
 		}
 
-		if (!GetInteger(args[2], out y))
+		if (!GetInteger(args[2], entity, out y))
 		{
 			ErrorHandler.LogText("Command Error: y coordinate must be an integer (SetTile).");
 			return;

@@ -13,25 +13,25 @@ public sealed class SetSquareFunction : Function
 
 		int startX, startY, endX, endY;
 
-		if (!GetInteger(args[1], out startX)) 
+		if (!GetInteger(args[1], entity, out startX)) 
 		{
 			ErrorHandler.LogText("Command Error: startX must be an integer (SetSquare).");
 			return;
 		}
 
-		if (!GetInteger(args[2], out startY))
+		if (!GetInteger(args[2], entity, out startY))
 		{
 			ErrorHandler.LogText("Command Error: endX must be an integer (SetSquare).");
 			return;
 		}
 
-		if (!GetInteger(args[3], out endX))
+		if (!GetInteger(args[3], entity, out endX))
 		{
 			ErrorHandler.LogText("Command Error: startY must be an integer (SetSquare).");
 			return;
 		}
 
-		if (!GetInteger(args[4], out endY))
+		if (!GetInteger(args[4], entity, out endY))
 		{
 			ErrorHandler.LogText("Command Error: endY must be an integer (SetSquare).");
 			return;

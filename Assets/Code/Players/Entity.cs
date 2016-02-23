@@ -12,11 +12,12 @@ public class Entity : MonoBehaviour
 
 	private float speed = 5.0f;
 
+	private bool isFlipped = false;
+	public bool IsFlipped { get { return isFlipped;  } }
+
 	protected Vector2i lastDirection = Vector2i.zero;
 	protected List<Vector2i> possibleMoves = new List<Vector2i>();
 	protected Queue<Vector2i> forcedDirections = new Queue<Vector2i>();
-
-	private int movesBeforeFlip;
 
 	protected bool beingDeleted = false;
 
@@ -55,10 +56,6 @@ public class Entity : MonoBehaviour
 
 			lastDirection = -dir;
 			RemainingMoves--;
-			movesBeforeFlip = Mathf.Max(movesBeforeFlip - 1, -1);
-
-			if (movesBeforeFlip == 0)
-				Flip(-1, false);
 			
 			TriggerTileFunction();
 		}
@@ -95,14 +92,10 @@ public class Entity : MonoBehaviour
 		transform.position = position;
 	}
 
-	public void Flip(int moves, bool force)
+	public void Flip()
 	{
-		if (moves == -1) force = false;
-
+		isFlipped = !isFlipped;
 		forcedDirections.Enqueue(lastDirection);
-		movesBeforeFlip = moves;
-
-		if (force) RemainingMoves = moves;
 	}
 
 	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)

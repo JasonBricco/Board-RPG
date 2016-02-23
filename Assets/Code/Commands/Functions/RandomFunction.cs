@@ -6,7 +6,7 @@ public sealed class RandomFunction : Function
 	{
 	}
 
-	public override bool GetValue(string[] args, out Value value)
+	public override bool GetValue(string[] args, Entity entity, out Value value)
 	{
 		value = new Value();
 

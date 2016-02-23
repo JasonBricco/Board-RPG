@@ -14,7 +14,7 @@ public sealed class CardLibrary : MonoBehaviour
 		currentCard = UIStore.GetGraphic<Image>("Card");
 
 		cards[0] = new ForwardFiveCard();
-		cards[1] = new BackFiveCard();
+		cards[1] = new FlipCard();
 	}
 
 	public void DrawCard(Entity entity)
@@ -25,14 +25,14 @@ public sealed class CardLibrary : MonoBehaviour
 		currentCard.sprite = cardSprites[index];
 		currentCard.enabled = true;
 
-		StartCoroutine(PlayCard(entity));
+		StartCoroutine(PlayCard(index, entity));
 	}
 
-	private IEnumerator PlayCard(Entity entity)
+	private IEnumerator PlayCard(int index, Entity entity)
 	{
 		yield return new WaitForSeconds(2.0f);
 		currentCard.enabled = false;
-		cards[Random.Range(0, cards.Length)].RunFunction(entity);
+		cards[index].RunFunction(entity);
 		entity.Wait = false;
 	}
 }

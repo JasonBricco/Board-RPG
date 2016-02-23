@@ -107,6 +107,9 @@ public sealed class CommandProcessor : MonoBehaviour
 
 				if (foundBracket && nextChar == '[')
 				{
+					Debug.Log("Triggered the bracket error. This is what we were operating on: ");
+					Debug.Log(commands[i]);
+
 					ErrorHandler.LogText("Command Error: found an opening bracket before closing the previous.");
 					return;
 				}

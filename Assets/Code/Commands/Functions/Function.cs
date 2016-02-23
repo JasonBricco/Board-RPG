@@ -32,32 +32,68 @@ public class Function
 	{
 	}
 
-	public virtual bool GetValue(string[] args, out Value value)
+	public virtual bool GetValue(string[] args, Entity entity, out Value value)
 	{
 		value = new Value();
 		return true;
 	}
 
-	protected bool GetInteger(string arg, out int num)
+	private bool TryGetFunctionValue(string functionString, Entity entity, out Value value)
+	{
+		value = new Value();
+
+		string[] args = functionString.Split(bracketSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+		Function function;
+
+		if (library.TryGetFunction(args[0], out function))
+		{
+			if (function.GetValue(args, entity, out value))
+				return true;
+		}
+
+		return false;
+	}
+
+	protected bool GetInteger(string arg, Entity entity, out int num)
 	{
 		if (int.TryParse(arg, out num))
 			return true;
 
-		string[] args = arg.Split(bracketSeparators, StringSplitOptions.RemoveEmptyEntries);
-
-		Function function;
 		Value value;
 
-		if (library.TryGetFunction(args[0], out function))
+		if (TryGetFunctionValue(arg, entity, out value))
 		{
-			if (function.GetValue(args, out value))
-			{
-				num = value.Int;
-				return true;
-			}
+			num = value.Int;
+			return true;
 		}
 
 		num = 0;
+		return false;
+	}
+
+	protected bool GetBool(string arg, Entity entity, out bool b)
+	{
+		if (arg == "true")
+		{
+			b = true;
+			return true;
+		}
+		else if (arg == "false")
+		{
+			b = false;
+			return true;
+		}
+
+		Value value;
+
+		if (TryGetFunctionValue(arg, entity, out value))
+		{
+			b = value.Bool;
+			return true;
+		}
+
+		b = false;
 		return false;
 	}
 
@@ -78,7 +114,7 @@ public class Function
 			entityID = entity.EntityID;
 		else
 		{
-			if (!GetInteger(arg, out entityID))
+			if (!GetInteger(arg, entity, out entityID))
 			{
 				ErrorHandler.LogText("Command Error: entity ID must be an integer or \"@\".");
 				return false;

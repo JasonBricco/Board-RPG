@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-public class BackFiveCard : Card
+public class FlipCard : Card
 {
 	public override void RunFunction(Entity entity)
 	{
-		entity.Flip(5, true);
+		entity.Flip();
 	}
 }
