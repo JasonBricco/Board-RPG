@@ -39,6 +39,12 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		{
 		case GameState.Editing:
 			reticle.SetActive(true);
+			if (selectedText != null) 
+				selectedText.enabled = true;
+			break;
+
+		case GameState.Playing:
+			selectedText.enabled = false;
 			break;
 		}
 	}
