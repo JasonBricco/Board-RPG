@@ -13,7 +13,7 @@ public sealed class FPS : MonoBehaviour
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Tab))
+		if (StateManager.CurrentState != GameState.Window && Input.GetKeyDown(KeyCode.Tab))
 			myLabel.enabled = !myLabel.enabled;
 
 		if (myLabel.enabled)

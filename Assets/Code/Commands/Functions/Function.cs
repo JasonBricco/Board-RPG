@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System;
 
+public enum FunctionType { Main, Value }
+
 public class Function
 {
 	protected FunctionLibrary library;
 	private static GameObject engine;
+
+	protected FunctionType type = FunctionType.Main;
+	public FunctionType Type { get { return type; } }
 
 	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
 
@@ -32,48 +37,24 @@ public class Function
 	{
 	}
 
-	public virtual bool GetValue(string[] args, Entity entity, out Value value)
+	public virtual string GetValue(string[] args, Entity entity)
 	{
-		value = new Value();
-		return true;
+		return "null";
 	}
 
-	private bool TryGetFunctionValue(string functionString, Entity entity, out Value value)
-	{
-		value = new Value();
-
-		string[] args = functionString.Split(bracketSeparators, StringSplitOptions.RemoveEmptyEntries);
-
-		Function function;
-
-		if (library.TryGetFunction(args[0], out function))
-		{
-			if (function.GetValue(args, entity, out value))
-				return true;
-		}
-
-		return false;
-	}
-
-	protected bool GetInteger(string arg, Entity entity, out int num)
+	protected bool GetInteger(string arg, out int num)
 	{
 		if (int.TryParse(arg, out num))
 			return true;
 
-		Value value;
-
-		if (TryGetFunctionValue(arg, entity, out value))
-		{
-			num = value.Int;
-			return true;
-		}
-
-		num = 0;
+		ErrorHandler.LogText("Command Error: argument must be an integer.");
 		return false;
 	}
 
-	protected bool GetBool(string arg, Entity entity, out bool b)
+	protected bool GetBool(string arg, out bool b)
 	{
+		b = false; 
+
 		if (arg == "true")
 		{
 			b = true;
@@ -85,21 +66,13 @@ public class Function
 			return true;
 		}
 
-		Value value;
-
-		if (TryGetFunctionValue(arg, entity, out value))
-		{
-			b = value.Bool;
-			return true;
-		}
-
-		b = false;
+		ErrorHandler.LogText("Command Error: argument must be true or false.");
 		return false;
 	}
 
 	protected bool CheckArgCount(string[] args, int required, string usage)
 	{
-		if (args.Length != required)
+		if (args.Length < required)
 		{
 			ErrorHandler.LogText("Command Error: invalid argument count.", usage);
 			return false;
@@ -114,7 +87,7 @@ public class Function
 			entityID = entity.EntityID;
 		else
 		{
-			if (!GetInteger(arg, entity, out entityID))
+			if (!GetInteger(arg, out entityID))
 			{
 				ErrorHandler.LogText("Command Error: entity ID must be an integer or \"@\".");
 				return false;

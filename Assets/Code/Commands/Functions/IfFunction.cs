@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 public class IfFunction : Function 
 {
@@ -8,24 +9,22 @@ public class IfFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 2, "Usage: MoveEntity(bool, function[...])")) return;
+		if (!CheckArgCount(args, 3, "Usage: [If: bool, [function: ...]]")) return;
 
 		bool isTrue;
 
-		if (!GetBool(args[1], entity, out isTrue))
-		{
-			ErrorHandler.LogText("Command Error: first argument must be true or false (If).");
-			return;
-		}
+		if (!GetBool(args[1], out isTrue)) return;
 
 		if (isTrue)
 		{
-			string[] paramArgs = args[2].Split(bracketSeparators, System.StringSplitOptions.RemoveEmptyEntries);
-
 			Function function;
 
-			if (library.TryGetFunction(paramArgs[0], out function))
-				function.Compute(paramArgs, entity);
+			if (library.TryGetFunction(args[2], out function))
+			{
+				string[] newArgs = new string[args.Length - 2];
+				Array.Copy(args, 2, newArgs, 0, args.Length - 2);
+				function.Compute(newArgs, entity);
+			}
 		}
 	}
 }

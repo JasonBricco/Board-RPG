@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public sealed class WaitingFunction 
 {
@@ -28,27 +29,21 @@ public sealed class TimerFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 3, "Usage: Timer(turns, function)")) return;
+		if (!CheckArgCount(args, 3, "Usage: [Timer: turns, [function: ...]]")) return;
 
 		int turns;
 
-		if (!GetInteger(args[1], entity, out turns))
-		{
-			ErrorHandler.LogText("Command Error: turn count must be an integer (Timer)");
-			return;
-		}
-
-		string[] paramArgs = args[2].Split(bracketSeparators, System.StringSplitOptions.RemoveEmptyEntries);
+		if (!GetInteger(args[1], out turns)) return;
 
 		Function function;
 
-		if (library.TryGetFunction(paramArgs[0], out function))
+		if (library.TryGetFunction(args[2], out function))
 		{
-			WaitingFunction func = new WaitingFunction(function, paramArgs, turns + 1, entity);
+			string[] newArgs = new string[args.Length - 2];
+			Array.Copy(args, 2, newArgs, 0, args.Length - 2);
+			WaitingFunction func = new WaitingFunction(function, newArgs, turns + 1, entity);
 			pending.Add(func);
 		}
-		else
-			ErrorHandler.LogText("Command Error: function passed into timer doesn't exist: " + paramArgs[0] + ".");
 	}
 
 	private void NewTurnHandler(int entityID)

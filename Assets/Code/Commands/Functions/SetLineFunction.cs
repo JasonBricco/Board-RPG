@@ -9,33 +9,14 @@ public sealed class SetLineFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 6, "Usage: SetLine(startX, startY, endX, endY, tile)")) return;
+		if (!CheckArgCount(args, 6, "Usage: [SetLine: startX, startY, endX, endY, tile]")) return;
 
 		int startX, startY, endX, endY;
 
-		if (!GetInteger(args[1], entity, out startX)) 
-		{
-			ErrorHandler.LogText("Command Error: startX must be an integer (SetLine).");
-			return;
-		}
-
-		if (!GetInteger(args[2], entity, out startY))
-		{
-			ErrorHandler.LogText("Command Error: endX must be an integer (SetLine).");
-			return;
-		}
-
-		if (!GetInteger(args[3], entity, out endX))
-		{
-			ErrorHandler.LogText("Command Error: startY must be an integer (SetLine).");
-			return;
-		}
-
-		if (!GetInteger(args[4], entity, out endY))
-		{
-			ErrorHandler.LogText("Command Error: endY must be an integer (SetLine).");
-			return;
-		}
+		if (!GetInteger(args[1], out startX)) return;
+		if (!GetInteger(args[2], out startY)) return;
+		if (!GetInteger(args[3], out endX)) return;
+		if (!GetInteger(args[4], out endY)) return;
 
 		Tile tile = TileStore.GetTileByName(args[5]);
 

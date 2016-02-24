@@ -9,23 +9,14 @@ public sealed class MoveEntityFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 4, "Usage: MoveEntity(entityID, x, y)")) return;
+		if (!CheckArgCount(args, 4, "Usage: [MoveEntity: entityID, x, y]")) return;
 
 		int entityID, x, y;
 
 		if (!TryGetEntityID(args[1], entity, out entityID)) return;
 
-		if (!GetInteger(args[2], entity, out x))
-		{
-			ErrorHandler.LogText("Command Error: x coordinate must be an integer (MoveEntity).");
-			return;
-		}
-			
-		if (!GetInteger(args[3], entity, out y))
-		{
-			ErrorHandler.LogText("Command Error: y coordinate must be an integer (MoveEntity).");
-			return;
-		}
+		if (!GetInteger(args[2], out x)) return;
+		if (!GetInteger(args[3], out y)) return;
 
 		Tile tile = boardManager.GetTileSafe(0, x, y);
 

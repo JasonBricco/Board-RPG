@@ -9,9 +9,11 @@ public class RandomTeleportFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (args.Length < 3) 
+		if (!CheckArgCount(args, 4, "Usage: [RandomTeleport: entityID, x, y, z, w, ...]")) return;
+		
+		if ((args.Length & 1) != 0) 
 		{
-			ErrorHandler.LogText("Command Error: invalid argument count.", "Usage: RandomTeleport(entityID, [x, y], [z, w], ...)");
+			ErrorHandler.LogText("Command Error: RandomTeleport expects an even number of arguments.");
 			return;
 		}
 
@@ -21,36 +23,19 @@ public class RandomTeleportFunction : Function
 
 		List<Vector2i> points = new List<Vector2i>();
 
-		for (int i = 2; i < args.Length; i++)
+		for (int i = 2; i < args.Length; i += 2)
 		{
-			string[] point = args[i].Split(bracketSeparators, System.StringSplitOptions.RemoveEmptyEntries);
-
-			if (point.Length != 2) 
-			{
-				ErrorHandler.LogText("Invalid coordinates sent to RandomTeleport.");
-				continue;
-			}
-
 			int x, y;
 
-			if (!int.TryParse(point[0], out x)) 
-			{
-				ErrorHandler.LogText("Coordinates must be integers (RandomTeleport).");
-				continue;
-			}
-
-			if (!int.TryParse(point[1], out y)) 
-			{
-				ErrorHandler.LogText("Coordinates must be integers (RandomTeleport).");
-				continue;
-			}
+			if (!GetInteger(args[i], out x)) return;
+			if (!GetInteger(args[i + 1], out y)) return;
 
 			points.Add(new Vector2i(x, y));
 		}
 
 		if (points.Count == 0) 
 		{
-			ErrorHandler.LogText("No coordinates found (RandomTeleport).");
+			ErrorHandler.LogText("Command Error: No coordinates found (RandomTeleport).");
 			return;
 		}
 
@@ -60,7 +45,7 @@ public class RandomTeleportFunction : Function
 
 		if (tile.ID == 0) 
 		{
-			ErrorHandler.LogText("Tried to teleport to an invalid tile (RandomTeleport).");
+			ErrorHandler.LogText("Command Error: Tried to teleport to an invalid tile (RandomTeleport).");
 			return;
 		}
 

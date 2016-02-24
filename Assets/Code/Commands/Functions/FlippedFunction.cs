@@ -4,22 +4,21 @@ public class FlippedFunction : Function
 {
 	public FlippedFunction(FunctionLibrary library) : base(library)
 	{
+		type = FunctionType.Value;
 	}
 
-	public override bool GetValue(string[] args, Entity entity, out Value value)
+	public override string GetValue(string[] args, Entity entity)
 	{
-		value = new Value();
-
-		if (!CheckArgCount(args, 2, "Usage: Flipped[entityID]")) return false;
+		if (!CheckArgCount(args, 2, "Usage: [Flipped: entityID]")) return "null";
 
 		int entityID;
 
-		if (!TryGetEntityID(args[1], entity, out entityID)) return false;
+		if (!TryGetEntityID(args[1], entity, out entityID)) return "null";
 
 		if (!TryGetEntity(entityID, entity))
-			return false;
+			return "false";
 
-		value.Bool = entity.IsFlipped;
-		return true;
+		if (entity.IsFlipped) return "true";
+		return "false";
 	}
 }

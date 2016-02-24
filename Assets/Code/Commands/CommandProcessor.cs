@@ -1,5 +1,4 @@
-﻿//
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Text;
@@ -12,10 +11,10 @@ public sealed class CommandProcessor : MonoBehaviour
 	[SerializeField] private BoardEditor boardEditor;
 	[SerializeField] private BoardManager boardManager;
 
-	private Char[] delimiters = new char[] { '(', ',', ')' };
+	private Char[] delimiters = new char[] { '[', ':', ',', ']' };
 
 	private GameObject codeEditor;
-	private InputField commandField;
+	private CodeEditor editorField;
 	private bool editorOpen = false;
 
 	private void Awake()
@@ -24,17 +23,17 @@ public sealed class CommandProcessor : MonoBehaviour
 		EventManager.StartListening("Quit", QuitHandler);
 
 		codeEditor = UIStore.GetGraphic("CodeEditor");
-		commandField = codeEditor.GetComponent<InputField>();
+		editorField = codeEditor.GetComponent<CodeEditor>();
 	}
 
 	private string LoadCommands(Vector2i pos)
 	{
 		var triggerDict = boardManager.GetData().triggerData;
 
-		string triggerData;
+		string data;
 
-		if (triggerDict.TryGetValue(pos, out triggerData))
-			return triggerData;
+		if (triggerDict.TryGetValue(pos, out data))
+			return data;
 
 		return String.Empty;
 	}
@@ -44,23 +43,14 @@ public sealed class CommandProcessor : MonoBehaviour
 		codeEditor.SetActive(true);
 		editorOpen = true;
 	
-		commandField.text = LoadCommands(boardEditor.LastFunctionPos());
-
-		commandField.ActivateInputField();
-		commandField.Select();
-		StartCoroutine(MoveTextToEnd());
-	}
-
-	private IEnumerator MoveTextToEnd()
-	{
-		yield return new WaitForEndOfFrame();
-		commandField.MoveTextEnd(false);
+		string data = LoadCommands(boardEditor.LastFunctionPos());
+		editorField.Load(data);
 	}
 
 	private void SaveCode(int data)
 	{
-		CreateTriggerData(boardEditor.LastFunctionPos(), commandField.text);
-		commandField.text = String.Empty;
+		CreateTriggerData(boardEditor.LastFunctionPos(), editorField.text);
+		editorField.text = String.Empty;
 		codeEditor.SetActive(false);
 		editorOpen = false;
 	}
@@ -72,77 +62,136 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	public void Process(int tX, int tY, Entity entity)
 	{
-		string commands = LoadCommands(new Vector2i(tX, tY));
+		string input = LoadCommands(new Vector2i(tX, tY));
 
-		int commandCount = 0;
-
-		for (int i = 0; i < commands.Length; i++)
+		if (input[0] != '[') 
 		{
-			if (commands[i] == ')')
-				commandCount++;
-		}
-
-		if (commandCount == 0) 
-		{
-			ErrorHandler.LogText("Command Error: no commands found!");
+			ErrorHandler.LogText("Command Error: invalid command format. Commands must start with \"[\".");
 			return;
 		}
 
-		StringBuilder[] commandList = new StringBuilder[commandCount];
+		List<string> commands = new List<string>();
+		StringBuilder current = new StringBuilder();
 
-		for (int i = 0; i < commandList.Length; i++)
-			commandList[i] = new StringBuilder();
-		
-		int count = 0;
-		bool foundBracket = false;
+		int bracketCount = 0; 
 
-		for (int i = 0; i < commands.Length; i++)
+		for (int i = 0; i < input.Length; i++)
 		{
-			Char nextChar = commands[i];
+			Char nextChar = input[i];
 
-			if (!Char.IsWhiteSpace(nextChar))
-			{
-				if (nextChar == '[') foundBracket = true;
-				if (nextChar == ']') foundBracket = false;
-
-				if (foundBracket && nextChar == '[')
-				{
-					Debug.Log("Triggered the bracket error. This is what we were operating on: ");
-					Debug.Log(commands[i]);
-
-					ErrorHandler.LogText("Command Error: found an opening bracket before closing the previous.");
-					return;
-				}
-				
-				if (foundBracket && nextChar == ',')
-					commandList[count].Append('/');
-				else
-					commandList[count].Append(commands[i]);
-			}
-
-			if (nextChar == ')') count++;
-		}
-
-		for (int i = 0; i < commandList.Length; i++)
-		{
-			string[] args = commandList[i].ToString().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-
-			Function function;
-			bool success = library.TryGetFunction(args[0], out function);
-
-			if (!success) 
-			{
-				ErrorHandler.LogText("Command Error: function doesn't exist: " + args[0] + ".");
+			if (Char.IsWhiteSpace(nextChar)) 
 				continue;
+
+			if (nextChar == '[')
+			{
+				if (bracketCount == 0)
+					current = new StringBuilder();
+				
+				bracketCount++;
+			}
+			else if (nextChar == ']')
+			{
+				bracketCount--;
+
+				if (bracketCount == 0)
+				{
+					current.Append(']');
+					commands.Add(current.ToString());
+					continue;
+				}
 			}
 
-			function.Compute(args, entity);
+			current.Append(nextChar);
 		}
+
+		for (int command = 0; command < commands.Count; command++)
+		{
+			input = commands[command];
+
+			for (int i = 0; i < 1000; i++) // SAFEGUARD
+			{
+				int startIndex = GetInnermostIndex(input);
+
+				if (startIndex == -1)
+					break;
+				
+				int endIndex = input.IndexOf(']', startIndex);
+
+				string funcString = input.Substring(startIndex, (endIndex - startIndex) + 1);
+				string[] args = funcString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+
+				Function function;
+				bool success = args.Length == 0 ? false : library.TryGetFunction(args[0], out function);
+
+				if (success)
+				{
+					if (function.Type == FunctionType.Value)
+					{
+						string value = function.GetValue(args, entity);
+						input = input.Replace(funcString, value);
+					}
+					else
+					{
+						string noBrackets = funcString.Substring(1, funcString.Length - 2);
+						input = input.Replace(funcString, noBrackets);
+					}
+				}
+				else
+				{
+					ErrorHandler.LogText("Command Error: invalid command entered, skipping.");
+					input = input.Remove(startIndex, (endIndex - startIndex) + 1);
+				}
+			}
+
+			string[] finalArgs = input.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+
+			if (finalArgs.Length == 0)
+			{
+				ErrorHandler.LogText("Command Error: no commands found!");
+				return;
+			}
+
+			Function mainFunction = library.GetFunction(finalArgs[0]);
+			mainFunction.Compute(finalArgs, entity);
+		}
+	}
+
+	private int GetInnermostIndex(string input)
+	{
+		bool found = false;
+
+		int deepestIndex = 0;
+		int deepestCounter = 0;
+
+		int counter = 0;
+
+		for (int i = 0; i < input.Length; i++)
+		{
+			Char nextChar = input[i];
+
+			if (nextChar == '[') 
+			{
+				found = true;
+				counter++;
+
+				if (counter > deepestCounter)
+				{
+					deepestIndex = i;
+					deepestCounter = counter;
+				}
+			}
+
+			if (nextChar == ']') 
+				counter--;
+		}
+
+		return found ? deepestIndex : -1;
 	}
 
 	private void CreateTriggerData(Vector2i pos, string commands)
 	{
 		var triggerDict = boardManager.GetData().triggerData;
-		triggerDict[pos] = String.Copy(commandField.text);
+		triggerDict[pos] = String.Copy(editorField.text);
 	}
 }
+	

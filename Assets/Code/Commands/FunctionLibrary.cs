@@ -17,6 +17,12 @@ public sealed class FunctionLibrary : MonoBehaviour
 		functions.Add("SetSquare", new SetSquareFunction(this));
 		functions.Add("Flip", new FlipFunction(this));
 		functions.Add("Flipped", new FlippedFunction(this));
+		functions.Add("If", new IfFunction(this));
+	}
+
+	public Function GetFunction(string name)
+	{
+		return functions[name];
 	}
 
 	public bool TryGetFunction(string name, out Function function)

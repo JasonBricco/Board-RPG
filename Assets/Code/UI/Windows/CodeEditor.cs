@@ -1,14 +1,43 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
-public sealed class CodeEditor : MonoBehaviour
+public sealed class CodeEditor : InputField
 {
-	public void OnEnable()
+	private bool moveToEnd;
+
+	public void Load(string text)
 	{
+		this.text = text;
+		ActivateInputField();
+		Select();
+	}
+
+	protected override void OnEnable()
+	{
+		base.OnEnable();
 		StateManager.ChangeState(GameState.Window);
 	}
 
-	public void OnDisable()
+	protected override void OnDisable()
 	{
+		base.OnDisable();
 		StateManager.ChangeState(GameState.Editing);
+	}
+
+	public override void OnSelect(UnityEngine.EventSystems.BaseEventData eventData)
+	{
+		base.OnSelect(eventData);
+		moveToEnd = true;
+	}
+		
+	protected override void LateUpdate()
+	{
+		base.LateUpdate();
+
+		if (moveToEnd)
+		{
+			MoveTextEnd(false);
+			moveToEnd = false;
+		}
 	}
 }

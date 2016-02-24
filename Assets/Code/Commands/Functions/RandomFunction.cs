@@ -4,30 +4,27 @@ public sealed class RandomFunction : Function
 {
 	public RandomFunction(FunctionLibrary library) : base(library)
 	{
+		type = FunctionType.Value;
 	}
 
-	public override bool GetValue(string[] args, Entity entity, out Value value)
+	public override string GetValue(string[] args, Entity entity)
 	{
-		value = new Value();
-
-		if (!CheckArgCount(args, 3, "Usage: Random[min, max]")) return false;
+		if (!CheckArgCount(args, 3, "Usage: [Random: min, max]")) return "null";
 
 		int min, max;
 
 		if (!int.TryParse(args[1], out min))
 		{
 			ErrorHandler.LogText("Command Error: min value must be an integer (Random).");
-			return false;
+			return "null";
 		}
 
 		if (!int.TryParse(args[2], out max))
 		{
 			ErrorHandler.LogText("Command Error: max value must be an integer (Random).");
-			return false;
+			return "null";
 		}
 
-		value.Int = Random.Range(min, max + 1);
-
-		return true;
+		return Random.Range(min, max + 1).ToString();
 	}
 }

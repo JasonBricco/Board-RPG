@@ -8,7 +8,7 @@ public class FlipFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 2, "Usage: Flip(entityID)")) return;
+		if (!CheckArgCount(args, 2, "Usage: [Flip: entityID]")) return;
 
 		int entityID;
 
