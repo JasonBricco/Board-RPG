@@ -17,7 +17,7 @@ public class TriggerTile : Tile
 
 	public TriggerTile()
 	{
-		name = "Trigger";
+		name = "Trigger (F)";
 		tileID = 5;
 		meshIndex = 4;
 		posIndex = 1;

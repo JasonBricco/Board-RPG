@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
@@ -15,6 +16,7 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 	private Vector2i lastFunctionPos;
 
 	private GameObject reticle;
+	private Text selectedText;
 
 	private void Awake()
 	{
@@ -23,6 +25,12 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		CreateReticle();
 
 		EventManager.StartListening("StateChanged", StateChangedHandler);
+	}
+
+	private void Start()
+	{
+		selectedText = UIStore.GetGraphic<Text>("SelectedTileText");
+		selectedText.text = activeTile.Name;
 	}
 
 	private void StateChangedHandler(int state)
@@ -62,6 +70,9 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		if (Input.GetKeyDown(KeyCode.F))
 			GetFunction();
 
+		if (Input.GetKeyDown(KeyCode.Q))
+			PickTile();
+
 		if (Input.GetMouseButtonDown(0))
 			SetSingleTile(GetCursorTilePos(), activeTile);
 
@@ -87,9 +98,23 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 		}
 	}
 
+	private void PickTile()
+	{
+		Vector2i tPos = GetCursorTilePos();
+
+		Tile tile = boardManager.GetTileSafe(1, tPos.x, tPos.y);
+
+		if (tile.ID == 0)
+			tile = boardManager.GetTileSafe(0, tPos.x, tPos.y);
+
+		if (tile.ID != 0)
+			SetActiveTile(tile);
+	}
+
 	public void SetActiveTile(Tile tile)
 	{
 		activeTile = tile;
+		selectedText.text = tile.Name;
 	}
 
 	public Vector2i LastFunctionPos()

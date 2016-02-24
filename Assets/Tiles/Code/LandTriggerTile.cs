@@ -17,7 +17,7 @@ public class LandTriggerTile : Tile
 
 	public LandTriggerTile()
 	{
-		name = "Land Trigger";
+		name = "Trigger (L)";
 		tileID = 6;
 		meshIndex = 5;
 		posIndex = 1;
