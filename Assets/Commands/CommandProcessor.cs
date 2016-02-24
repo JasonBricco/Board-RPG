@@ -64,6 +64,8 @@ public sealed class CommandProcessor : MonoBehaviour
 	{
 		string input = LoadCommands(new Vector2i(tX, tY));
 
+		if (input.Length == 0) return;
+
 		if (input[0] != '[') 
 		{
 			ErrorHandler.LogText("Command Error: invalid command format. Commands must start with \"[\".");

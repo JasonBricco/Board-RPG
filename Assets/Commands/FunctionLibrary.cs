@@ -18,6 +18,7 @@ public sealed class FunctionLibrary : MonoBehaviour
 		functions.Add("Flip", new FlipFunction(this));
 		functions.Add("Flipped", new FlippedFunction(this));
 		functions.Add("If", new IfFunction(this));
+		functions.Add("TeleportInArea", new TeleportInAreaFunction(this));
 	}
 
 	public Function GetFunction(string name)
