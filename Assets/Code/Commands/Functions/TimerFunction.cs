@@ -25,6 +25,13 @@ public sealed class TimerFunction : Function
 	public TimerFunction(FunctionLibrary library) : base(library)
 	{
 		EventManager.StartListening("NewTurn", NewTurnHandler);
+		EventManager.StartListening("StateChanged", StateChanged);
+	}
+
+	private void StateChanged(int state)
+	{
+		if ((GameState)state == GameState.Editing)
+			pending.Clear();
 	}
 
 	public override void Compute(string[] args, Entity entity)
