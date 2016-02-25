@@ -3,6 +3,22 @@ using System;
 
 public enum FunctionType { Main, Value }
 
+public sealed class WaitingFunction 
+{
+	public Function function;
+	public string[] args;
+	public int turnsRemaining;
+	public Entity entity;
+
+	public WaitingFunction(Function func, string[] args, int turnsRemaining, Entity entity)
+	{
+		this.function = func;
+		this.args = args;
+		this.turnsRemaining = turnsRemaining;
+		this.entity = entity;
+	}
+}
+
 public class Function
 {
 	protected FunctionLibrary library;

@@ -7,7 +7,7 @@ public sealed class FunctionLibrary : MonoBehaviour
 
 	private void Awake()
 	{
-		functions.Add("MoveEntity", new MoveEntityFunction(this));
+		functions.Add("Teleport", new TeleportFunction(this));
 		functions.Add("SetTile", new SetTileFunction(this));
 		functions.Add("SetMoves", new SetMovesFunction(this));
 		functions.Add("Random", new RandomFunction(this));
@@ -19,6 +19,7 @@ public sealed class FunctionLibrary : MonoBehaviour
 		functions.Add("Flipped", new FlippedFunction(this));
 		functions.Add("If", new IfFunction(this));
 		functions.Add("TeleportInArea", new TeleportInAreaFunction(this));
+		functions.Add("Repeat", new RepeatFunction(this));
 	}
 
 	public Function GetFunction(string name)

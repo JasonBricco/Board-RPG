@@ -95,7 +95,7 @@ public class Entity : MonoBehaviour
 	public void Flip()
 	{
 		isFlipped = !isFlipped;
-		forcedDirections.Enqueue(lastDirection);
+		lastDirection = -lastDirection;
 	}
 
 	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)

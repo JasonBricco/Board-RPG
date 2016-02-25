@@ -18,9 +18,9 @@ public sealed class Enemy : Entity
 			Vector2i current = new Vector2i(transform.position);
 			Vector2i dir;
 
-			if (forcedDirections.Count > 0)
-				dir = forcedDirections.Dequeue();
-			else
+//			if (forcedDirections.Count > 0)
+//				dir = forcedDirections.Dequeue();
+//			else
 				GetMoveDirection(current, out dir);
 
 			yield return StartCoroutine(Move(dir, current));

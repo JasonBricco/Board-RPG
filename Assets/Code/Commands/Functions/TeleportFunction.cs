@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using System;
 
-public sealed class MoveEntityFunction : Function
+public sealed class TeleportFunction : Function
 {
-	public MoveEntityFunction(FunctionLibrary library) : base(library)
+	public TeleportFunction(FunctionLibrary library) : base(library)
 	{
 	}
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 4, "Usage: [MoveEntity: entityID, x, y]")) return;
+		if (!CheckArgCount(args, 4, "Usage: [Teleport: entityID, x, y]")) return;
 
 		int entityID, x, y;
 
