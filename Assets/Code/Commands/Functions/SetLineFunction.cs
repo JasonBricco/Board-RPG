@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 public sealed class SetLineFunction : Function 
 {
-	public SetLineFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public SetLineFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -18,7 +16,7 @@ public sealed class SetLineFunction : Function
 		if (!GetInteger(args[3], out endX)) return;
 		if (!GetInteger(args[4], out endY)) return;
 
-		Tile tile = TileStore.GetTileByName(args[5]);
+		TileType tile = TileStore.GetTileByName(args[5]);
 
 		if (tile == null)
 		{
@@ -39,6 +37,6 @@ public sealed class SetLineFunction : Function
 			points.Add(new Vector2i(point));
 		}
 			
-		boardEditor.SetMultipleTiles(points, tile);
+		Engine.BoardEditor.SetMultipleTiles(points, new Tile(tile.ID));
 	}
 }

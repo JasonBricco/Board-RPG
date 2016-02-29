@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 public class RandomTeleportFunction : Function 
 {
-	public RandomTeleportFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public RandomTeleportFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -41,7 +39,7 @@ public class RandomTeleportFunction : Function
 
 		Vector2i randomPoint = points[Random.Range(0, points.Count)];
 
-		Tile tile = boardManager.GetTileSafe(0, randomPoint.x, randomPoint.y);
+		Tile tile = Engine.BoardManager.GetTileSafe(0, randomPoint.x, randomPoint.y);
 
 		if (tile.ID == 0) 
 		{
@@ -49,8 +47,8 @@ public class RandomTeleportFunction : Function
 			return;
 		}
 
-		randomPoint.x *= Tile.Size;
-		randomPoint.y *= Tile.Size;
+		randomPoint.x *= TileType.Size;
+		randomPoint.y *= TileType.Size;
 
 		if (TryGetEntity(entityID, entity))
 			entity.SetTo(new Vector3(randomPoint.x, randomPoint.y));

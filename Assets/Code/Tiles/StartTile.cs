@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
-public sealed class StartTile : Tile 
+public sealed class StartTile : TileType 
 {
 	public StartTile()
 	{
 		name = "Start";
 		tileID = 2;
 		meshIndex = 1;
-		posIndex = 1;
+		layer = 1;
 	}
 
 	public override bool CanAdd(BoardData data, Vector2i pos)

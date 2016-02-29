@@ -1,7 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
+
+public class PendingFunction
+{
+	public int entityID;
+	public int turnsRemaining;
+	public Data data;
+	public UnityAction<Data> function;
+
+	public PendingFunction(int entityID, int turns, Data data, UnityAction<Data> function)
+	{
+		this.entityID = entityID;
+		this.turnsRemaining = turns;
+		this.data = data;
+		this.function = function;
+	}
+}
 
 public sealed class PlayerManager : MonoBehaviour, IUpdatable
 {
@@ -16,6 +33,8 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 	private int lastTurn = -1;
 
 	private Entity currentEntity;
+
+	private List<PendingFunction> pendingFunctions = new List<PendingFunction>();
 
 	public Entity CurrentEntity 
 	{
@@ -33,6 +52,12 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 		enemySprite = Resources.Load<Sprite>("Sprites/Enemy");
 
 		EventManager.StartListening("PlayPressed", PlayPressedHandler);
+	}
+
+	private void StateChangedHandler(int state)
+	{
+		if ((GameState)state == GameState.Editing)
+			pendingFunctions.Clear();
 	}
 
 	private Entity CreateEntity(string name, System.Type type, Sprite sprite, int ID)
@@ -108,9 +133,33 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 		}
 	}
 
+	public void WaitForTurns(int entityID, int turns, Data data, UnityAction<Data> function)
+	{
+		pendingFunctions.Add(new PendingFunction(entityID, turns, data, function));
+	}
+
+	private void ProcessPendingList(int entityID)
+	{
+		for (int i = pendingFunctions.Count - 1; i >= 0; i--)
+		{
+			PendingFunction pF = pendingFunctions[i];
+
+			if (pF.entityID == entityID)
+			{
+				pF.turnsRemaining--;
+
+				if (pF.turnsRemaining == 0)
+				{
+					pF.function(pF.data);
+					pendingFunctions.RemoveAt(i);
+				}
+			}
+		}
+	}
+
 	public void NextTurn(int forcedTurn = -1)
 	{
-		if (lastTurn != -1) EventManager.TriggerEvent("NewTurn", entityList[lastTurn].EntityID);
+		if (lastTurn != -1) ProcessPendingList(entityList[lastTurn].EntityID);
 
 		int turnIndex = forcedTurn == -1 ? (lastTurn + 1) % entityList.Count : forcedTurn;
 		lastTurn = turnIndex;

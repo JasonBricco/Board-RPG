@@ -3,9 +3,7 @@ using System;
 
 public class IfFunction : Function 
 {
-	public IfFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public IfFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

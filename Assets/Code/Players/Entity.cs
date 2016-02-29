@@ -2,24 +2,47 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public delegate int DiceMod();
+
 public class Entity : MonoBehaviour
 {
 	protected int entityID; 
-	public int EntityID { get { return entityID; } }
 
 	protected BoardManager boardManager;
 	protected PlayerManager playerManager;
 
-	private float speed = 5.0f;
+	private float speed = 160.0f;
 
+	protected bool skipTurn = false;
 	private bool isFlipped = false;
-	public bool IsFlipped { get { return isFlipped;  } }
 
 	protected Vector2i lastDirection = Vector2i.zero;
 	protected List<Vector2i> possibleMoves = new List<Vector2i>();
 	protected Queue<Vector2i> forcedDirections = new Queue<Vector2i>();
 
 	protected bool beingDeleted = false;
+
+	private DiceMod diceMod = null;
+
+	public Vector2 Position
+	{
+		get { return transform.position; }
+	}
+
+	public int EntityID 
+	{ 
+		get { return entityID; } 
+	}
+
+	public bool IsFlipped 
+	{ 
+		get { return isFlipped; } 
+	}
+
+	public PlayerManager PlayerManager
+	{
+		get { return playerManager; }
+	}
 
 	public int RemainingMoves { get; set; }
 	public bool Wait { get; set; }
@@ -31,12 +54,23 @@ public class Entity : MonoBehaviour
 		this.playerManager = playerManager;
 	}
 
-	public virtual void BeginTurn()
+	public virtual void BeginTurn() {}
+
+	public void SkipNextTurn()
 	{
+		skipTurn = true;
 	}
 
-	protected int GetDieRoll()
+	public void SetDiceMod(DiceMod modFunc)
 	{
+		diceMod = modFunc;
+	}
+
+	public int GetDieRoll()
+	{
+		if (diceMod != null)
+			return diceMod.Invoke();
+		
 		if (RemainingMoves == 0)
 			return Random.Range(1, 7);
 
@@ -45,7 +79,7 @@ public class Entity : MonoBehaviour
 
 	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)
 	{
-		return (current + (direction * Tile.Size)).ToVector3();
+		return (current + (direction * TileType.Size)).ToVector3();
 	}
 
 	protected IEnumerator Move(Vector2i dir, Vector2i current)
@@ -67,12 +101,9 @@ public class Entity : MonoBehaviour
 
 	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)
 	{
-		float t = 0.0f;
-
-		while (t < 1.0f)
+		while ((transform.position - target).magnitude > 0.05f)
 		{
-			transform.position = Vector3.Lerp(current, target, t);
-			t += Time.deltaTime * speed;
+			transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * speed);
 			yield return null;
 		}
 
@@ -82,26 +113,34 @@ public class Entity : MonoBehaviour
 	protected void TriggerTileFunction()
 	{
 		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
-		boardManager.GetTile(0, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
-		boardManager.GetTile(1, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTile(0, tPos.x, tPos.y).Type.OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTile(1, tPos.x, tPos.y).Type.OnEnter(tPos.x, tPos.y, this);
 	}
 
-	public void SetTo(Vector3 position)
+	public void SetTo(Vector3 wPos)
 	{
 		lastDirection = Vector2i.zero;
-		transform.position = position;
+		transform.position = wPos;
+	}
+
+	public IEnumerator SlideTo(Vector2i tPos)
+	{
+		Vector3 wPos = Utils.WorldFromTilePos(tPos);
+		yield return StartCoroutine(MoveToPosition(transform.position, wPos));
+		TriggerTileFunction();
 	}
 
 	public void Flip()
 	{
 		isFlipped = !isFlipped;
-		lastDirection = -lastDirection;
+		forcedDirections.Clear();
+		forcedDirections.Enqueue(lastDirection);
 	}
 
 	protected bool GetMoveDirection(Vector2i current, out Vector2i dir)
 	{
-		current.x >>= Tile.SizeBits;
-		current.y >>= Tile.SizeBits;
+		current.x >>= TileType.SizeBits;
+		current.y >>= TileType.SizeBits;
 
 		possibleMoves.Clear();
 

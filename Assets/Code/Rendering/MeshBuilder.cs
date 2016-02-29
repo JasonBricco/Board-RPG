@@ -3,21 +3,24 @@ using System.Collections.Generic;
 
 public sealed class MeshBuilder
 {
-	public void BuildSquare(byte meshIndex, int tX, int tY, MeshData meshData, bool overlay)
+	public void BuildSquare(Tile tile, int tX, int tY, MeshData meshData)
 	{
+		TileType type = tile.Type;
+		int meshIndex = type.MeshIndex;
+
 		AddSquareIndices(meshIndex, meshData);
 
-		float z = overlay ? 1.0f : 2.0f;
+		float z = type.Layer == 1 ? 1.0f : 2.0f;
 
-		meshData.AddVertex(meshIndex, new Vector3(tX + Tile.HalfSize, tY - Tile.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(tX + Tile.HalfSize, tY + Tile.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(tX - Tile.HalfSize, tY + Tile.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(tX - Tile.HalfSize, tY - Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX + TileType.HalfSize, tY - TileType.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX + TileType.HalfSize, tY + TileType.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX - TileType.HalfSize, tY + TileType.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX - TileType.HalfSize, tY - TileType.HalfSize, z));
 
-		AddSquareUVs(meshIndex, meshData);
+		type.SetUVs(tile, meshData);
 	}
 
-	private void AddSquareIndices(byte index, MeshData data)
+	private void AddSquareIndices(int index, MeshData data)
 	{
 		List<int> indices = data.GetIndices(index);
 		int offset = data.GetOffset(index);
@@ -29,13 +32,5 @@ public sealed class MeshBuilder
 		indices.Add(offset + 3);
 		indices.Add(offset + 2);
 		indices.Add(offset + 0);
-	}
-
-	private void AddSquareUVs(byte index, MeshData data)
-	{
-		data.AddUV(index, new Vector2(1.0f, 0.0f));
-		data.AddUV(index, new Vector2(1.0f, 1.0f));
-		data.AddUV(index, new Vector2(0.0f, 1.0f));
-		data.AddUV(index, new Vector2(0.0f, 0.0f));
 	}
 }

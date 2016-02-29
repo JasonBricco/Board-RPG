@@ -1,46 +1,36 @@
 ﻿using UnityEngine;
+using System;
 
-public class Tile  
+[Serializable]
+public struct Tile
 {
-	public const int SizeBits = 5;
-	public const int Size = 1 << SizeBits;
-	public const int HalfSize = Size / 2;
+	[SerializeField] private ushort tileID;
+	[SerializeField] private ushort data;
 
-	protected static MeshBuilder meshBuilder = new MeshBuilder();
-
-	protected string name = "Unassigned";
-	protected ushort tileID = 0;
-	protected byte meshIndex = 0;
-	protected int posIndex = 0;
-
-	public string Name { get { return name; } }
-	public ushort ID { get { return tileID; } }
-	public byte MeshIndex { get { return meshIndex; } }
-	public int PosIndex { get { return posIndex; } }
-
-	public virtual void Build(int tX, int tY, MeshData data, bool overlay)
+	public Tile(ushort ID)
 	{
-		meshBuilder.BuildSquare(meshIndex, tX, tY, data, overlay);
+		this.tileID = ID;
+		this.data = 0;
 	}
 
-	public virtual bool CanAdd(BoardData data, Vector2i pos)
+	public Tile(ushort ID, ushort data)
 	{
-		return true;
+		this.tileID = ID;
+		this.data = data;
 	}
 
-	public virtual void OnAdded(BoardData data, Vector2i pos)
+	public ushort ID
 	{
+		get { return tileID; }
 	}
 
-	public virtual void OnDeleted(BoardData data, Vector2i pos)
+	public ushort Data
 	{
+		get { return data; }
 	}
 
-	public virtual void OnFunction()
+	public TileType Type
 	{
-	}
-
-	public virtual void OnEnter(int tX, int tY, Entity entity)
-	{
+		get { return TileStore.GetTileByID(ID); }
 	}
 }

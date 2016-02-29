@@ -17,6 +17,8 @@ public sealed class CommandProcessor : MonoBehaviour
 	private CodeEditor editorField;
 	private bool editorOpen = false;
 
+	private Vector2i currentPos;
+
 	private void Awake()
 	{
 		EventManager.StartListening("SaveCode", SaveCode);
@@ -38,18 +40,20 @@ public sealed class CommandProcessor : MonoBehaviour
 		return String.Empty;
 	}
 
-	public void LoadEditor()
+	public void LoadEditor(Vector2i pos)
 	{
+		currentPos = pos;
+
 		codeEditor.SetActive(true);
 		editorOpen = true;
 	
-		string data = LoadCommands(boardEditor.LastFunctionPos());
+		string data = LoadCommands(pos);
 		editorField.Load(data);
 	}
 
 	private void SaveCode(int data)
 	{
-		CreateTriggerData(boardEditor.LastFunctionPos(), editorField.text);
+		CreateTriggerData(currentPos, editorField.text);
 		editorField.text = String.Empty;
 		codeEditor.SetActive(false);
 		editorOpen = false;

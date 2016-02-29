@@ -3,9 +3,7 @@ using System;
 
 public sealed class TeleportFunction : Function
 {
-	public TeleportFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public TeleportFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -18,7 +16,7 @@ public sealed class TeleportFunction : Function
 		if (!GetInteger(args[2], out x)) return;
 		if (!GetInteger(args[3], out y)) return;
 
-		Tile tile = boardManager.GetTileSafe(0, x, y);
+		Tile tile = Engine.BoardManager.GetTileSafe(0, x, y);
 
 		if (tile.ID == 0) 
 		{
@@ -26,8 +24,8 @@ public sealed class TeleportFunction : Function
 			return;
 		}
 
-		x *= Tile.Size;
-		y *= Tile.Size;
+		x *= TileType.Size;
+		y *= TileType.Size;
 
 		if (TryGetEntity(entityID, entity)) entity.SetTo(new Vector3(x, y));
 	}

@@ -1,34 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
 
 public enum CameraMode { Free, Follow }
 
 [RequireComponent(typeof(Camera))]
 public sealed class CameraControl : MonoBehaviour
 {
-	private PlayerManager playerManager;
 	private GameObject cameraToggle;
 
 	private Transform player;
-	private float speed = 10.0f * Tile.Size;
+	private float speed = 10.0f * TileType.Size;
 	private float minX, maxX, minZ, maxZ;
-
-	private Vector3 velocity = Vector3.zero;
 
 	private CameraMode mode = CameraMode.Free;
 
 	private void Start()
 	{
-		playerManager = Engine.Instance.GetComponent<PlayerManager>();
-
 		float vertical = Camera.main.orthographicSize;
 		float horizontal = vertical * Screen.width / Screen.height;
 
-		minX = horizontal - Tile.HalfSize;
-		maxX = (BoardManager.Size * Tile.Size) - horizontal - Tile.HalfSize;
-		minZ = vertical - Tile.HalfSize;
-		maxZ = (BoardManager.Size * Tile.Size) - vertical - Tile.HalfSize;
+		minX = horizontal - TileType.HalfSize;
+		maxX = (BoardManager.Size * TileType.Size) - horizontal - TileType.HalfSize;
+		minZ = vertical - TileType.HalfSize;
+		maxZ = (BoardManager.Size * TileType.Size) - vertical - TileType.HalfSize;
 
 		cameraToggle = UIStore.GetGraphic("CameraToggle");
 
@@ -70,8 +64,8 @@ public sealed class CameraControl : MonoBehaviour
 	{
 		if (StateManager.CurrentState == GameState.Window) return;
 
-		if (mode == CameraMode.Follow)
-			transform.SetXY(Vector3.SmoothDamp(transform.position, playerManager.CurrentEntity.transform.position, ref velocity, 0.5f));
+		if (mode == CameraMode.Follow)	
+			transform.SetXY(Vector3.Lerp(transform.position, Engine.PlayerManager.CurrentEntity.Position, Time.deltaTime * 5.0f));
 		else
 		{
 			float x = Input.GetAxis("Horizontal");

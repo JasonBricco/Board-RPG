@@ -2,9 +2,7 @@
 
 public class FlipFunction : Function
 {
-	public FlipFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public FlipFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

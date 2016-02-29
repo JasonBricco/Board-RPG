@@ -29,21 +29,6 @@ public class Function
 
 	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
 
-	protected PlayerManager playerManager
-	{
-		get { return Engine.Instance.GetComponent<PlayerManager>(); }
-	}
-
-	protected BoardManager boardManager
-	{
-		get { return Engine.Instance.GetComponent<BoardManager>(); }
-	}
-
-	protected BoardEditor boardEditor
-	{
-		get { return Engine.Instance.GetComponent<BoardEditor>(); }
-	}
-
 	public Function(FunctionLibrary library)
 	{
 		this.library = library;
@@ -115,7 +100,7 @@ public class Function
 
 	protected bool TryGetEntity(int entityID, Entity entity)
 	{
-		entity = playerManager.GetEntity(entityID);
+		entity = Engine.PlayerManager.GetEntity(entityID);
 
 		if (entity == null)
 		{

@@ -3,9 +3,7 @@ using System;
 
 public sealed class SetTileFunction : Function
 {
-	public SetTileFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public SetTileFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -16,7 +14,7 @@ public sealed class SetTileFunction : Function
 		if (!GetInteger(args[1], out x)) return;
 		if (!GetInteger(args[2], out y)) return;
 
-		Tile tile = TileStore.GetTileByName(args[3]);
+		TileType tile = TileStore.GetTileByName(args[3]);
 
 		if (tile == null)
 		{
@@ -25,6 +23,6 @@ public sealed class SetTileFunction : Function
 		}
 
 		Vector2i pos = new Vector2i(x, y);
-		boardEditor.SetSingleTile(pos, tile);
+		Engine.BoardEditor.SetSingleTile(pos, new Tile(tile.ID));
 	}
 }

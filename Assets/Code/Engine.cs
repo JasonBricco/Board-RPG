@@ -5,16 +5,53 @@ public delegate void Method();
 
 public sealed class Engine : MonoBehaviour
 {
-	[SerializeField] private CameraControl camControl;
-
 	private static List<IUpdatable> updateList = new List<IUpdatable>();
 
-	private static GameObject instance;
-	public static GameObject Instance { get { return instance; } }
+	private static bool quitting = false;
+
+	public static bool IsQuitting
+	{
+		get { return quitting; }
+	}
+
+	private static BoardManager boardManager;
+	private static PlayerManager playerManager;
+	private static BoardEditor boardEditor;
+	private static CardLibrary cardLibrary;
+	private static CommandProcessor commandProcessor;
+
+	public static BoardManager BoardManager
+	{
+		get { return boardManager; }
+	}
+
+	public static PlayerManager PlayerManager
+	{
+		get { return playerManager; }
+	}
+
+	public static BoardEditor BoardEditor
+	{
+		get { return boardEditor; }
+	}
+
+	public static CardLibrary CardLibrary
+	{
+		get { return cardLibrary; }
+	}
+
+	public static CommandProcessor CommandProcessor
+	{
+		get { return commandProcessor; }
+	}
 
 	private void Awake()
 	{
-		instance = gameObject;
+		boardManager = GetComponent<BoardManager>();
+		playerManager = GetComponent<PlayerManager>();
+		boardEditor = GetComponent<BoardEditor>();
+		cardLibrary = GetComponent<CardLibrary>();
+		commandProcessor = GetComponent<CommandProcessor>();
 	
 		StateManager.ChangeState(GameState.Editing);
 		EventManager.StartListening("ExitPressed", ExitPressedHandler);
@@ -44,6 +81,7 @@ public sealed class Engine : MonoBehaviour
 
 	private void OnApplicationQuit()
 	{
+		quitting = true;
 		EventManager.TriggerEvent("Quit");
 	}
 }

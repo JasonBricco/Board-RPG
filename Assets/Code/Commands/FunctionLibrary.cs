@@ -20,6 +20,8 @@ public sealed class FunctionLibrary : MonoBehaviour
 		functions.Add("If", new IfFunction(this));
 		functions.Add("TeleportInArea", new TeleportInAreaFunction(this));
 		functions.Add("Repeat", new RepeatFunction(this));
+		functions.Add("Swap", new SwapFunction(this));
+		functions.Add("Skip", new SkipFunction(this));
 	}
 
 	public Function GetFunction(string name)

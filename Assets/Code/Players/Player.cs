@@ -28,8 +28,16 @@ public sealed class Player : Entity
 
 	public override void BeginTurn()
 	{
-		if (!beingDeleted)
-			actionPanel.SetActive(true);
+		if (skipTurn) 
+		{
+			skipTurn = false;
+			playerManager.NextTurn();
+		}
+		else
+		{
+			if (!beingDeleted)
+				actionPanel.SetActive(true);
+		}
 	}
 
 	private void MoveHandler(int data)

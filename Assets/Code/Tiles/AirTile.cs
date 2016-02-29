@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public sealed class AirTile : Tile 
+public sealed class AirTile : TileType 
 {
 	public AirTile()
 	{

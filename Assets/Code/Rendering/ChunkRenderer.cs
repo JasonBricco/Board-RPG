@@ -2,7 +2,7 @@
 
 public sealed class ChunkRenderer : MonoBehaviour, IUpdatable
 {
-	private const int WToXShift = Chunk.SizeBits + Tile.SizeBits;
+	private const int WToXShift = Chunk.SizeBits + TileType.SizeBits;
 
 	[SerializeField] private BoardManager boardManager;
 

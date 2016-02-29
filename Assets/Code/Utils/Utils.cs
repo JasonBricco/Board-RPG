@@ -9,7 +9,7 @@ public static class Utils
 
 	public static Vector3 WorldFromTilePos(Vector2i tPos)
 	{
-		return new Vector3(tPos.x * Tile.Size, tPos.y * Tile.Size);
+		return new Vector3(tPos.x * TileType.Size, tPos.y * TileType.Size);
 	}
 
 	public static Vector3 WorldFromChunkPos(Vector2i cPos)
@@ -19,7 +19,7 @@ public static class Utils
 
 	public static Vector2i TileFromWorldPos(Vector3 wPos)
 	{
-		return new Vector2i((int)wPos.x >> Tile.SizeBits, (int)wPos.y >> Tile.SizeBits);
+		return new Vector2i((int)wPos.x >> TileType.SizeBits, (int)wPos.y >> TileType.SizeBits);
 	}
 }
 		

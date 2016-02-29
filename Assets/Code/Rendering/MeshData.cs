@@ -21,22 +21,22 @@ public class MeshData
 		}
 	}
 
-	public void AddVertex(byte index, Vector3 vertex) 
+	public void AddVertex(int index, Vector3 vertex) 
 	{
 		vertices[index].Add(vertex);
 	}
 
-	public void AddUV(byte index, Vector2 uv)
+	public void AddUV(int index, Vector2 uv)
 	{
 		this.uvs[index].Add(uv);
 	}
 
-	public List<int> GetIndices(byte index)
+	public List<int> GetIndices(int index)
 	{
 		return indices[index];
 	}
 
-	public int GetOffset(byte index)
+	public int GetOffset(int index)
 	{
 		return vertices[index].Count;
 	}

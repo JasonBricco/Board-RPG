@@ -2,9 +2,7 @@
 
 public sealed class SetMovesFunction : Function
 {
-	public SetMovesFunction(FunctionLibrary library) : base(library)
-	{
-	}
+	public SetMovesFunction(FunctionLibrary library) : base(library) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

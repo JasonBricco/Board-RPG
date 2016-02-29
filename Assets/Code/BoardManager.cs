@@ -51,21 +51,21 @@ public sealed class BoardManager : MonoBehaviour
 		return boardData;
 	}
 
-	public Tile GetTileSafe(int index, int tX, int tY)
+	public Tile GetTileSafe(int layer, int tX, int tY)
 	{
-		if (!InTileBounds(tX, tY)) return TileStore.Air;
-		return GetTile(index, tX, tY);
+		if (!InTileBounds(tX, tY)) return new Tile(0);
+		return GetTile(layer, tX, tY);
 	}
 
-	public Tile GetTile(int index, int tX, int tY)
+	public Tile GetTile(int layer, int tX, int tY)
 	{
 		Chunk chunk = GetChunk(tX, tY);
-		return chunk == null ? TileStore.Air : chunk.GetTile(index, tX & Chunk.Size - 1, tY & Chunk.Size - 1);
+		return chunk == null ? Tiles.Air : chunk.GetTile(layer, tX & Chunk.Size - 1, tY & Chunk.Size - 1);
 	}
 
 	public void SetTile(Vector2i tPos, Tile tile)
 	{
-		tile.OnAdded(boardData, tPos);
+		tile.Type.OnAdded(boardData, tPos);
 		GetChunkSafe(tPos.x, tPos.y).SetTile(tPos.x & Chunk.Size - 1, tPos.y & Chunk.Size - 1, tile);
 	}
 
@@ -183,7 +183,7 @@ public sealed class BoardManager : MonoBehaviour
 			{
 				int pos = boardData.savedChunks[i];
 				int cX = pos & (BoardManager.WidthInChunks - 1);
-				int cY = (pos >> Tile.SizeBits) & (BoardManager.WidthInChunks - 1);
+				int cY = (pos >> TileType.SizeBits) & (BoardManager.WidthInChunks - 1);
 
 				Chunk chunk = new Chunk(cX, cY, this);
 				chunks[cX, cY] = chunk;

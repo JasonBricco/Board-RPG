@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 
-[System.Serializable]
+[Serializable]
 public class BoardData : ISerializationCallbackReceiver
 {
 	public List<int> savedChunks = new List<int>();
@@ -38,44 +39,9 @@ public class BoardData : ISerializationCallbackReceiver
 	}
 }
 
-[System.Serializable]
+[Serializable]
 public class ChunkData
 {
-	public List<int> runs = new List<int>();
-	public List<ushort> tiles = new List<ushort>();
-
-	public List<int> overlayRuns = new List<int>();
-	public List<ushort> overlayTiles = new List<ushort>();
-
-	public void AddData(int count, ushort data, int index)
-	{
-		if (index == 0) 
-		{
-			runs.Add(count);
-			tiles.Add(data);
-		}
-		else
-		{
-			overlayRuns.Add(count);
-			overlayTiles.Add(data);
-		}
-	}
-
-	public List<int> GetRuns(int index)
-	{
-		return index == 0 ? runs : overlayRuns;
-	}
-
-	public List<ushort> GetTiles(int index)
-	{
-		return index == 0 ? tiles : overlayTiles;
-	}
-
-	public void Clear()
-	{
-		runs.Clear();
-		tiles.Clear();
-		overlayRuns.Clear();
-		overlayTiles.Clear();
-	}
+	public Tile[] tiles;
+	public Tile[] overlays;
 }

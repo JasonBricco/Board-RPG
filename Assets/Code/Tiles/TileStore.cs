@@ -1,45 +1,52 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public sealed class TileStore 
+public static class TileStore
 {
-	public static readonly Tile Air = new AirTile();
-	public static readonly Tile Grass = new GrassTile();
-	public static readonly Tile Start = new StartTile();
-	public static readonly Tile Stone = new StoneTile();
-	public static readonly Tile Sand = new SandTile();
-	public static readonly Tile Trigger = new TriggerTile();
-	public static readonly Tile LandTrigger = new LandTriggerTile();
-	public static readonly Tile Card = new CardTile();
+	private static readonly List<TileType> tilesList = new List<TileType>();
+		
+	private static readonly Dictionary<string, TileType> tilesByName = new Dictionary<string, TileType>();
 
-	private static readonly List<Tile> tilesList = new List<Tile>()
+	static TileStore()
 	{
-		Air, Grass, Start, Stone, Sand, Trigger, LandTrigger, Card
-	};
+		tilesList.Add(new AirTile());
+		tilesList.Add(new BasicTile(1, "Grass", 0));
+		tilesList.Add(new StartTile());
+		tilesList.Add(new BasicTile(3, "Stone", 2));
+		tilesList.Add(new BasicTile(4, "Sand", 3));
+		tilesList.Add(new TriggerTile());
+		tilesList.Add(new LandTriggerTile());
+		tilesList.Add(new CardTile());
+		tilesList.Add(new ArrowTile());
 
-	private static readonly Dictionary<string, Tile> tilesByName = new Dictionary<string, Tile>()
-	{
-		{ "Air", Air },
-		{ "Grass", Grass },
-		{ "Start", Start },
-		{ "Stone", Stone },
-		{ "Sand", Sand },
-		{ "Trigger", Trigger },
-		{ "LandTrigger", LandTrigger },
-		{ "Card", Card }
-	};
+		for (int i = 0; i < tilesList.Count; i++)
+			tilesByName.Add(tilesList[i].Name, tilesList[i]);
+	}
 
 	public static int Count { get { return tilesByName.Count; } }
 
-	public static Tile GetTileByName(string name)
+	public static TileType GetTileByName(string name)
 	{
-		Tile tile;
+		TileType tile;
 		bool success = tilesByName.TryGetValue(name, out tile);
 		return success ? tile : null;
 	}
 
-	public static Tile GetTileByID(int ID)
+	public static TileType GetTileByID(int ID)
 	{
 		return tilesList[ID];
 	}
+}
+
+public sealed class Tiles
+{
+	public static readonly Tile Air = new Tile(0);
+	public static readonly Tile Grass = new Tile(1);
+	public static readonly Tile Start = new Tile(2);
+	public static readonly Tile Stone = new Tile(3);
+	public static readonly Tile Sand = new Tile(4);
+	public static readonly Tile Trigger = new Tile(5);
+	public static readonly Tile LandTrigger = new Tile(6);
+	public static readonly Tile Card = new Tile(7);
+	public static readonly Tile Arrow = new Tile(8);
 }

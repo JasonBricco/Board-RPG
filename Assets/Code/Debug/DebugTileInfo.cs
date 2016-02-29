@@ -3,17 +3,8 @@ using UnityEngine.UI;
 
 public class DebugTileInfo : MonoBehaviour 
 {
-	private BoardEditor boardEditor;
-	private BoardManager boardManager;
-
 	[SerializeField] private Text nameLabel;
 	[SerializeField] private Text posLabel;
-
-	private void Start()
-	{
-		boardEditor = Engine.Instance.GetComponent<BoardEditor>();
-		boardManager = Engine.Instance.GetComponent<BoardManager>();
-	}
 
 	private void StateChangedHandler(int state)
 	{
@@ -36,10 +27,10 @@ public class DebugTileInfo : MonoBehaviour
 
 		if (StateManager.CurrentState != GameState.Editing) return;
 
-		Vector2i pos = boardEditor.GetCursorTilePos();
-		Tile tile = boardManager.GetTileSafe(0, pos.x, pos.y);
+		Vector2i pos = Engine.BoardEditor.GetCursorTilePos();
+		Tile tile = Engine.BoardManager.GetTileSafe(0, pos.x, pos.y);
 
-		nameLabel.text = "Tile: " + tile.Name;
+		nameLabel.text = "Tile: " + tile.Type.Name;
 		posLabel.text = "Position: " + pos.x + ", " + pos.y;
 	}
 
