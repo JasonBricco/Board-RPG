@@ -2,10 +2,10 @@
 
 public class ArrowTile : TileType 
 {
-	public ArrowTile()
+	public ArrowTile(ushort ID, int mesh)
 	{
 		name = "Arrow";
-		tileID = 8;
+		tileID = ID;
 		meshIndex = 7;
 		layer = 1;
 	}
@@ -55,17 +55,25 @@ public class ArrowTile : TileType
 			Vector2i next = current + dir;
 			Tile nextTile = manager.GetTileSafe(0, next.x, next.y);
 
-			if (nextTile.ID == 0)
+			if (nextTile.Equals(Tiles.Air))
 			{
+				entity.RemainingMoves = 0;
 				end = current;
+				break;
+			}
+			else if (nextTile.Equals(Tiles.Stopper))
+			{
+				entity.RemainingMoves = 0;
+				end = next;
 				break;
 			}
 			else
 				current = next;
 		}
 			
+
 		entity.Wait = true;
-		entity.StartCoroutine(entity.SlideTo(end));
+		entity.StartCoroutine(entity.SlideTo(end, dir));
 	}
 
 	public override void SetUVs(Tile tile, MeshData data)

@@ -42,6 +42,6 @@ public class BoardData : ISerializationCallbackReceiver
 [Serializable]
 public class ChunkData
 {
-	public Tile[] tiles;
-	public Tile[] overlays;
+	public List<ushort> layer0 = new List<ushort>();
+	public List<ushort> layer1 = new List<ushort>();
 }

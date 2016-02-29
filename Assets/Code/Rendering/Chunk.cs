@@ -111,26 +111,85 @@ public sealed class Chunk
 			GameObject.Destroy(meshes[i]);
 	}
 
+	public void Load(string data)
+	{
+		ChunkData loadedData = JsonUtility.FromJson<ChunkData>(data);
+
+		ReadData(loadedData.layer0, tiles[0]);
+		ReadData(loadedData.layer1, tiles[1]);
+
+		BuildMesh();
+	}
+
 	public void Save(BoardData data)
 	{
 		int pos = (chunkPos.y * BoardManager.WidthInChunks) + chunkPos.x;
 		data.savedChunks.Add(pos);
 
 		ChunkData saveData = new ChunkData();
-		saveData.tiles = tiles[0];
-		saveData.overlays = tiles[1];
+
+		WriteData(tiles[0], saveData.layer0);
+		WriteData(tiles[1], saveData.layer1);
 
 		string chunkData = JsonUtility.ToJson(saveData);
 		data.chunkData.Add(chunkData);
 	}
 
-	public void Load(string data)
+	private void WriteData(Tile[] source, List<ushort> destination)
 	{
-		ChunkData loadedData = JsonUtility.FromJson<ChunkData>(data);
+		ushort airCount = 0;
 
-		tiles[0] = loadedData.tiles;
-		tiles[1] = loadedData.overlays;
+		for (int i = 0; i < source.Length; i++)
+		{
+			Tile nextTile = source[i];
 
-		BuildMesh();
+			if (nextTile.ID != 0)
+			{
+				if (airCount > 0)
+				{
+					destination.Add(0);
+					destination.Add(airCount);
+					airCount = 0;
+				}
+					
+				destination.Add(nextTile.ID);
+				destination.Add(nextTile.Data);
+			}
+			else
+			{
+				airCount++;
+
+				if (i == source.Length - 1)
+				{
+					destination.Add(0);
+					destination.Add(airCount);
+				}
+			}
+		}
+	}
+
+	private void ReadData(List<ushort> source, Tile[] destination)
+	{
+		int pos = 0;
+
+		for (int i = 0; i <= source.Count - 2; i += 2)
+		{
+			ushort ID = source[i];
+			ushort data = source[i + 1];
+
+			if (ID == 0)
+			{
+				for (int j = 0; j < data; j++)
+				{
+					destination[pos] = Tiles.Air;
+					pos++;
+				}
+			}
+			else
+			{
+				destination[pos] = new Tile(ID, data);
+				pos++;
+			}
+		}
 	}
 }

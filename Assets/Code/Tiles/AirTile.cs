@@ -2,9 +2,9 @@
 
 public sealed class AirTile : TileType 
 {
-	public AirTile()
+	public AirTile(ushort ID)
 	{
 		name = "Air";
-		tileID = 0;
+		tileID = ID;
 	}
 }

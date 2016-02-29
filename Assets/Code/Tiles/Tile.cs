@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using System;
 
-[Serializable]
-public struct Tile
+public struct Tile : IEquatable<Tile>
 {
-	[SerializeField] private ushort tileID;
-	[SerializeField] private ushort data;
+	private ushort tileID;
+	private ushort data;
 
 	public Tile(ushort ID)
 	{
@@ -32,5 +31,10 @@ public struct Tile
 	public TileType Type
 	{
 		get { return TileStore.GetTileByID(ID); }
+	}
+
+	public bool Equals(Tile other)
+	{
+		return other.ID == this.tileID;
 	}
 }

@@ -19,6 +19,7 @@ public sealed class BoardManager : MonoBehaviour
 	private void Start()
 	{
 		mainButtons = UIStore.GetGraphic("MainButtons");
+		ShowMainButtons();
 
  		EventManager.StartListening("Quit", SaveBoard);
 		EventManager.StartListening("ClearPressed", ClearBoard);
@@ -32,13 +33,19 @@ public sealed class BoardManager : MonoBehaviour
 		switch ((GameState)state)
 		{
 		case GameState.Editing:
-			mainButtons.SetActive(true);
+			ShowMainButtons();
 			break;
 
 		default:
 			mainButtons.SetActive(false);
 			break;
 		}
+	}
+
+	private void ShowMainButtons()
+	{
+		if (!mainButtons.activeSelf)
+			mainButtons.SetActive(true);
 	}
 
 	public Material GetMaterial(int index)

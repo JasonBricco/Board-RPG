@@ -64,11 +64,13 @@ public sealed class CardLibrary : MonoBehaviour
 	{
 		yield return new WaitForSeconds(2.0f);
 
+		currentImage.enabled = false;
+		entity.Wait = false;
+
 		if (StateManager.CurrentState == GameState.Playing)
 		{
-			currentImage.enabled = false;
-			card.RunFunction(entity);
-			entity.Wait = false;
+			if (entity != null)
+				card.RunFunction(entity);
 		}
 	}
 }

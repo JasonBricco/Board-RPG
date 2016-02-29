@@ -123,10 +123,11 @@ public class Entity : MonoBehaviour
 		transform.position = wPos;
 	}
 
-	public IEnumerator SlideTo(Vector2i tPos)
+	public IEnumerator SlideTo(Vector2i tPos, Vector2i dir)
 	{
 		Vector3 wPos = Utils.WorldFromTilePos(tPos);
 		yield return StartCoroutine(MoveToPosition(transform.position, wPos));
+		lastDirection = -dir;
 		TriggerTileFunction();
 	}
 

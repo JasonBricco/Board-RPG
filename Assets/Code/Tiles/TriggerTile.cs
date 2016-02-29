@@ -2,11 +2,11 @@
 
 public class TriggerTile : TileType 
 {
-	public TriggerTile()
+	public TriggerTile(ushort ID, int mesh)
 	{
 		name = "Trigger (F)";
-		tileID = 5;
-		meshIndex = 4;
+		tileID = ID;
+		meshIndex = mesh;
 		layer = 1;
 	}
 

@@ -2,11 +2,11 @@
 
 public class LandTriggerTile : TileType 
 {
-	public LandTriggerTile()
+	public LandTriggerTile(ushort ID, int mesh)
 	{
 		name = "Trigger (L)";
-		tileID = 6;
-		meshIndex = 5;
+		tileID = ID;
+		meshIndex = mesh;
 		layer = 1;
 	}
 

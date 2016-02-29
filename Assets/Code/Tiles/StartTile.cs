@@ -2,11 +2,11 @@
 
 public sealed class StartTile : TileType 
 {
-	public StartTile()
+	public StartTile(ushort ID, int mesh)
 	{
 		name = "Start";
-		tileID = 2;
-		meshIndex = 1;
+		tileID = ID;
+		meshIndex = mesh;
 		layer = 1;
 	}
 

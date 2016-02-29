@@ -2,11 +2,11 @@
 
 public class CardTile : TileType 
 {
-	public CardTile()
+	public CardTile(ushort ID, int mesh)
 	{
 		name = "Card";
-		tileID = 7;
-		meshIndex = 6;
+		tileID = ID;
+		meshIndex = mesh;
 		layer = 1;
 	}
 

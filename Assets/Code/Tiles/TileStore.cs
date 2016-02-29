@@ -9,15 +9,16 @@ public static class TileStore
 
 	static TileStore()
 	{
-		tilesList.Add(new AirTile());
-		tilesList.Add(new BasicTile(1, "Grass", 0));
-		tilesList.Add(new StartTile());
-		tilesList.Add(new BasicTile(3, "Stone", 2));
-		tilesList.Add(new BasicTile(4, "Sand", 3));
-		tilesList.Add(new TriggerTile());
-		tilesList.Add(new LandTriggerTile());
-		tilesList.Add(new CardTile());
-		tilesList.Add(new ArrowTile());
+		tilesList.Add(new AirTile(0));
+		tilesList.Add(new BasicTile(1, 0, "Grass"));
+		tilesList.Add(new StartTile(2, 1));
+		tilesList.Add(new BasicTile(3, 2, "Stone"));
+		tilesList.Add(new BasicTile(4, 3, "Sand"));
+		tilesList.Add(new TriggerTile(5, 4));
+		tilesList.Add(new LandTriggerTile(6, 5));
+		tilesList.Add(new CardTile(7, 6));
+		tilesList.Add(new ArrowTile(8, 7));
+		tilesList.Add(new BasicTile(9, 8, "Stopper"));
 
 		for (int i = 0; i < tilesList.Count; i++)
 			tilesByName.Add(tilesList[i].Name, tilesList[i]);
@@ -49,4 +50,5 @@ public sealed class Tiles
 	public static readonly Tile LandTrigger = new Tile(6);
 	public static readonly Tile Card = new Tile(7);
 	public static readonly Tile Arrow = new Tile(8);
+	public static readonly Tile Stopper = new Tile(9);
 }

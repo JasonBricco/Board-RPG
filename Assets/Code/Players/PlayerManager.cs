@@ -32,6 +32,9 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 
 	private int lastTurn = -1;
 
+	private float startTime = 0.0f;
+	private float exitDelay = 0.0f;
+
 	private Entity currentEntity;
 
 	private List<PendingFunction> pendingFunctions = new List<PendingFunction>();
@@ -83,6 +86,9 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 
 	private void PlayPressedHandler(int data)
 	{
+		startTime = Time.time;
+		exitDelay = startTime + 2.0f;
+
 		List<Vector2i> startTiles = boardManager.GetData().startTiles;
 
 		if (startTiles.Count == 0)
@@ -119,16 +125,21 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 
 	public void UpdateFrame()
 	{
-		if (Input.GetKeyDown(KeyCode.Escape))
+		startTime += Time.deltaTime;
+
+		if (startTime > exitDelay)
 		{
-			if (StateManager.CurrentState == GameState.Playing)
+			if (Input.GetKeyDown(KeyCode.Escape))
 			{
-				for (int i = 0; i < entityList.Count; i++)
-					entityList[i].Delete();
+				if (StateManager.CurrentState == GameState.Playing)
+				{
+					for (int i = 0; i < entityList.Count; i++)
+						entityList[i].Delete();
 
-				entityList.Clear();
+					entityList.Clear();
 
-				StateManager.ChangeState(GameState.Editing);
+					StateManager.ChangeState(GameState.Editing);
+				}
 			}
 		}
 	}
