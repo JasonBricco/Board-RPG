@@ -6,6 +6,11 @@ public class DebugTileInfo : MonoBehaviour
 	[SerializeField] private BoardManager boardManager;
 	[SerializeField] private Text posLabel;
 
+	private void Awake()
+	{
+		EventManager.StartListening("StateChanged", StateChangedHandler);
+	}
+
 	private void StateChangedHandler(int state)
 	{
 		switch ((GameState)state)
@@ -22,10 +27,10 @@ public class DebugTileInfo : MonoBehaviour
 
 	private void Update()
 	{
+		if (StateManager.CurrentState != GameState.Editing) return;
+
 		if (StateManager.CurrentState != GameState.Window && Input.GetKeyDown(KeyCode.Tab))
 			ToggleLabels();
-
-		if (StateManager.CurrentState != GameState.Editing) return;
 
 		Vector2i pos = boardManager.GetCursorTilePos();
 		posLabel.text = "Position: " + pos.x + ", " + pos.y;

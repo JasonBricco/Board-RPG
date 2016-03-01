@@ -51,6 +51,8 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 	private float startTime = 0.0f;
 	private float exitDelay = 0.0f;
 
+	private List<Vector2i> startPositions = new List<Vector2i>();
+
 	private Dictionary<string, Function> functions = new Dictionary<string, Function>();
 
 	public Entity CurrentEntity 
@@ -65,12 +67,12 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		Serializer.ListenForSave(SaveTiles);
 		Serializer.ListenForLoad(LoadTiles);
 
+		processor = GetComponent<CommandProcessor>();
+
 		CreateReticle();
 		CreateTiles();
 		CreateCards();
 		CreateFunctions();
-
-		processor = GetComponent<CommandProcessor>();
 	}
 
 	private void Start()
@@ -128,8 +130,9 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 						entityList[i].Delete();
 
 					entityList.Clear();
-
 					StateManager.ChangeState(GameState.Editing);
+					ClearBoard(0);
+					Serializer.Load();
 				}
 			}
 		}
@@ -262,9 +265,9 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		GetTileTypeSafe(1, tPos.x, tPos.y).OnFunction(tPos);
 	}
 
-	public List<Vector2i> GetStartPositions()
+	public void SetStartPositions()
 	{
-		List<Vector2i> positions = new List<Vector2i>();
+		startPositions.Clear();
 
 		for (int x = 0; x < chunks.GetLength(0); x++)
 		{
@@ -281,14 +284,32 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 							Tile tile = chunk.GetTile(1, cX, cY);
 
 							if (tile.Equals(Tiles.Start))
-								positions.Add(new Vector2i((x * Chunk.Size) + cX, (y * Chunk.Size) + cY));
+								startPositions.Add(new Vector2i((x * Chunk.Size) + cX, (y * Chunk.Size) + cY));
 						}
 					}
 				}
 			}
 		}
+	}
 
-		return positions;
+	private void CreateDefaultStartTile()
+	{
+		Vector2i midPos = new Vector2i(Size / 2, Size / 2);
+		Tile midTile = GetTile(0, midPos.x, midPos.y);
+
+		if (midTile.Equals(Tiles.Air))
+			SetTileFast(midPos, Tiles.Grass);
+
+		SetTileFast(midPos, Tiles.Start);
+		startPositions.Add(midPos);
+
+		FlagChunkForRebuild(midPos);
+		RebuildChunks();
+	}
+
+	public void RemoveStartTile(Vector2i pos)
+	{
+		startPositions.Remove(pos);
 	}
 
 	private Entity CreateEntity(string name, System.Type type, Sprite sprite, int ID)
@@ -312,37 +333,43 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		return entityList[entityID];
 	}
 
+	public void ValidateEntities()
+	{
+		for (int i = 0; i < entityList.Count; i++)
+		{
+			Entity entity = entityList[i];
+			Vector2i tPos = Utils.TileFromWorldPos(entity.Position);
+
+			if (GetTile(0, tPos.x, tPos.y).ID == 0)
+				SpawnEntity(entityList[i]);
+		}
+	}
+
+	public void SpawnEntity(Entity entity)
+	{
+		if (startPositions.Count == 0)
+			CreateDefaultStartTile();
+		
+		entity.SetTo(startPositions[Random.Range(0, startPositions.Count)]);
+	}
+
 	private void PlayPressedHandler(int data)
 	{
+		Serializer.Save();
+
 		startTime = Time.time;
 		exitDelay = startTime + 2.0f;
 
-		List<Vector2i> startTiles = GetStartPositions();
+		SetStartPositions();
 
-		if (startTiles.Count == 0)
-			return;
+		if (startPositions.Count == 0)
+			CreateDefaultStartTile();
 
 		entityList.Add(CreateEntity("Player", typeof(Player), playerSprite, 0));
 		entityList.Add(CreateEntity("Enemy", typeof(Enemy), enemySprite, 1));
 
-		int initialIndex = Random.Range(0, startTiles.Count);
-		Vector2i playerTile = startTiles[initialIndex];
-		Vector3 worldPos = Utils.WorldFromTilePos(playerTile);
-
-		entityList[0].SetTo(worldPos);
-
-		if (startTiles.Count == 1)
-			entityList[1].SetTo(worldPos);
-		else
-		{
-			int newIndex;
-
-			do { newIndex = Random.Range(0, startTiles.Count); }
-			while (newIndex == initialIndex);
-
-			Vector3 newPos = Utils.WorldFromTilePos(startTiles[newIndex]);
-			entityList[1].SetTo(new Vector3(newPos.x, newPos.y, 0.0f));
-		}
+		for (int i = 0; i < entityList.Count; i++)
+			SpawnEntity(entityList[i]);
 
 		int turnIndex = Random.Range(0, entityList.Count);
 		currentEntity = entityList[turnIndex];
@@ -672,7 +699,7 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 	{
 		tilesList.Add(new AirTile(0, this));
 		tilesList.Add(new BasicTile(1, 0, 0, "Grass", this));
-		tilesList.Add(new BasicTile(2, 1, 1, "Start", this));
+		tilesList.Add(new StartTile(2, 1, this));
 		tilesList.Add(new BasicTile(3, 2, 0, "Stone", this));
 		tilesList.Add(new BasicTile(4, 3, 0, "Sand", this));
 		tilesList.Add(new TriggerTile(5, 4, this, processor));
@@ -718,5 +745,6 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		functions.Add("Skip", new SkipFunction(this));
 		functions.Add("SetData", new SetDataFunction(this));
 		functions.Add("Direction", new DirectionFunction(this));
+		functions.Add("Respawn", new RespawnFunction(this));
 	}
 }

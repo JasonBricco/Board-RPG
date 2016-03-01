@@ -42,6 +42,8 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private void LoadCommands(BoardData data)
 	{
+		triggerData.Clear();
+
 		for (int i = 0; i < data.triggerKeys.Count; i++)
 			triggerData.Add(data.triggerKeys[i], data.triggerValues[i]);
 	}

@@ -56,6 +56,7 @@ public class Serializer : MonoBehaviour
 
 	private void OnApplicationQuit()
 	{
-		Save();
+		if (StateManager.CurrentState != GameState.Playing)
+			Save();
 	}
 }

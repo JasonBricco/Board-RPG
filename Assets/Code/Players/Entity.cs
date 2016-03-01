@@ -116,6 +116,11 @@ public class Entity : MonoBehaviour
 		transform.position = wPos;
 	}
 
+	public void SetTo(Vector2i tPos)
+	{
+		SetTo(Utils.WorldFromTilePos(tPos));
+	}
+
 	public IEnumerator SlideTo(Vector2i tPos, Vector2i dir)
 	{
 		Vector3 wPos = Utils.WorldFromTilePos(tPos);
@@ -144,11 +149,7 @@ public class Entity : MonoBehaviour
 
 			if (!direction.Equals(lastDirection))
 			{
-				Vector2i newPos = current + direction;
-
-				Tile tile = boardManager.GetTileSafe(0, newPos.x, newPos.y);
-
-				if (tile.ID != 0)
+				if (IsValidDirection(current, direction))
 					possibleMoves.Add(direction);
 			}
 		}
@@ -156,7 +157,8 @@ public class Entity : MonoBehaviour
 		switch (possibleMoves.Count)
 		{
 		case 0:
-			dir = lastDirection;
+			if (IsValidDirection(current, lastDirection)) dir = lastDirection;
+			else dir = Vector2i.zero;
 			return true;
 
 		case 1:
@@ -166,6 +168,13 @@ public class Entity : MonoBehaviour
 		default:
 			return HandleSplitPath(out dir);
 		}
+	}
+
+	private bool IsValidDirection(Vector2i current, Vector2i direction)
+	{
+		Vector2i newPos = current + direction;
+		Tile tile = boardManager.GetTileSafe(0, newPos.x, newPos.y);
+		return tile.ID != 0;
 	}
 
 	public virtual bool HandleSplitPath(out Vector2i dir)

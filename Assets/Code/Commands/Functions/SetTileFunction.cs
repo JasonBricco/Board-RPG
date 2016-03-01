@@ -30,5 +30,6 @@ public sealed class SetTileFunction : Function
 
 		Vector2i pos = new Vector2i(x, y);
 		boardManager.SetSingleTile(pos, new Tile(tile.ID));
+		boardManager.ValidateEntities();
 	}
 }

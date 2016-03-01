@@ -16,6 +16,11 @@ public sealed class SetSquareFunction : Function
 		if (!GetInteger(args[3], out endX)) return;
 		if (!GetInteger(args[4], out endY)) return;
 
+		startX = Mathf.Clamp(startX, 0, 255);
+		startY = Mathf.Clamp(startY, 0, 255);
+		endX = Mathf.Clamp(endX, 0, 255);
+		endY = Mathf.Clamp(endY, 0, 255);
+
 		TileType tile = boardManager.GetTileType(args[5]);
 
 		if (tile == null) 
@@ -51,7 +56,8 @@ public sealed class SetSquareFunction : Function
 
 		for (int y = startY + 1; y < endY; y++)
 			points.Add(new Vector2i(endX, y));
-
+		
 		boardManager.SetMultipleTiles(points, new Tile(tile.ID));
+		boardManager.ValidateEntities();
 	}
 }
