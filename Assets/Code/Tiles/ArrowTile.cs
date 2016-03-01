@@ -30,10 +30,6 @@ public class ArrowTile : TileType
 
 		switch (data)
 		{
-		case 0:
-			dir = Vector2i.up;
-			break;
-
 		case 1:
 			dir = Vector2i.right;
 			break;
@@ -45,30 +41,44 @@ public class ArrowTile : TileType
 		case 3: 
 			dir = Vector2i.left;
 			break;
+
+		default:
+			dir = Vector2i.up;
+			break;
 		}
 
 		Vector2i current = new Vector2i(tX, tY);
 		Vector2i end = Vector2i.zero;
 
+		int distance = 0;
+
 		while (true)
 		{
 			Vector2i next = current + dir;
 			Tile nextTile = manager.GetTileSafe(0, next.x, next.y);
+			Tile nextOverlay = manager.GetTileSafe(1, next.x, next.y);
 
 			if (nextTile.Equals(Tiles.Air))
 			{
 				entity.RemainingMoves = 0;
 				end = current;
+
+				if (distance == 0)
+					return;
+
 				break;
 			}
-			else if (nextTile.Equals(Tiles.Stopper))
+			else if (nextTile.Equals(Tiles.Stopper) || nextOverlay.Equals(Tiles.Arrow))
 			{
 				entity.RemainingMoves = 0;
 				end = next;
 				break;
 			}
 			else
+			{
 				current = next;
+				distance++;
+			}
 		}
 			
 
@@ -80,10 +90,6 @@ public class ArrowTile : TileType
 	{
 		switch (tile.Data)
 		{
-		case 0:
-			base.SetUVs(tile, data);
-			break;
-
 		case 1:
 			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));
 			data.AddUV(meshIndex, new Vector2(0.0f, 1.0f));
@@ -103,6 +109,10 @@ public class ArrowTile : TileType
 			data.AddUV(meshIndex, new Vector2(1.0f, 0.0f));
 			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));
 			data.AddUV(meshIndex, new Vector2(0.0f, 1.0f));
+			break;
+
+		default:
+			base.SetUVs(tile, data);
 			break;
 		}
 	}

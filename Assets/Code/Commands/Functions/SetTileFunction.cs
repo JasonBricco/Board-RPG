@@ -7,12 +7,18 @@ public sealed class SetTileFunction : Function
 
 	public override void Compute(string[] args, Entity entity)
 	{
-		if (!CheckArgCount(args, 4, "Usage: [SetTile: x, y, tile]")) return;
+		if (!CheckArgCount(args, 4, "Usage: [SetData: x, y, data]")) return;
 
 		int x, y;
 
 		if (!GetInteger(args[1], out x)) return;
 		if (!GetInteger(args[2], out y)) return;
+
+		if (!Engine.BoardManager.InTileBounds(x, y))
+		{
+			ErrorHandler.LogText("Command Error: tried to set a tile outside of the board.");
+			return;
+		}
 
 		TileType tile = TileStore.GetTileByName(args[3]);
 

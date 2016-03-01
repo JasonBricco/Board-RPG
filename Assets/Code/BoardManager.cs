@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
 
 public sealed class BoardManager : MonoBehaviour
 {
-	public const int Size = 512;
+	public const int Size = 256;
 	public const int WidthInChunks = Size / Chunk.Size;
 
 	[SerializeField] private Material[] materials;
@@ -14,18 +13,19 @@ public sealed class BoardManager : MonoBehaviour
 
 	private List<Chunk> chunksToRebuild = new List<Chunk>();
 
-	private BoardData boardData = new BoardData();
+	private void Awake()
+	{
+		Serializer.ListenForSave(SaveTiles);
+		Serializer.ListenForLoad(LoadTiles);
+	}
 
 	private void Start()
 	{
 		mainButtons = UIStore.GetGraphic("MainButtons");
 		ShowMainButtons();
 
- 		EventManager.StartListening("Quit", SaveBoard);
 		EventManager.StartListening("ClearPressed", ClearBoard);
 		EventManager.StartListening("StateChanged", StateChangedHandler);
-
-		LoadBoard();
 	}
 
 	private void StateChangedHandler(int state)
@@ -53,9 +53,33 @@ public sealed class BoardManager : MonoBehaviour
 		return materials[index];
 	}
 
-	public BoardData GetData()
+	public List<Vector2i> GetStartPositions()
 	{
-		return boardData;
+		List<Vector2i> positions = new List<Vector2i>();
+
+		for (int x = 0; x < chunks.GetLength(0); x++)
+		{
+			for (int y = 0; y < chunks.GetLength(0); y++)
+			{
+				Chunk chunk = chunks[x, y];
+
+				if (chunk != null)
+				{
+					for (int cX = 0; cX < Chunk.Size; cX++)
+					{
+						for (int cY = 0; cY < Chunk.Size; cY++)
+						{
+							Tile tile = chunk.GetTile(1, cX, cY);
+
+							if (tile.Equals(Tiles.Start))
+								positions.Add(new Vector2i((x * Chunk.Size) + cX, (y * Chunk.Size) + cY));
+						}
+					}
+				}
+			}
+		}
+
+		return positions;
 	}
 
 	public Tile GetTileSafe(int layer, int tX, int tY)
@@ -72,7 +96,7 @@ public sealed class BoardManager : MonoBehaviour
 
 	public void SetTile(Vector2i tPos, Tile tile)
 	{
-		tile.Type.OnAdded(boardData, tPos);
+		tile.Type.OnAdded(tPos);
 		GetChunkSafe(tPos.x, tPos.y).SetTile(tPos.x & Chunk.Size - 1, tPos.y & Chunk.Size - 1, tile);
 	}
 
@@ -94,7 +118,7 @@ public sealed class BoardManager : MonoBehaviour
 
 		if (chunk == null)
 		{
-			chunk = new Chunk(pos.x, pos.y, this);
+			chunk = new Chunk(pos.x, pos.y);
 			chunks[pos.x, pos.y] = chunk;
 		}
 
@@ -150,11 +174,10 @@ public sealed class BoardManager : MonoBehaviour
 			}
 		}
 
-		boardData.startTiles.Clear();
-		boardData.triggerData.Clear();
+		Engine.CommandProcessor.ClearAll();
 	}
 
-	private void SaveBoard(int data)
+	private void SaveTiles(BoardData data)
 	{
 		for (int x = 0; x < chunks.GetLength(0); x++)
 		{
@@ -163,42 +186,23 @@ public sealed class BoardManager : MonoBehaviour
 				Chunk chunk = chunks[x, y];
 
 				if (chunk != null)
-					chunk.Save(boardData);
+					chunk.Save(data);
 			}
 		}
-
-		FileStream stream = new FileStream(Application.persistentDataPath + "/Data.txt", FileMode.Create);
-		StreamWriter dataWriter = new StreamWriter(stream);
-
-		string json = JsonUtility.ToJson(boardData);
-		dataWriter.Write(json);
-		dataWriter.Close();
 	}
 
-	private void LoadBoard()
+	private void LoadTiles(BoardData data)
 	{
-		string path = Application.persistentDataPath + "/Data.txt";
-
-		if (File.Exists(path))
+		for (int i = 0; i < data.savedChunks.Count; i++)
 		{
-			StreamReader reader = new StreamReader(path);
-			string json = reader.ReadToEnd();
-			boardData = JsonUtility.FromJson<BoardData>(json);
-			reader.Close();
+			int pos = data.savedChunks[i];
+			int cX = pos & (BoardManager.WidthInChunks - 1);
+			int cY = (pos >> 4) & (BoardManager.WidthInChunks - 1);
 
-			for (int i = 0; i < boardData.savedChunks.Count; i++)
-			{
-				int pos = boardData.savedChunks[i];
-				int cX = pos & (BoardManager.WidthInChunks - 1);
-				int cY = (pos >> TileType.SizeBits) & (BoardManager.WidthInChunks - 1);
+			Chunk chunk = new Chunk(cX, cY);
+			chunks[cX, cY] = chunk;
 
-				Chunk chunk = new Chunk(cX, cY, this);
-				chunks[cX, cY] = chunk;
-
-				chunk.Load(boardData.chunkData[i]);
-			}
-
-			boardData.ClearChunkData();
+			chunk.Load(data.chunkData[i]);
 		}
 	}
 }

@@ -22,6 +22,8 @@ public sealed class FunctionLibrary : MonoBehaviour
 		functions.Add("Repeat", new RepeatFunction(this));
 		functions.Add("Swap", new SwapFunction(this));
 		functions.Add("Skip", new SkipFunction(this));
+		functions.Add("SetData", new SetDataFunction(this));
+		functions.Add("Direction", new DirectionFunction(this));
 	}
 
 	public Function GetFunction(string name)

@@ -11,6 +11,8 @@ public sealed class CommandProcessor : MonoBehaviour
 	[SerializeField] private BoardEditor boardEditor;
 	[SerializeField] private BoardManager boardManager;
 
+	private Dictionary<Vector2i, string> triggerData = new Dictionary<Vector2i, string>();
+
 	private Char[] delimiters = new char[] { '[', ':', ',', ']' };
 
 	private GameObject codeEditor;
@@ -21,23 +23,57 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private void Awake()
 	{
-		EventManager.StartListening("SaveCode", SaveCode);
-		EventManager.StartListening("Quit", QuitHandler);
+		Serializer.ListenForSave(SaveCommands);
+		Serializer.ListenForLoad(LoadCommands);
 
+		EventManager.StartListening("CodeFinished", FinishedHandler);
 		codeEditor = UIStore.GetGraphic("CodeEditor");
 		editorField = codeEditor.GetComponent<CodeEditor>();
 	}
 
-	private string LoadCommands(Vector2i pos)
+	private void SaveCommands(BoardData data)
 	{
-		var triggerDict = boardManager.GetData().triggerData;
+		if (editorOpen) CreateTriggerData(currentPos, editorField.text);
 
+		foreach (KeyValuePair<Vector2i, string> pair in triggerData)
+		{
+			data.triggerKeys.Add(pair.Key);
+			data.triggerValues.Add(pair.Value);
+		}
+	}
+
+	private void LoadCommands(BoardData data)
+	{
+		for (int i = 0; i < data.triggerKeys.Count; i++)
+			triggerData.Add(data.triggerKeys[i], data.triggerValues[i]);
+	}
+
+	private string GetCommands(Vector2i pos)
+	{
 		string data;
 
-		if (triggerDict.TryGetValue(pos, out data))
+		if (triggerData.TryGetValue(pos, out data))
 			return data;
 
 		return String.Empty;
+	}
+		
+	private void FinishedHandler(int data)
+	{
+		CreateTriggerData(currentPos, editorField.text);
+		editorField.text = String.Empty;
+		codeEditor.SetActive(false);
+		editorOpen = false;
+	}
+
+	public void DeleteCommands(Vector2i pos)
+	{
+		triggerData.Remove(pos);
+	}
+
+	public void ClearAll()
+	{
+		triggerData.Clear();
 	}
 
 	public void LoadEditor(Vector2i pos)
@@ -47,26 +83,13 @@ public sealed class CommandProcessor : MonoBehaviour
 		codeEditor.SetActive(true);
 		editorOpen = true;
 	
-		string data = LoadCommands(pos);
+		string data = GetCommands(pos);
 		editorField.Load(data);
-	}
-
-	private void SaveCode(int data)
-	{
-		CreateTriggerData(currentPos, editorField.text);
-		editorField.text = String.Empty;
-		codeEditor.SetActive(false);
-		editorOpen = false;
-	}
-
-	private void QuitHandler(int data)
-	{
-		if (editorOpen) SaveCode(0);
 	}
 
 	public void Process(int tX, int tY, Entity entity)
 	{
-		string input = LoadCommands(new Vector2i(tX, tY));
+		string input = GetCommands(new Vector2i(tX, tY));
 
 		if (input.Length == 0) return;
 
@@ -114,7 +137,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		{
 			input = commands[command];
 
-			for (int i = 0; i < 1000; i++) // SAFEGUARD
+			while (true)
 			{
 				int startIndex = GetInnermostIndex(input);
 
@@ -196,8 +219,7 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private void CreateTriggerData(Vector2i pos, string commands)
 	{
-		var triggerDict = boardManager.GetData().triggerData;
-		triggerDict[pos] = String.Copy(editorField.text);
+		triggerData[pos] = String.Copy(editorField.text);
 	}
 }
 	

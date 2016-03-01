@@ -23,16 +23,16 @@ public class TileType
 		meshBuilder.BuildSquare(tile, tX, tY, data);
 	}
 
-	public virtual bool CanAdd(BoardData data, Vector2i pos)
+	public virtual bool CanAdd(Vector2i pos)
 	{
 		return true;
 	}
 
-	public virtual void OnAdded(BoardData data, Vector2i pos)
+	public virtual void OnAdded(Vector2i pos)
 	{
 	}
 
-	public virtual void OnDeleted(BoardData data, Vector2i pos)
+	public virtual void OnDeleted(Vector2i pos)
 	{
 	}
 

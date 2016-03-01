@@ -8,8 +8,6 @@ public sealed class Chunk
 
 	private Tile[][] tiles = new Tile[2][];
 
-	private BoardManager boardManager;
-
 	private Vector2i chunkPos;
 	private Vector3 worldPos;
 
@@ -26,12 +24,10 @@ public sealed class Chunk
 		get { return worldPos; }
 	}
 
-	public Chunk(int cX, int cY, BoardManager boardManager)
+	public Chunk(int cX, int cY)
 	{
 		tiles[0] = new Tile[Size * Size];
 		tiles[1] = new Tile[Size * Size];
-
-		this.boardManager = boardManager;
 
 		chunkPos = new Vector2i(cX, cY);
 		worldPos = Utils.WorldFromChunkPos(chunkPos);
@@ -53,12 +49,12 @@ public sealed class Chunk
 
 		if (tiles[1][index].ID != 0)
 		{
-			tiles[1][index].Type.OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
+			tiles[1][index].Type.OnDeleted(new Vector2i(tX, tY));
 			tiles[1][index] = new Tile(0);
 		}
 		else
 		{
-			tiles[0][index].Type.OnDeleted(boardManager.GetData(), new Vector2i(tX, tY));
+			tiles[0][index].Type.OnDeleted(new Vector2i(tX, tY));
 			tiles[0][index] = new Tile(0);
 		}
 	}
@@ -98,7 +94,7 @@ public sealed class Chunk
 		for (int i = 0; i < meshes.Length; i++)
 		{
 			if (meshes[i] != null)
-				Graphics.DrawMesh(meshes[i], worldPos, Quaternion.identity, boardManager.GetMaterial(i), 0);
+				Graphics.DrawMesh(meshes[i], worldPos, Quaternion.identity, Engine.BoardManager.GetMaterial(i), 0);
 		}
 
 		while (unloadQueue.Count > 0)

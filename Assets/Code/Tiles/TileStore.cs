@@ -10,15 +10,15 @@ public static class TileStore
 	static TileStore()
 	{
 		tilesList.Add(new AirTile(0));
-		tilesList.Add(new BasicTile(1, 0, "Grass"));
-		tilesList.Add(new StartTile(2, 1));
-		tilesList.Add(new BasicTile(3, 2, "Stone"));
-		tilesList.Add(new BasicTile(4, 3, "Sand"));
+		tilesList.Add(new BasicTile(1, 0, 0, "Grass"));
+		tilesList.Add(new BasicTile(2, 1, 1, "Start"));
+		tilesList.Add(new BasicTile(3, 2, 0, "Stone"));
+		tilesList.Add(new BasicTile(4, 3, 0, "Sand"));
 		tilesList.Add(new TriggerTile(5, 4));
 		tilesList.Add(new LandTriggerTile(6, 5));
 		tilesList.Add(new CardTile(7, 6));
 		tilesList.Add(new ArrowTile(8, 7));
-		tilesList.Add(new BasicTile(9, 8, "Stopper"));
+		tilesList.Add(new BasicTile(9, 8, 0, "Stopper"));
 
 		for (int i = 0; i < tilesList.Count; i++)
 			tilesByName.Add(tilesList[i].Name, tilesList[i]);

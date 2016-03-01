@@ -82,6 +82,5 @@ public sealed class Engine : MonoBehaviour
 	private void OnApplicationQuit()
 	{
 		quitting = true;
-		EventManager.TriggerEvent("Quit");
 	}
 }

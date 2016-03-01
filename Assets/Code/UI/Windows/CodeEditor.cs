@@ -21,7 +21,9 @@ public sealed class CodeEditor : InputField
 	protected override void OnDisable()
 	{
 		base.OnDisable();
-		StateManager.ChangeState(GameState.Editing);
+
+		if (!Engine.IsQuitting)
+			StateManager.ChangeState(GameState.Editing);
 	}
 
 	public override void OnSelect(UnityEngine.EventSystems.BaseEventData eventData)

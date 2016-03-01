@@ -183,10 +183,9 @@ public sealed class BoardEditor : MonoBehaviour, IUpdatable
 					boardManager.DeleteTile(tPos);
 				else 
 				{
-					BoardData data = boardManager.GetData();
-					boardManager.GetTile(tile.Type.Layer, tPos.x, tPos.y).Type.OnDeleted(data, tPos);
+					boardManager.GetTile(tile.Type.Layer, tPos.x, tPos.y).Type.OnDeleted(tPos);
 
-					if (activeTile.Type.CanAdd(data, tPos))
+					if (activeTile.Type.CanAdd(tPos))
 						boardManager.SetTile(tPos, tile);
 				}
 

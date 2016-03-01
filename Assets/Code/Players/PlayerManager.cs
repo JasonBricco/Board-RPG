@@ -89,7 +89,7 @@ public sealed class PlayerManager : MonoBehaviour, IUpdatable
 		startTime = Time.time;
 		exitDelay = startTime + 2.0f;
 
-		List<Vector2i> startTiles = boardManager.GetData().startTiles;
+		List<Vector2i> startTiles = boardManager.GetStartPositions();
 
 		if (startTiles.Count == 0)
 			return;

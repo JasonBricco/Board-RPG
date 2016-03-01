@@ -21,8 +21,8 @@ public class LandTriggerTile : TileType
 			Engine.CommandProcessor.Process(tX, tY, entity);
 	}
 
-	public override void OnDeleted(BoardData data, Vector2i pos)
+	public override void OnDeleted(Vector2i pos)
 	{
-		data.triggerData.Remove(pos);
+		Engine.CommandProcessor.DeleteCommands(pos);
 	}
 }
