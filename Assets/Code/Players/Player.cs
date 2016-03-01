@@ -31,7 +31,7 @@ public sealed class Player : Entity
 		if (skipTurn) 
 		{
 			skipTurn = false;
-			playerManager.NextTurn();
+			boardManager.NextTurn();
 		}
 		else
 		{
@@ -65,7 +65,7 @@ public sealed class Player : Entity
 			yield return StartCoroutine(Move(dir, current));
 		}
 			
-		playerManager.NextTurn();
+		boardManager.NextTurn();
 	}
 
 	private void AttackHandler(int data)
@@ -75,7 +75,7 @@ public sealed class Player : Entity
 	private void PassHandler(int data)
 	{
 		actionPanel.SetActive(false);
-		playerManager.NextTurn();
+		boardManager.NextTurn();
 	}
 
 	public override bool HandleSplitPath(out Vector2i dir)

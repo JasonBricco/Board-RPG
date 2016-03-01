@@ -2,7 +2,7 @@
 
 public class ArrowTile : TileType 
 {
-	public ArrowTile(ushort ID, int mesh)
+	public ArrowTile(ushort ID, int mesh, BoardManager manager) : base(manager)
 	{
 		name = "Arrow";
 		tileID = ID;
@@ -12,20 +12,16 @@ public class ArrowTile : TileType
 
 	public override void OnFunction(Vector2i pos)
 	{
-		BoardManager manager = Engine.BoardManager;
+		Tile tile = boardManager.GetTile(1, pos.x, pos.y);
+		boardManager.SetTileFast(pos, new Tile(tile.ID, (ushort)((tile.Data + 1) & 3)));
 
-		Tile tile = manager.GetTile(1, pos.x, pos.y);
-		manager.SetTile(pos, new Tile(tile.ID, (ushort)((tile.Data + 1) & 3)));
-
-		manager.FlagChunkForRebuild(pos);
-		manager.RebuildChunks();
+		boardManager.FlagChunkForRebuild(pos);
+		boardManager.RebuildChunks();
 	}
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		BoardManager manager = Engine.BoardManager;
-
-		ushort data = manager.GetTile(1, tX, tY).Data;
+		ushort data = boardManager.GetTile(1, tX, tY).Data;
 		Vector2i dir = Vector2i.zero;
 
 		switch (data)
@@ -55,8 +51,8 @@ public class ArrowTile : TileType
 		while (true)
 		{
 			Vector2i next = current + dir;
-			Tile nextTile = manager.GetTileSafe(0, next.x, next.y);
-			Tile nextOverlay = manager.GetTileSafe(1, next.x, next.y);
+			Tile nextTile = boardManager.GetTileSafe(0, next.x, next.y);
+			Tile nextOverlay = boardManager.GetTileSafe(1, next.x, next.y);
 
 			if (nextTile.Equals(Tiles.Air))
 			{

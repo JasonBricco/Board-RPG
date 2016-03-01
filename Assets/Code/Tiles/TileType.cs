@@ -6,6 +6,8 @@ public class TileType
 	public const int Size = 1 << SizeBits;
 	public const int HalfSize = Size / 2;
 
+	protected BoardManager boardManager;
+
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
 
 	protected string name = "Unassigned";
@@ -18,9 +20,14 @@ public class TileType
 	public int MeshIndex { get { return meshIndex; } }
 	public int Layer { get { return layer; } }
 
+	public TileType(BoardManager manager)
+	{
+		this.boardManager = manager;
+	}
+
 	public virtual void Build(Tile tile, int tX, int tY, MeshData data)
 	{
-		meshBuilder.BuildSquare(tile, tX, tY, data);
+		meshBuilder.BuildSquare(this, tile, tX, tY, data);
 	}
 
 	public virtual bool CanAdd(Vector2i pos)

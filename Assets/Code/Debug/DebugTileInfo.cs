@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class DebugTileInfo : MonoBehaviour 
 {
+	[SerializeField] private BoardManager boardManager;
 	[SerializeField] private Text posLabel;
 
 	private void StateChangedHandler(int state)
@@ -26,7 +27,7 @@ public class DebugTileInfo : MonoBehaviour
 
 		if (StateManager.CurrentState != GameState.Editing) return;
 
-		Vector2i pos = Engine.BoardEditor.GetCursorTilePos();
+		Vector2i pos = boardManager.GetCursorTilePos();
 		posLabel.text = "Position: " + pos.x + ", " + pos.y;
 	}
 

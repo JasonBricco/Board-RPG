@@ -2,7 +2,7 @@
 
 public class SkipFunction : Function 
 {
-	public SkipFunction(FunctionLibrary library) : base(library) {}
+	public SkipFunction(BoardManager manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

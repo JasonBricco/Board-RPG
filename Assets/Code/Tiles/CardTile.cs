@@ -2,7 +2,7 @@
 
 public class CardTile : TileType 
 {
-	public CardTile(ushort ID, int mesh)
+	public CardTile(ushort ID, int mesh, BoardManager manager) : base(manager)
 	{
 		name = "Card";
 		tileID = ID;
@@ -13,6 +13,6 @@ public class CardTile : TileType
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
 		if (entity.RemainingMoves == 0)
-			Engine.CardLibrary.DrawCard(entity);
+			boardManager.DrawCard(entity);
 	}
 }

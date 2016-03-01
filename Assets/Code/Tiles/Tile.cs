@@ -28,11 +28,6 @@ public struct Tile : IEquatable<Tile>
 		get { return data; }
 	}
 
-	public TileType Type
-	{
-		get { return TileStore.GetTileByID(ID); }
-	}
-
 	public bool Equals(Tile other)
 	{
 		return other.ID == this.tileID;

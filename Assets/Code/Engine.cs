@@ -14,45 +14,8 @@ public sealed class Engine : MonoBehaviour
 		get { return quitting; }
 	}
 
-	private static BoardManager boardManager;
-	private static PlayerManager playerManager;
-	private static BoardEditor boardEditor;
-	private static CardLibrary cardLibrary;
-	private static CommandProcessor commandProcessor;
-
-	public static BoardManager BoardManager
-	{
-		get { return boardManager; }
-	}
-
-	public static PlayerManager PlayerManager
-	{
-		get { return playerManager; }
-	}
-
-	public static BoardEditor BoardEditor
-	{
-		get { return boardEditor; }
-	}
-
-	public static CardLibrary CardLibrary
-	{
-		get { return cardLibrary; }
-	}
-
-	public static CommandProcessor CommandProcessor
-	{
-		get { return commandProcessor; }
-	}
-
 	private void Awake()
 	{
-		boardManager = GetComponent<BoardManager>();
-		playerManager = GetComponent<PlayerManager>();
-		boardEditor = GetComponent<BoardEditor>();
-		cardLibrary = GetComponent<CardLibrary>();
-		commandProcessor = GetComponent<CommandProcessor>();
-	
 		StateManager.ChangeState(GameState.Editing);
 		EventManager.StartListening("ExitPressed", ExitPressedHandler);
 	}

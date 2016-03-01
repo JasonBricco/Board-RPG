@@ -21,7 +21,7 @@ public sealed class WaitingFunction
 
 public class Function
 {
-	protected FunctionLibrary library;
+	protected BoardManager boardManager;
 	private static GameObject engine;
 
 	protected FunctionType type = FunctionType.Main;
@@ -29,9 +29,9 @@ public class Function
 
 	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
 
-	public Function(FunctionLibrary library)
+	public Function(BoardManager manager)
 	{
-		this.library = library;
+		this.boardManager = manager;
 	}
 
 	public virtual void Compute(string[] args, Entity entity)
@@ -100,7 +100,7 @@ public class Function
 
 	protected bool TryGetEntity(int entityID, Entity entity)
 	{
-		entity = Engine.PlayerManager.GetEntity(entityID);
+		entity = boardManager.GetEntity(entityID);
 
 		if (entity == null)
 		{

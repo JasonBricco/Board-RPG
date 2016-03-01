@@ -12,7 +12,7 @@ public sealed class TileWindow : Window
 
 	private void TileButtonPressed(int data)
 	{
-		Engine.BoardEditor.SetActiveTile((ushort)data);
+		boardManager.SetActiveTile((ushort)data);
 		gameObject.SetActive(false);
 	}
 }

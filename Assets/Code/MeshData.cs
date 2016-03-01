@@ -3,15 +3,22 @@ using System.Collections.Generic;
 
 public class MeshData 
 {
-	public static readonly int MaxMeshes = TileStore.Count - 1;
+	private readonly int MaxMeshes;
 
-	private List<Vector3>[] vertices = new List<Vector3>[MaxMeshes];
-	private List<Vector2>[] uvs = new List<Vector2>[MaxMeshes];
-	private List<int>[] indices = new List<int>[MaxMeshes];
-	private List<Color32>[] colors = new List<Color32>[MaxMeshes];
+	private List<Vector3>[] vertices;
+	private List<Vector2>[] uvs;
+	private List<int>[] indices;
+	private List<Color32>[] colors;
 
-	public MeshData()
+	public MeshData(BoardManager manager)
 	{
+		MaxMeshes = manager.TileCount;
+
+		vertices = new List<Vector3>[MaxMeshes];
+		uvs = new List<Vector2>[MaxMeshes];
+		indices = new List<int>[MaxMeshes];
+		colors = new List<Color32>[MaxMeshes];
+
 		for (int i = 0; i < MaxMeshes; i++)
 		{
 			vertices[i] = new List<Vector3>(512);

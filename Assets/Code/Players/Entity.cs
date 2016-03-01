@@ -9,7 +9,6 @@ public class Entity : MonoBehaviour
 	protected int entityID; 
 
 	protected BoardManager boardManager;
-	protected PlayerManager playerManager;
 
 	private float speed = 160.0f;
 
@@ -39,19 +38,13 @@ public class Entity : MonoBehaviour
 		get { return isFlipped; } 
 	}
 
-	public PlayerManager PlayerManager
-	{
-		get { return playerManager; }
-	}
-
 	public int RemainingMoves { get; set; }
 	public bool Wait { get; set; }
 
-	public void SetReferences(int entityID, BoardManager boardManager, PlayerManager playerManager)
+	public void SetReferences(int entityID, BoardManager boardManager)
 	{
 		this.entityID = entityID;
 		this.boardManager = boardManager;
-		this.playerManager = playerManager;
 	}
 
 	public virtual void BeginTurn() {}
@@ -113,8 +106,8 @@ public class Entity : MonoBehaviour
 	protected void TriggerTileFunction()
 	{
 		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
-		boardManager.GetTile(0, tPos.x, tPos.y).Type.OnEnter(tPos.x, tPos.y, this);
-		boardManager.GetTile(1, tPos.x, tPos.y).Type.OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTileType(0, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		boardManager.GetTileType(1, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
 	}
 
 	public void SetTo(Vector3 wPos)

@@ -8,7 +8,7 @@ public sealed class Enemy : Entity
 		if (skipTurn) 
 		{
 			skipTurn = false;
-			playerManager.NextTurn();
+			boardManager.NextTurn();
 		}
 		else
 		{
@@ -34,7 +34,7 @@ public sealed class Enemy : Entity
 			yield return StartCoroutine(Move(dir, current));
 		}
 
-		playerManager.NextTurn();
+		boardManager.NextTurn();
 	}
 
 	public override bool HandleSplitPath(out Vector2i dir)

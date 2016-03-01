@@ -2,7 +2,7 @@
 
 public class SetDataFunction : Function 
 {
-	public SetDataFunction(FunctionLibrary library) : base(library) {}
+	public SetDataFunction(BoardManager manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -27,18 +27,16 @@ public class SetDataFunction : Function
 			return;
 		}
 
-		BoardManager manager = Engine.BoardManager;
-
-		if (!manager.InTileBounds(x, y))
+		if (!boardManager.InTileBounds(x, y))
 		{
 			ErrorHandler.LogText("Command Error: tried to set data to a tile outside of the board.");
 			return;
 		}
 
-		Tile oldTile = manager.GetTile(layer, x, y);
+		Tile oldTile = boardManager.GetTile(layer, x, y);
 		Tile newTile = new Tile(oldTile.ID, (ushort)data);
 
 		Vector2i pos = new Vector2i(x, y);
-		Engine.BoardEditor.SetSingleTile(pos, newTile);
+		boardManager.SetSingleTile(pos, newTile);
 	}
 }

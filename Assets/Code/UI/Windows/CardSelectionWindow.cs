@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CardSelectionWindow : Window 
+public sealed class CardSelectionWindow : Window 
 {
 	public override void Initialize()
 	{
@@ -10,7 +10,7 @@ public class CardSelectionWindow : Window
 
 	private void DoneHandler(int data)
 	{
-		Engine.CardLibrary.ReplaceAllowedList();
+		boardManager.ReplaceAllowedList();
 
 		gameObject.SetActive(false);
 		UIStore.GetGraphic("BoardSettings").SetActive(true);
@@ -18,6 +18,6 @@ public class CardSelectionWindow : Window
 
 	private void CardToggled(int cardID)
 	{
-		Engine.CardLibrary.ToggleCard(cardID);
+		boardManager.ToggleCard(cardID);
 	}
 }

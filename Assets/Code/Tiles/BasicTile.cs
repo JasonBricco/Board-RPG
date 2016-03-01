@@ -2,7 +2,7 @@
 
 public class BasicTile : TileType
 {
-	public BasicTile(ushort ID, int mesh, int layer, string name)
+	public BasicTile(ushort ID, int mesh, int layer, string name, BoardManager manager) : base(manager)
 	{
 		this.name = name;
 		this.tileID = ID;

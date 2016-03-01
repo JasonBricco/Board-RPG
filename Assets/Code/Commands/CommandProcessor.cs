@@ -7,8 +7,6 @@ using System.Collections.Generic;
 
 public sealed class CommandProcessor : MonoBehaviour
 {
-	[SerializeField] private FunctionLibrary library;
-	[SerializeField] private BoardEditor boardEditor;
 	[SerializeField] private BoardManager boardManager;
 
 	private Dictionary<Vector2i, string> triggerData = new Dictionary<Vector2i, string>();
@@ -150,7 +148,7 @@ public sealed class CommandProcessor : MonoBehaviour
 				string[] args = funcString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
 				Function function;
-				bool success = args.Length == 0 ? false : library.TryGetFunction(args[0], out function);
+				bool success = args.Length == 0 ? false : boardManager.TryGetFunction(args[0], out function);
 
 				if (success)
 				{
@@ -180,7 +178,7 @@ public sealed class CommandProcessor : MonoBehaviour
 				return;
 			}
 
-			Function mainFunction = library.GetFunction(finalArgs[0]);
+			Function mainFunction = boardManager.GetFunction(finalArgs[0]);
 			mainFunction.Compute(finalArgs, entity);
 		}
 	}

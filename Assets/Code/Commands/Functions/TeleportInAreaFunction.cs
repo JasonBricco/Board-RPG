@@ -2,7 +2,7 @@
 
 public class TeleportInAreaFunction : Function 
 {
-	public TeleportInAreaFunction(FunctionLibrary library) : base(library) {}
+	public TeleportInAreaFunction(BoardManager manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -25,7 +25,7 @@ public class TeleportInAreaFunction : Function
 			
 		Tile tile = Tiles.Air;
 
-		if (!Engine.BoardManager.InTileBounds(startX, startY) || (!Engine.BoardManager.InTileBounds(endX, endY)))
+		if (!boardManager.InTileBounds(startX, startY) || (!boardManager.InTileBounds(endX, endY)))
 		{
 			ErrorHandler.LogText("Command Error: coordinates are out of bounds of the board (TeleportInArea).");
 			return;
@@ -36,7 +36,7 @@ public class TeleportInAreaFunction : Function
 			int randX = Random.Range(startX, endX + 1);
 			int randY = Random.Range(startY, endY + 1);
 
-			tile = Engine.BoardManager.GetTile(0, randX, randY);
+			tile = boardManager.GetTile(0, randX, randY);
 
 			if (tile.ID != 0)
 			{

@@ -3,7 +3,7 @@ using System;
 
 public sealed class SetTileFunction : Function
 {
-	public SetTileFunction(FunctionLibrary library) : base(library) {}
+	public SetTileFunction(BoardManager manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -14,13 +14,13 @@ public sealed class SetTileFunction : Function
 		if (!GetInteger(args[1], out x)) return;
 		if (!GetInteger(args[2], out y)) return;
 
-		if (!Engine.BoardManager.InTileBounds(x, y))
+		if (!boardManager.InTileBounds(x, y))
 		{
 			ErrorHandler.LogText("Command Error: tried to set a tile outside of the board.");
 			return;
 		}
 
-		TileType tile = TileStore.GetTileByName(args[3]);
+		TileType tile = boardManager.GetTileType(args[3]);
 
 		if (tile == null)
 		{
@@ -29,6 +29,6 @@ public sealed class SetTileFunction : Function
 		}
 
 		Vector2i pos = new Vector2i(x, y);
-		Engine.BoardEditor.SetSingleTile(pos, new Tile(tile.ID));
+		boardManager.SetSingleTile(pos, new Tile(tile.ID));
 	}
 }

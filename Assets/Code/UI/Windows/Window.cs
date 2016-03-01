@@ -2,6 +2,7 @@
 
 public class Window : MonoBehaviour, IUpdatable
 {
+	[SerializeField] protected BoardManager boardManager;
 	protected KeyCode enableKey = KeyCode.Alpha0;
 
 	public virtual void Initialize()

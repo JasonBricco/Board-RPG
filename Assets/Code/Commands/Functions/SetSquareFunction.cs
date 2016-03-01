@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public sealed class SetSquareFunction : Function 
 {
-	public SetSquareFunction(FunctionLibrary library) : base(library) {}
+	public SetSquareFunction(BoardManager manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -16,7 +16,7 @@ public sealed class SetSquareFunction : Function
 		if (!GetInteger(args[3], out endX)) return;
 		if (!GetInteger(args[4], out endY)) return;
 
-		TileType tile = TileStore.GetTileByName(args[5]);
+		TileType tile = boardManager.GetTileType(args[5]);
 
 		if (tile == null) 
 		{
@@ -52,6 +52,6 @@ public sealed class SetSquareFunction : Function
 		for (int y = startY + 1; y < endY; y++)
 			points.Add(new Vector2i(endX, y));
 
-		Engine.BoardEditor.SetMultipleTiles(points, new Tile(tile.ID));
+		boardManager.SetMultipleTiles(points, new Tile(tile.ID));
 	}
 }

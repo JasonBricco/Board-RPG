@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 public sealed class MeshBuilder
 {
-	public void BuildSquare(Tile tile, int tX, int tY, MeshData meshData)
+	public void BuildSquare(TileType type, Tile tile, int tX, int tY, MeshData meshData)
 	{
-		TileType type = tile.Type;
 		int meshIndex = type.MeshIndex;
 
 		AddSquareIndices(meshIndex, meshData);
