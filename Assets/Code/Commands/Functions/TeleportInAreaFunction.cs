@@ -36,9 +36,7 @@ public class TeleportInAreaFunction : Function
 			int randX = Random.Range(startX, endX + 1);
 			int randY = Random.Range(startY, endY + 1);
 
-			tile = boardManager.GetTile(0, randX, randY);
-
-			if (tile.ID != 0)
+			if (boardManager.IsPassable(randX, randY))
 			{
 				randX *= TileType.Size;
 				randY *= TileType.Size;

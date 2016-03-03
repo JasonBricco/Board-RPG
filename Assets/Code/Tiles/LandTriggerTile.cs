@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class LandTriggerTile : TileType 
+public class LandTriggerTile : OverlayTile 
 {
 	private CommandProcessor processor;
 
@@ -11,7 +11,6 @@ public class LandTriggerTile : TileType
 		name = "Trigger (L)";
 		tileID = ID;
 		meshIndex = mesh;
-		layer = 1;
 	}
 
 	public override void OnFunction(Vector2i pos)

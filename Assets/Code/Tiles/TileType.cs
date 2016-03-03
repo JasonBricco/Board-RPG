@@ -30,13 +30,25 @@ public class TileType
 		meshBuilder.BuildSquare(this, tile, tX, tY, data);
 	}
 
+	public virtual bool IsPassable(int layer, Tile main, Tile overlay)
+	{
+		if (layer == 0)
+		{
+			if (!boardManager.GetTileType(overlay).IsPassable(1, main, overlay))
+				return false;
+		}
+
+		return true;
+	}
+
 	public virtual bool CanAdd(Vector2i pos)
 	{
 		return true;
 	}
 
-	public virtual void OnAdded(Vector2i pos)
+	public virtual Tile Preprocess(Tile tile, Vector2i pos)
 	{
+		return tile;
 	}
 
 	public virtual void OnDeleted(Vector2i pos)

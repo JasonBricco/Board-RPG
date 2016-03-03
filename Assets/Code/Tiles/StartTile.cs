@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class StartTile : TileType 
+public class StartTile : OverlayTile 
 {
 	public StartTile(ushort ID, int mesh, BoardManager manager) : base(manager)
 	{

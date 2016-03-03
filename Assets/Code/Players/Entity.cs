@@ -173,8 +173,7 @@ public class Entity : MonoBehaviour
 	private bool IsValidDirection(Vector2i current, Vector2i direction)
 	{
 		Vector2i newPos = current + direction;
-		Tile tile = boardManager.GetTileSafe(0, newPos.x, newPos.y);
-		return tile.ID != 0;
+		return boardManager.IsPassable(newPos.x, newPos.y);
 	}
 
 	public virtual bool HandleSplitPath(out Vector2i dir)

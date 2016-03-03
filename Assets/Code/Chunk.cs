@@ -30,7 +30,7 @@ public sealed class Chunk
 	{
 		this.boardManager = manager;
 
-		meshes = new Mesh[manager.TileCount];
+		meshes = new Mesh[BoardManager.MaxMeshes];
 
 		if (meshData == null)
 			meshData = new MeshData(manager);

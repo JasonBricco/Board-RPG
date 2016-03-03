@@ -11,6 +11,8 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 	public const int WidthInChunks = Size / Chunk.Size;
 	private const int WToXShift = Chunk.SizeBits + TileType.SizeBits;
 
+	private static int maxMeshes;
+
 	[SerializeField] private Material[] materials;
 	[SerializeField] private Sprite[] cardSprites;
 
@@ -55,6 +57,11 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 
 	private Dictionary<string, Function> functions = new Dictionary<string, Function>();
 
+	public static int MaxMeshes
+	{
+		get { return maxMeshes; }
+	}
+
 	public Entity CurrentEntity 
 	{
 		get { return currentEntity; }
@@ -62,6 +69,8 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 
 	private void Awake()
 	{
+		maxMeshes = materials.Length;
+
 		Engine.StartUpdating(this);
 
 		Serializer.ListenForSave(SaveTiles);
@@ -444,27 +453,28 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 
 		if (InTileBounds(tPos.x, tPos.y))
 		{
-			if (IsValidEdit(tPos, tile))
+			if (deleting) 
 			{
-				if (deleting) 
-					DeleteTile(tPos);
-				else 
-				{
-					TileType type = GetTileType(tile);
-					GetTileType(type.Layer, tPos.x, tPos.y).OnDeleted(tPos);
-
-					if (type.CanAdd(tPos))
-						SetTileFast(tPos, tile);
-				}
-
+				DeleteTile(tPos);
 				FlagChunkForRebuild(tPos);
+			}
+			else 
+			{
+				TileType type = GetTileType(tile);
+				GetTileType(type.Layer, tPos.x, tPos.y).OnDeleted(tPos);
+
+				if (type.CanAdd(tPos))
+				{
+					SetTileFast(tPos, tile);
+					FlagChunkForRebuild(tPos);
+				}
 			}
 		}
 	}
 
 	public Tile GetTileSafe(int layer, int tX, int tY)
 	{
-		if (!InTileBounds(tX, tY)) return new Tile(0);
+		if (!InTileBounds(tX, tY)) return Tiles.Air;
 		return GetTile(layer, tX, tY);
 	}
 
@@ -476,7 +486,7 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 
 	public void SetTileFast(Vector2i tPos, Tile tile)
 	{
-		GetTileType(tile).OnAdded(tPos);
+		tile = GetTileType(tile).Preprocess(tile, tPos);
 		GetChunkSafe(tPos.x, tPos.y).SetTile(tPos.x & Chunk.Size - 1, tPos.y & Chunk.Size - 1, tile);
 	}
 
@@ -529,14 +539,22 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		chunksToRebuild.Clear();
 	}
 
-	public bool InTileBounds(int x, int y)
+	public bool IsPassable(int tX, int tY)
 	{
-		return x >= 0 && y >= 0 && x < Size && y < Size;
+		Tile mainTile = GetTileSafe(0, tX, tY);
+		Tile overlayTile = GetTileSafe(1, tX, tY);
+
+		return GetTileType(mainTile).IsPassable(0, mainTile, overlayTile);
 	}
 
-	public bool InChunkBounds(int x, int y)
+	public bool InTileBounds(int tX, int tY)
 	{
-		return x >= 0 && y >= 0 && x < WidthInChunks && y < WidthInChunks; 
+		return tX >= 0 && tY >= 0 && tX < Size && tY < Size;
+	}
+
+	public bool InChunkBounds(int cX, int cY)
+	{
+		return cX >= 0 && cY >= 0 && cX < WidthInChunks && cY < WidthInChunks; 
 	}
 
 	private void ClearBoard(int data)
@@ -602,20 +620,29 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		return new Vector2i(x, y);
 	}
 
-	private bool IsValidEdit(Vector2i tilePos, Tile tile)
+	public Vector2i GetLineEnd(Vector2i start, Vector2i dir)
 	{
-		if (tile.ID == 0) return true;
+		Vector2i current = start;
+		int distance = 0;
 
-		if (GetTileType(tile).Layer == 1)
+		for (int i = 0; i < Size; i++)
 		{
-			if (GetTile(0, tilePos.x, tilePos.y).ID == 0)
-				return false;
+			Vector2i next = current + dir;
+			Tile nextTile = GetTileSafe(0, next.x, next.y);
+			Tile nextOverlay = GetTileSafe(1, next.x, next.y);
+
+			if (nextTile.Equals(Tiles.Stopper) || nextOverlay.Equals(Tiles.Arrow) || nextOverlay.Equals(Tiles.RandomArrow))
+				return next;
+
+			if (!IsPassable(next.x, next.y))
+				return current;
+
+			current = next;
+			distance++;
 		}
 
-		return true;
+		return start;
 	}
-
-	public int TileCount { get { return tilesByName.Count; } }
 
 	public TileType GetTileType(string name)
 	{
@@ -707,6 +734,9 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		tilesList.Add(new CardTile(7, 6, this));
 		tilesList.Add(new ArrowTile(8, 7, this));
 		tilesList.Add(new BasicTile(9, 8, 0, "Stopper", this));
+		tilesList.Add(new RandomArrowTile(10, 9, this));
+		tilesList.Add(new WaterTile(11, 10, 11, this));
+		tilesList.Add(new BorderTile(12, 12, 13, this));
 
 		for (int i = 0; i < tilesList.Count; i++)
 			tilesByName.Add(tilesList[i].Name, tilesList[i]);

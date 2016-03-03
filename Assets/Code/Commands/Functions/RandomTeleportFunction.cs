@@ -39,11 +39,9 @@ public class RandomTeleportFunction : Function
 
 		Vector2i randomPoint = points[Random.Range(0, points.Count)];
 
-		Tile tile = boardManager.GetTileSafe(0, randomPoint.x, randomPoint.y);
-
-		if (tile.ID == 0) 
+		if (!boardManager.IsPassable(randomPoint.x, randomPoint.y)) 
 		{
-			ErrorHandler.LogText("Command Error: Tried to teleport to an invalid tile (RandomTeleport).");
+			ErrorHandler.LogText("Command Error: Tried to teleport to an impassable tile (RandomTeleport).");
 			return;
 		}
 

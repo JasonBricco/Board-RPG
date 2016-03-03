@@ -1,21 +1,36 @@
 ﻿using UnityEngine;
 
-public class ArrowTile : OverlayTile 
+public class BorderTile : OverlayTile 
 {
 	private ushort orientation = 0;
+	private int dataIndex = 0;
 
-	public ArrowTile(ushort ID, int mesh, BoardManager manager) : base(manager)
+	private int primaryMeshIndex;
+	private int secondaryMeshIndex;
+
+	private ushort[] dataOrder = { 0, 4, 1, 5, 2, 6, 3, 7 };
+
+	public BorderTile(ushort ID, int mesh0, int mesh1, BoardManager manager) : base(manager)
 	{
-		name = "Arrow";
+		name = "Border";
 		tileID = ID;
-		meshIndex = mesh;
+
+		primaryMeshIndex = mesh0;
+		secondaryMeshIndex = mesh1;
+		meshIndex = primaryMeshIndex;
+	}
+
+	public override void Build(Tile tile, int tX, int tY, MeshData data)
+	{
+		meshIndex = tile.Data > 3 ? secondaryMeshIndex : primaryMeshIndex;
+		base.Build(tile, tX, tY, data);
 	}
 
 	public override void OnFunction(Vector2i pos)
 	{
-		Tile tile = boardManager.GetTile(1, pos.x, pos.y);
+		dataIndex = (dataIndex + 1) & 7;
+		orientation = dataOrder[dataIndex];
 
-		orientation = (ushort)((tile.Data + 1) & 3);
 		boardManager.SetTileFast(pos, new Tile(tileID, orientation));
 
 		boardManager.FlagChunkForRebuild(pos);
@@ -28,61 +43,38 @@ public class ArrowTile : OverlayTile
 		return tile;
 	}
 
-	public override void OnEnter(int tX, int tY, Entity entity)
+	public override bool IsPassable(int layer, Tile main, Tile overlay)
 	{
-		ushort data = boardManager.GetTile(1, tX, tY).Data;
-		Vector2i dir = Vector2i.zero;
+		return false;
+	}
 
-		switch (data)
-		{
-		case 1:
-			dir = Vector2i.right;
-			break;
-
-		case 2:
-			dir = Vector2i.down;
-			break;
-
-		case 3: 
-			dir = Vector2i.left;
-			break;
-
-		default:
-			dir = Vector2i.up;
-			break;
-		}
-
-		Vector2i start = new Vector2i(tX, tY);
-		Vector2i end = boardManager.GetLineEnd(start, dir);
-
-		entity.RemainingMoves = 0;
-
-		if (end.Equals(start))
-			return;
-
-		entity.Wait = true;
-		entity.StartCoroutine(entity.SlideTo(end, dir));
+	public override bool CanAdd(Vector2i pos)
+	{
+		return true;
 	}
 
 	public override void SetUVs(Tile tile, MeshData data)
 	{
 		switch (tile.Data)
 		{
-		case 1:
-			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));
-			data.AddUV(meshIndex, new Vector2(0.0f, 1.0f));
-			data.AddUV(meshIndex, new Vector2(0.0f, 0.0f));
-			data.AddUV(meshIndex, new Vector2(1.0f, 0.0f));
-			break;
-
-		case 2:
-			data.AddUV(meshIndex, new Vector2(0.0f, 1.0f));
-			data.AddUV(meshIndex, new Vector2(0.0f, 0.0f));
-			data.AddUV(meshIndex, new Vector2(1.0f, 0.0f));
-			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));
-			break;
-
 		case 3:
+		case 7:
+			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));
+			data.AddUV(meshIndex, new Vector2(0.0f, 1.0f));
+			data.AddUV(meshIndex, new Vector2(0.0f, 0.0f));
+			data.AddUV(meshIndex, new Vector2(1.0f, 0.0f));
+			break;
+
+		case 0:
+		case 4:
+			data.AddUV(meshIndex, new Vector2(0.0f, 1.0f));
+			data.AddUV(meshIndex, new Vector2(0.0f, 0.0f));
+			data.AddUV(meshIndex, new Vector2(1.0f, 0.0f));
+			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));
+			break;
+
+		case 1:
+		case 5:
 			data.AddUV(meshIndex, new Vector2(0.0f, 0.0f));
 			data.AddUV(meshIndex, new Vector2(1.0f, 0.0f));
 			data.AddUV(meshIndex, new Vector2(1.0f, 1.0f));

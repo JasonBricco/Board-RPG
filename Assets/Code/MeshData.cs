@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 public class MeshData 
 {
-	private readonly int MaxMeshes;
-
 	private List<Vector3>[] vertices;
 	private List<Vector2>[] uvs;
 	private List<int>[] indices;
@@ -12,14 +10,14 @@ public class MeshData
 
 	public MeshData(BoardManager manager)
 	{
-		MaxMeshes = manager.TileCount;
+		int count = BoardManager.MaxMeshes;
 
-		vertices = new List<Vector3>[MaxMeshes];
-		uvs = new List<Vector2>[MaxMeshes];
-		indices = new List<int>[MaxMeshes];
-		colors = new List<Color32>[MaxMeshes];
+		vertices = new List<Vector3>[count];
+		uvs = new List<Vector2>[count];
+		indices = new List<int>[count];
+		colors = new List<Color32>[count];
 
-		for (int i = 0; i < MaxMeshes; i++)
+		for (int i = 0; i < count; i++)
 		{
 			vertices[i] = new List<Vector3>(512);
 			uvs[i] = new List<Vector2>(512);
@@ -65,7 +63,7 @@ public class MeshData
 
 	public void Clear()
 	{
-		for (int i = 0; i < MaxMeshes; i++)
+		for (int i = 0; i < BoardManager.MaxMeshes; i++)
 		{
 			vertices[i].Clear();
 			uvs[i].Clear();

@@ -16,11 +16,9 @@ public sealed class TeleportFunction : Function
 		if (!GetInteger(args[2], out x)) return;
 		if (!GetInteger(args[3], out y)) return;
 
-		Tile tile = boardManager.GetTileSafe(0, x, y);
-
-		if (tile.ID == 0) 
+		if (!boardManager.IsPassable(x, y)) 
 		{
-			ErrorHandler.LogText("Command Error: attempted to move the entity to an invalid tile.");
+			ErrorHandler.LogText("Command Error: attempted to move the entity to an impassable tile.");
 			return;
 		}
 
