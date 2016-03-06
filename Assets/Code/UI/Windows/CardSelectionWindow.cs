@@ -10,7 +10,7 @@ public sealed class CardSelectionWindow : Window
 
 	private void DoneHandler(int data)
 	{
-		boardManager.ReplaceAllowedList();
+		map.ReplaceAllowedList();
 
 		gameObject.SetActive(false);
 		UIStore.GetGraphic("BoardSettings").SetActive(true);
@@ -18,6 +18,6 @@ public sealed class CardSelectionWindow : Window
 
 	private void CardToggled(int cardID)
 	{
-		boardManager.ToggleCard(cardID);
+		map.ToggleCard(cardID);
 	}
 }

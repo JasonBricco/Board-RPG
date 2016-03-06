@@ -2,7 +2,7 @@
 
 public class Window : MonoBehaviour, IUpdatable
 {
-	[SerializeField] protected Map boardManager;
+	[SerializeField] protected Map map;
 	protected KeyCode enableKey = KeyCode.Alpha0;
 
 	public virtual void Initialize()

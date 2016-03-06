@@ -6,7 +6,7 @@ public enum CameraMode { Free, Follow }
 [RequireComponent(typeof(Camera))]
 public sealed class CameraControl : MonoBehaviour
 {
-	[SerializeField] private Map boardManager;
+	[SerializeField] private Map map;
 
 	private GameObject cameraToggle;
 
@@ -67,7 +67,7 @@ public sealed class CameraControl : MonoBehaviour
 		if (StateManager.CurrentState == GameState.Window) return;
 
 		if (mode == CameraMode.Follow)	
-			transform.SetXY(Vector3.Lerp(transform.position, boardManager.CurrentEntity.Position, Time.deltaTime * 5.0f));
+			transform.SetXY(Vector3.Lerp(transform.position, map.CurrentEntity.Position, Time.deltaTime * 5.0f));
 		else
 		{
 			float x = Input.GetAxis("Horizontal");

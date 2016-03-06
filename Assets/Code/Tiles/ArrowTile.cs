@@ -55,12 +55,12 @@ public class ArrowTile : OverlayTile
 		Vector2i start = new Vector2i(tX, tY);
 		Vector2i end = boardManager.GetLineEnd(start, dir);
 
-		entity.RemainingMoves = 0;
+		entity.remainingMoves = 0;
 
 		if (end.Equals(start))
 			return;
 
-		entity.Wait = true;
+		entity.wait = true;
 		entity.StartCoroutine(entity.SlideTo(end, dir));
 	}
 

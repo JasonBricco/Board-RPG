@@ -11,7 +11,7 @@ public class CardTile : OverlayTile
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		if (entity.RemainingMoves == 0)
+		if (entity.remainingMoves == 0)
 			boardManager.DrawCard(entity);
 	}
 }

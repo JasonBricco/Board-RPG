@@ -24,17 +24,7 @@ public sealed class ForwardFiveCard : Card
 
 	public override void RunFunction(Entity entity)
 	{
-		entity.RemainingMoves = 5;
-	}
-}
-
-public sealed class FlipCard : Card
-{
-	public FlipCard(Sprite sprite, Map manager) : base(sprite, manager) {}
-
-	public override void RunFunction(Entity entity)
-	{
-		entity.Flip();
+		// TODO
 	}
 }
 
@@ -58,7 +48,7 @@ public sealed class ExtraRollCard : Card
 
 	public override void RunFunction(Entity entity)
 	{
-		entity.RemainingMoves = entity.GetDieRoll();
+		// TODO
 	}
 }
 
@@ -68,24 +58,7 @@ public sealed class DoubleRollsCard : Card
 
 	public override void RunFunction(Entity entity)
 	{
-		entity.SetDiceMod(DoubledRoll);
-
-		Data data = new Data();
-		data.num0 = entity.EntityID;
-
-		boardManager.WaitForTurns(entity.EntityID, 4, data, EndEffect);
-	}
-
-	private int DoubledRoll()
-	{
-		return Random.Range(2, 13);
-	}
-
-	private void EndEffect(Data data)
-	{
-		Entity entity = boardManager.GetEntity(data.num0);
-
-		entity.SetDiceMod(null);
+		// TODO
 	}
 }
 
@@ -95,24 +68,7 @@ public sealed class HalfRollsCard : Card
 
 	public override void RunFunction(Entity entity)
 	{
-		entity.SetDiceMod(HalvedRoll);
-
-		Data data = new Data();
-		data.num0 = entity.EntityID;
-
-		boardManager.WaitForTurns(entity.EntityID, 4, data, EndEffect);
-	}
-
-	private int HalvedRoll()
-	{
-		return Random.Range(1, 4);
-	}
-
-	private void EndEffect(Data data)
-	{
-		Entity entity = boardManager.GetEntity(data.num0);
-
-		entity.SetDiceMod(null);
+		// TODO
 	}
 }
 

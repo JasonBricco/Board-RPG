@@ -42,11 +42,11 @@ public class RandomArrowTile : OverlayTile
 
 		Vector2i end = boardManager.GetLineEnd(start, dir);
 
-		entity.RemainingMoves = 0;
+		entity.remainingMoves = 0;
 
 		if (end.Equals(start)) return;
 
-		entity.Wait = true;
+		entity.wait = true;
 		entity.StartCoroutine(entity.SlideTo(end, dir));
 	}
 }

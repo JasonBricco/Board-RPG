@@ -61,7 +61,7 @@ public class TileType
 
 	public virtual void OnEnter(int tX, int tY, Entity entity)
 	{
-		entity.Wait = false;
+		entity.wait = false;
 	}
 
 	public virtual void SetUVs(Tile tile, MeshData data)

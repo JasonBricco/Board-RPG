@@ -15,6 +15,6 @@ public sealed class SetMovesFunction : Function
 
 		moves = Mathf.Clamp(moves, 0, 100);
 
-		if (TryGetEntity(entityID, entity)) entity.RemainingMoves = moves;
+		if (TryGetEntity(entityID, entity)) entity.remainingMoves = moves;
 	}
 }

@@ -699,7 +699,7 @@ public sealed class Map : MonoBehaviour, IUpdatable
 	{
 		if (allowedCards.Count == 0) return;
 
-		entity.Wait = true;
+		entity.wait = true;
 
 		Card card = allowedCards[Random.Range(0, allowedCards.Count)];
 		currentCardImage.sprite = card.sprite;
@@ -713,7 +713,7 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		yield return new WaitForSeconds(2.0f);
 
 		currentCardImage.enabled = false;
-		entity.Wait = false;
+		entity.wait = false;
 
 		if (StateManager.CurrentState == GameState.Playing)
 		{
@@ -745,12 +745,11 @@ public sealed class Map : MonoBehaviour, IUpdatable
 	private void CreateCards()
 	{
 		cards[0] = new ForwardFiveCard(cardSprites[0], this);
-		cards[1] = new FlipCard(cardSprites[1], this);
-		cards[2] = new SwapCard(cardSprites[2], this);
-		cards[3] = new ExtraRollCard(cardSprites[3], this);
-		cards[4] = new DoubleRollsCard(cardSprites[4], this);
-		cards[5] = new HalfRollsCard(cardSprites[5], this);
-		cards[6] = new SkipTurnCard(cardSprites[6], this);
+		cards[2] = new SwapCard(cardSprites[1], this);
+		cards[3] = new ExtraRollCard(cardSprites[2], this);
+		cards[4] = new DoubleRollsCard(cardSprites[3], this);
+		cards[5] = new HalfRollsCard(cardSprites[4], this);
+		cards[6] = new SkipTurnCard(cardSprites[5], this);
 
 		for (int i = 0; i < cards.Length; i++)
 			allowedCards.Add(cards[i]);
@@ -766,8 +765,6 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		functions.Add("Timer", new TimerFunction(this));
 		functions.Add("SetLine", new SetLineFunction(this));
 		functions.Add("SetSquare", new SetSquareFunction(this));
-		functions.Add("Flip", new FlipFunction(this));
-		functions.Add("Flipped", new FlippedFunction(this));
 		functions.Add("If", new IfFunction(this));
 		functions.Add("TeleportInArea", new TeleportInAreaFunction(this));
 		functions.Add("Repeat", new RepeatFunction(this));

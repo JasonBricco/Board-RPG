@@ -20,7 +20,7 @@ public class LandTriggerTile : OverlayTile
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		if (entity.RemainingMoves == 0)
+		if (entity.remainingMoves == 0)
 			processor.Process(tX, tY, entity);
 	}
 
