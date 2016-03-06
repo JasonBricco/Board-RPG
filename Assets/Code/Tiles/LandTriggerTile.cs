@@ -4,7 +4,7 @@ public class LandTriggerTile : OverlayTile
 {
 	private CommandProcessor processor;
 
-	public LandTriggerTile(ushort ID, int mesh, BoardManager manager, CommandProcessor processor) : base(manager)
+	public LandTriggerTile(ushort ID, int mesh, Map manager, CommandProcessor processor) : base(manager)
 	{
 		this.processor = processor;
 

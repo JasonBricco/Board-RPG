@@ -4,7 +4,7 @@ public class ArrowTile : OverlayTile
 {
 	private ushort orientation = 0;
 
-	public ArrowTile(ushort ID, int mesh, BoardManager manager) : base(manager)
+	public ArrowTile(ushort ID, int mesh, Map manager) : base(manager)
 	{
 		name = "Arrow";
 		tileID = ID;

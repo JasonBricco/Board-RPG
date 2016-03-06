@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public class Card
 {
-	protected BoardManager boardManager;
+	protected Map boardManager;
 	public Sprite sprite;
 	public bool allowed = true;
 
-	public Card(Sprite sprite, BoardManager boardManager)
+	public Card(Sprite sprite, Map boardManager)
 	{
 		this.sprite = sprite;
 		this.boardManager = boardManager;
@@ -20,7 +20,7 @@ public class Card
 
 public sealed class ForwardFiveCard : Card
 {
-	public ForwardFiveCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public ForwardFiveCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{
@@ -30,7 +30,7 @@ public sealed class ForwardFiveCard : Card
 
 public sealed class FlipCard : Card
 {
-	public FlipCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public FlipCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{
@@ -40,7 +40,7 @@ public sealed class FlipCard : Card
 
 public sealed class SwapCard : Card 
 {
-	public SwapCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public SwapCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{
@@ -54,7 +54,7 @@ public sealed class SwapCard : Card
 
 public sealed class ExtraRollCard : Card 
 {
-	public ExtraRollCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public ExtraRollCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{
@@ -64,7 +64,7 @@ public sealed class ExtraRollCard : Card
 
 public sealed class DoubleRollsCard : Card 
 {
-	public DoubleRollsCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public DoubleRollsCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{
@@ -91,7 +91,7 @@ public sealed class DoubleRollsCard : Card
 
 public sealed class HalfRollsCard : Card 
 {
-	public HalfRollsCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public HalfRollsCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{
@@ -118,7 +118,7 @@ public sealed class HalfRollsCard : Card
 
 public sealed class SkipTurnCard : Card 
 {
-	public SkipTurnCard(Sprite sprite, BoardManager manager) : base(sprite, manager) {}
+	public SkipTurnCard(Sprite sprite, Map manager) : base(sprite, manager) {}
 
 	public override void RunFunction(Entity entity)
 	{

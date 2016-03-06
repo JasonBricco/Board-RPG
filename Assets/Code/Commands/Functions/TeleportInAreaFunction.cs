@@ -2,7 +2,7 @@
 
 public class TeleportInAreaFunction : Function 
 {
-	public TeleportInAreaFunction(BoardManager manager) : base(manager) {}
+	public TeleportInAreaFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

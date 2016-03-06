@@ -4,7 +4,7 @@ public class TriggerTile : OverlayTile
 {
 	private CommandProcessor processor;
 
-	public TriggerTile(ushort ID, int mesh, BoardManager manager, CommandProcessor processor) : base(manager)
+	public TriggerTile(ushort ID, int mesh, Map manager, CommandProcessor processor) : base(manager)
 	{
 		this.processor = processor;
 		name = "Trigger (F)";

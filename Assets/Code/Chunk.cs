@@ -6,7 +6,7 @@ public sealed class Chunk
 	public const int SizeBits = 4;
 	public const int Size = 1 << SizeBits;
 
-	private BoardManager boardManager;
+	private Map boardManager;
 
 	private Tile[][] tiles = new Tile[2][];
 
@@ -26,11 +26,11 @@ public sealed class Chunk
 		get { return worldPos; }
 	}
 
-	public Chunk(int cX, int cY, BoardManager manager)
+	public Chunk(int cX, int cY, Map manager)
 	{
 		this.boardManager = manager;
 
-		meshes = new Mesh[BoardManager.MaxMeshes];
+		meshes = new Mesh[Map.MaxMeshes];
 
 		if (meshData == null)
 			meshData = new MeshData(manager);
@@ -60,12 +60,12 @@ public sealed class Chunk
 		if (tiles[1][index].ID != 0)
 		{
 			boardManager.GetTileType(tiles[1][index]).OnDeleted(new Vector2i(tX, tY));
-			tiles[1][index] = new Tile(0);
+			tiles[1][index] = Tiles.Air;
 		}
 		else
 		{
 			boardManager.GetTileType(tiles[0][index]).OnDeleted(new Vector2i(tX, tY));
-			tiles[0][index] = new Tile(0);
+			tiles[0][index] = Tiles.Air;
 		}
 	}
 
@@ -127,9 +127,9 @@ public sealed class Chunk
 		BuildMesh();
 	}
 
-	public void Save(BoardData data)
+	public void Save(MapData data)
 	{
-		int pos = (chunkPos.y * BoardManager.WidthInChunks) + chunkPos.x;
+		int pos = (chunkPos.y * Map.WidthInChunks) + chunkPos.x;
 		data.savedChunks.Add(pos);
 
 		ChunkData saveData = new ChunkData();

@@ -3,7 +3,7 @@ using System;
 
 public sealed class SetTileFunction : Function
 {
-	public SetTileFunction(BoardManager manager) : base(manager) {}
+	public SetTileFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

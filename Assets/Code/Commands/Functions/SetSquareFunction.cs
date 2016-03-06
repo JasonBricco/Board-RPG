@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public sealed class SetSquareFunction : Function 
 {
-	public SetSquareFunction(BoardManager manager) : base(manager) {}
+	public SetSquareFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

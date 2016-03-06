@@ -3,7 +3,7 @@ using System;
 
 public sealed class RepeatFunction : Function
 {
-	public RepeatFunction(BoardManager manager) : base(manager) {}
+	public RepeatFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

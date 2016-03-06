@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public sealed class CommandProcessor : MonoBehaviour
 {
-	[SerializeField] private BoardManager boardManager;
+	[SerializeField] private Map boardManager;
 
 	private Dictionary<Vector2i, string> triggerData = new Dictionary<Vector2i, string>();
 
@@ -29,7 +29,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		editorField = codeEditor.GetComponent<CodeEditor>();
 	}
 
-	private void SaveCommands(BoardData data)
+	private void SaveCommands(MapData data)
 	{
 		if (editorOpen) CreateTriggerData(currentPos, editorField.text);
 
@@ -40,7 +40,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		}
 	}
 
-	private void LoadCommands(BoardData data)
+	private void LoadCommands(MapData data)
 	{
 		triggerData.Clear();
 

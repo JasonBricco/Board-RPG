@@ -3,7 +3,7 @@ using System;
 
 public sealed class TeleportFunction : Function
 {
-	public TeleportFunction(BoardManager manager) : base(manager) {}
+	public TeleportFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

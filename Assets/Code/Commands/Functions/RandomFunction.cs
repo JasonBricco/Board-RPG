@@ -2,7 +2,7 @@
 
 public sealed class RandomFunction : Function
 {
-	public RandomFunction(BoardManager manager) : base(manager)
+	public RandomFunction(Map manager) : base(manager)
 	{
 		type = FunctionType.Value;
 	}

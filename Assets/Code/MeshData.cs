@@ -8,9 +8,9 @@ public class MeshData
 	private List<int>[] indices;
 	private List<Color32>[] colors;
 
-	public MeshData(BoardManager manager)
+	public MeshData(Map manager)
 	{
-		int count = BoardManager.MaxMeshes;
+		int count = Map.MaxMeshes;
 
 		vertices = new List<Vector3>[count];
 		uvs = new List<Vector2>[count];
@@ -63,7 +63,7 @@ public class MeshData
 
 	public void Clear()
 	{
-		for (int i = 0; i < BoardManager.MaxMeshes; i++)
+		for (int i = 0; i < Map.MaxMeshes; i++)
 		{
 			vertices[i].Clear();
 			uvs[i].Clear();

@@ -21,7 +21,7 @@ public sealed class WaitingFunction
 
 public class Function
 {
-	protected BoardManager boardManager;
+	protected Map boardManager;
 	private static GameObject engine;
 
 	protected FunctionType type = FunctionType.Main;
@@ -29,7 +29,7 @@ public class Function
 
 	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
 
-	public Function(BoardManager manager)
+	public Function(Map manager)
 	{
 		this.boardManager = manager;
 	}

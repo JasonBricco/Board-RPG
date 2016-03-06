@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public sealed class SetLineFunction : Function 
 {
-	public SetLineFunction(BoardManager manager) : base(manager) {}
+	public SetLineFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

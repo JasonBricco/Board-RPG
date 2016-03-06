@@ -2,7 +2,7 @@
 
 public class SkipFunction : Function 
 {
-	public SkipFunction(BoardManager manager) : base(manager) {}
+	public SkipFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

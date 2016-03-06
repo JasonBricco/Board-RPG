@@ -3,7 +3,7 @@ using System;
 
 public class IfFunction : Function 
 {
-	public IfFunction(BoardManager manager) : base(manager) {}
+	public IfFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

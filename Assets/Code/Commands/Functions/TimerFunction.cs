@@ -3,7 +3,7 @@ using System;
 
 public sealed class TimerFunction : Function
 {
-	public TimerFunction(BoardManager manager) : base(manager) {}
+	public TimerFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

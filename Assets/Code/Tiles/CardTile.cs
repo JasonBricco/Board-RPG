@@ -2,7 +2,7 @@
 
 public class CardTile : OverlayTile 
 {
-	public CardTile(ushort ID, int mesh, BoardManager manager) : base(manager)
+	public CardTile(ushort ID, int mesh, Map manager) : base(manager)
 	{
 		name = "Card";
 		tileID = ID;

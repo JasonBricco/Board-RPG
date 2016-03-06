@@ -2,7 +2,7 @@
 
 public class RespawnFunction : Function 
 {
-	public RespawnFunction(BoardManager manager) : base(manager) {}
+	public RespawnFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

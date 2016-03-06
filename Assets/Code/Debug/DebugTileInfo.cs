@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class DebugTileInfo : MonoBehaviour 
 {
-	[SerializeField] private BoardManager boardManager;
+	[SerializeField] private Map boardManager;
 	[SerializeField] private Text posLabel;
 
 	private void Awake()

@@ -2,7 +2,7 @@
 
 public class SetDataFunction : Function 
 {
-	public SetDataFunction(BoardManager manager) : base(manager) {}
+	public SetDataFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

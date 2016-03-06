@@ -8,7 +8,7 @@ public class Entity : MonoBehaviour
 {
 	protected int entityID; 
 
-	protected BoardManager boardManager;
+	protected Map boardManager;
 
 	private float speed = 160.0f;
 
@@ -41,7 +41,7 @@ public class Entity : MonoBehaviour
 	public int RemainingMoves { get; set; }
 	public bool Wait { get; set; }
 
-	public void SetReferences(int entityID, BoardManager boardManager)
+	public void SetReferences(int entityID, Map boardManager)
 	{
 		this.entityID = entityID;
 		this.boardManager = boardManager;

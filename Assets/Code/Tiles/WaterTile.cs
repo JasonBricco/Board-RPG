@@ -5,7 +5,7 @@ public class WaterTile : OverlayTile
 	private int primaryMeshIndex;
 	private int secondaryMeshIndex;
 
-	public WaterTile(ushort ID, int mesh0, int mesh1, BoardManager manager) : base(manager)
+	public WaterTile(ushort ID, int mesh0, int mesh1, Map manager) : base(manager)
 	{
 		name = "Water";
 		tileID = ID;

@@ -3,7 +3,7 @@ using System.IO;
 
 public class Serializer : MonoBehaviour 
 {
-	public delegate void SerializationDelegate(BoardData data);
+	public delegate void SerializationDelegate(MapData data);
 
 	private static event SerializationDelegate OnSave;
 	private static event SerializationDelegate OnLoad;
@@ -25,7 +25,7 @@ public class Serializer : MonoBehaviour
 
 	public static void Save()
 	{
-		BoardData data = new BoardData();
+		MapData data = new MapData();
 
 		if (OnSave != null) 
 			OnSave(data);
@@ -46,7 +46,7 @@ public class Serializer : MonoBehaviour
 		{
 			StreamReader reader = new StreamReader(path);
 			string json = reader.ReadToEnd();
-			BoardData data = JsonUtility.FromJson<BoardData>(json);
+			MapData data = JsonUtility.FromJson<MapData>(json);
 			reader.Close();
 
 			if (OnLoad != null)

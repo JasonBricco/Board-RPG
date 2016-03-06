@@ -6,7 +6,7 @@ public class TileType
 	public const int Size = 1 << SizeBits;
 	public const int HalfSize = Size / 2;
 
-	protected BoardManager boardManager;
+	protected Map boardManager;
 
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
 
@@ -20,7 +20,7 @@ public class TileType
 	public int MeshIndex { get { return meshIndex; } }
 	public int Layer { get { return layer; } }
 
-	public TileType(BoardManager manager)
+	public TileType(Map manager)
 	{
 		this.boardManager = manager;
 	}

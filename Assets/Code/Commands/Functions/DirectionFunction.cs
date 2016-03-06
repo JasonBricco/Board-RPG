@@ -2,7 +2,7 @@
 
 public class DirectionFunction : Function 
 {
-	public DirectionFunction(BoardManager manager) : base(manager)
+	public DirectionFunction(Map manager) : base(manager)
 	{
 		type = FunctionType.Value;
 	}

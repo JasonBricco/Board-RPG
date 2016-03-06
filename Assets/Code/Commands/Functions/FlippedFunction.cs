@@ -2,7 +2,7 @@
 
 public class FlippedFunction : Function 
 {
-	public FlippedFunction(BoardManager manager) : base(manager)
+	public FlippedFunction(Map manager) : base(manager)
 	{
 		type = FunctionType.Value;
 	}

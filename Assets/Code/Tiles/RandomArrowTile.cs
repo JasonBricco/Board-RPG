@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class RandomArrowTile : OverlayTile 
 {
-	public RandomArrowTile(ushort ID, int mesh, BoardManager manager) : base(manager)
+	public RandomArrowTile(ushort ID, int mesh, Map manager) : base(manager)
 	{
 		name = "Random Arrow";
 		tileID = ID;

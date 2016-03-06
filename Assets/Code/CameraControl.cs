@@ -6,7 +6,7 @@ public enum CameraMode { Free, Follow }
 [RequireComponent(typeof(Camera))]
 public sealed class CameraControl : MonoBehaviour
 {
-	[SerializeField] private BoardManager boardManager;
+	[SerializeField] private Map boardManager;
 
 	private GameObject cameraToggle;
 
@@ -22,9 +22,9 @@ public sealed class CameraControl : MonoBehaviour
 		float horizontal = vertical * Screen.width / Screen.height;
 
 		minX = horizontal - TileType.HalfSize;
-		maxX = (BoardManager.Size * TileType.Size) - horizontal - TileType.HalfSize;
+		maxX = (Map.Size * TileType.Size) - horizontal - TileType.HalfSize;
 		minZ = vertical - TileType.HalfSize;
-		maxZ = (BoardManager.Size * TileType.Size) - vertical - TileType.HalfSize;
+		maxZ = (Map.Size * TileType.Size) - vertical - TileType.HalfSize;
 
 		cameraToggle = UIStore.GetGraphic("CameraToggle");
 

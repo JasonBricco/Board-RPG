@@ -2,7 +2,7 @@
 
 public sealed class SetMovesFunction : Function
 {
-	public SetMovesFunction(BoardManager manager) : base(manager) {}
+	public SetMovesFunction(Map manager) : base(manager) {}
 
 	public override void Compute(string[] args, Entity entity)
 	{

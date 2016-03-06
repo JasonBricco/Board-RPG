@@ -2,7 +2,7 @@
 
 public class StartTile : OverlayTile 
 {
-	public StartTile(ushort ID, int mesh, BoardManager manager) : base(manager)
+	public StartTile(ushort ID, int mesh, Map manager) : base(manager)
 	{
 		name = "Start";
 		tileID = ID;

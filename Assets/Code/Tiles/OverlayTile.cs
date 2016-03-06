@@ -2,7 +2,7 @@
 
 public class OverlayTile : TileType 
 {
-	public OverlayTile(BoardManager manager) : base(manager)
+	public OverlayTile(Map manager) : base(manager)
 	{
 		layer = 1;
 	}

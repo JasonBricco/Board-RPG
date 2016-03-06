@@ -10,7 +10,7 @@ public class BorderTile : OverlayTile
 
 	private ushort[] dataOrder = { 0, 4, 1, 5, 2, 6, 3, 7 };
 
-	public BorderTile(ushort ID, int mesh0, int mesh1, BoardManager manager) : base(manager)
+	public BorderTile(ushort ID, int mesh0, int mesh1, Map manager) : base(manager)
 	{
 		name = "Border";
 		tileID = ID;

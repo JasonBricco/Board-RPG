@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
-public sealed class BoardManager : MonoBehaviour, IUpdatable
+public sealed class Map : MonoBehaviour, IUpdatable
 {
 	public const int Size = 256;
 	public const int WidthInChunks = Size / Chunk.Size;
@@ -575,7 +575,7 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		processor.ClearAll();
 	}
 
-	private void SaveTiles(BoardData data)
+	private void SaveTiles(MapData data)
 	{
 		for (int x = 0; x < chunks.GetLength(0); x++)
 		{
@@ -589,13 +589,13 @@ public sealed class BoardManager : MonoBehaviour, IUpdatable
 		}
 	}
 
-	private void LoadTiles(BoardData data)
+	private void LoadTiles(MapData data)
 	{
 		for (int i = 0; i < data.savedChunks.Count; i++)
 		{
 			int pos = data.savedChunks[i];
-			int cX = pos & (BoardManager.WidthInChunks - 1);
-			int cY = (pos >> 4) & (BoardManager.WidthInChunks - 1);
+			int cX = pos & (Map.WidthInChunks - 1);
+			int cY = (pos >> 4) & (Map.WidthInChunks - 1);
 
 			Chunk chunk = new Chunk(cX, cY, this);
 			chunks[cX, cY] = chunk;

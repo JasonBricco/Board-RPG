@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public class BoardData
+public class MapData
 {
 	public List<int> savedChunks = new List<int>();
 	public List<string> chunkData = new List<string>();
