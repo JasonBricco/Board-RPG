@@ -7,7 +7,9 @@ public delegate int DiceMod();
 public class Entity : MonoBehaviour
 {
 	protected EntityManager manager;
-	protected int entityID; 
+
+	protected int entityID;
+	public int EntityID { get { return entityID; } }
 
 	private float speed = 160.0f;
 
@@ -16,18 +18,14 @@ public class Entity : MonoBehaviour
 
 	protected Pathfinder pathfinder;
 
-	public Vector2 Position
-	{
-		get { return transform.position; }
-	}
-
-	public int EntityID 
-	{ 
-		get { return entityID; } 
-	}
+	public Vector2 Position { get { return transform.position; } }
 
 	public int MP = 5;
-	public int remainingMoves;
+	public int remainingMP;
+
+	protected int targetMP;
+	public int TargetMP { get { return targetMP; } }
+
 	public bool wait;
 
 	public void SetReferences(int entityID, EntityManager manager, Pathfinder pathfinder)
@@ -58,7 +56,8 @@ public class Entity : MonoBehaviour
 		}
 
 		transform.position = target;
-		remainingMoves--;
+		remainingMP--;
+		targetMP--;
 		TriggerTileFunction();
 
 		while (wait) yield return null;

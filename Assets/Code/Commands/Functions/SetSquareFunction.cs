@@ -44,16 +44,19 @@ public sealed class SetSquareFunction : Function
 		}
 
 		for (int x = startX; x <= endX; x++)
-			points.Add(new Vector2i(x, startY));
+		{
+			for (int y = startY; y <= endY; y++)
+				points.Add(new Vector2i(x, y));
+		}
 
-		for (int x = startX; x <= endX; x++)
-			points.Add(new Vector2i(x, endY));
-
-		for (int y = startY + 1; y < endY; y++)
-			points.Add(new Vector2i(startX, y));
-
-		for (int y = startY + 1; y < endY; y++)
-			points.Add(new Vector2i(endX, y));
+//		for (int x = startX; x <= endX; x++)
+//			points.Add(new Vector2i(x, endY));
+//
+//		for (int y = startY + 1; y < endY; y++)
+//			points.Add(new Vector2i(startX, y));
+//
+//		for (int y = startY + 1; y < endY; y++)
+//			points.Add(new Vector2i(endX, y));
 		
 		Map.SetMultipleTiles(points, new Tile(tile.ID));
 		EventManager.Notify("ValidateEntities", null);

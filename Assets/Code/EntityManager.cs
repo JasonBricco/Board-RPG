@@ -96,13 +96,13 @@ public class EntityManager : MonoBehaviour
 	private void SetEntityMoves(Data data)
 	{
 		if (data.entity != null)
-			data.entity.remainingMoves = data.num;
+			data.entity.remainingMP = data.num;
 		else
 		{
 			if (!IsValidEntity(data.num))
 				return;
 
-			entityList[data.num].remainingMoves = data.secondNum;
+			entityList[data.num].remainingMP = data.secondNum;
 		}
 	}
 

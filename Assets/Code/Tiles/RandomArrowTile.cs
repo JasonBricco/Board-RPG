@@ -44,7 +44,7 @@ public class RandomArrowTile : OverlayTile
 
 		Vector2i end = Utils.GetLineEnd(start, dir);
 
-		entity.remainingMoves = 0;
+		entity.remainingMP = 0;
 
 		if (end.Equals(start)) return;
 

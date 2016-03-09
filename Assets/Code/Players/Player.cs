@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public sealed class Player : Entity
 {
 	private GameObject actionPanel;
+	private Button moveButton;
 
 	private Queue<PossibleTile> floodQueue = new Queue<PossibleTile>();
 	private HashSet<Vector2i> filledPositions = new HashSet<Vector2i>();
@@ -15,10 +17,11 @@ public sealed class Player : Entity
 	private void Start()
 	{
 		actionPanel = UIStore.GetGraphic("ActionPanel");
+		moveButton = actionPanel.FindChild("Move").GetComponent<Button>();
 
 		EventManager.StartListening("MovePressed", MoveHandler);
 		EventManager.StartListening("AttackPressed", AttackHandler);
-		EventManager.StartListening("PassPressed", PassHandler);
+		EventManager.StartListening("EndTurnPressed", EndTurnHandler);
 		EventManager.StartListening("TileSelected", TileSelected);
 	}
 
@@ -32,21 +35,25 @@ public sealed class Player : Entity
 		else
 		{
 			if (!beingDeleted)
+			{
+				remainingMP = MP;
 				actionPanel.SetActive(true);
+				moveButton.interactable = true;
+			}
 		}
 	}
 
 	private void MoveHandler(Data data)
 	{
 		actionPanel.SetActive(false);
-		ShowRange(MP);
+		ShowRange(remainingMP);
 	}
 		
 	private void AttackHandler(Data data)
 	{
 	}
 
-	private void PassHandler(Data data)
+	private void EndTurnHandler(Data data)
 	{
 		actionPanel.SetActive(false);
 		manager.NextTurn();
@@ -54,6 +61,8 @@ public sealed class Player : Entity
 
 	private void ShowRange(int range)
 	{
+		if (range == 0) return;
+
 		Vector2i startPos = Utils.TileFromWorldPos(Position);
 
 		PossibleTile startTile = new PossibleTile(startPos, range);
@@ -76,7 +85,10 @@ public sealed class Player : Entity
 				if (filledPositions.Contains(nextPos))
 					continue;
 
-				if (Map.GetTileTypeSafe(1, nextPos.x, nextPos.y).IsPassable(nextPos.x, nextPos.y))
+				if (!Map.InTileBounds(nextPos.x, nextPos.y))
+					continue;
+				
+				if (Map.GetTileType(1, nextPos.x, nextPos.y).IsPassable(nextPos.x, nextPos.y))
 				{
 					floodQueue.Enqueue(new PossibleTile(nextPos, next.remaining - 1));
 					filledPositions.Add(nextPos);
@@ -99,7 +111,10 @@ public sealed class Player : Entity
 		Vector2i start = Utils.TileFromWorldPos(Position);
 		Vector2i end = Utils.TileFromWorldPos(data.position);
 
-		StartCoroutine(FollowPath(pathfinder.FindPath(start, end)));
+		List<Vector2i> path = pathfinder.FindPath(start, end);
+		targetMP = path.Count;
+
+		StartCoroutine(FollowPath(path));
 	}
 
 	private IEnumerator FollowPath(List<Vector2i> path)
@@ -107,7 +122,10 @@ public sealed class Player : Entity
 		for (int i = 0; i < path.Count; i++)
 			yield return StartCoroutine(MoveToPosition(transform.position, Utils.WorldFromTilePos(path[i])));
 
-		manager.NextTurn();
+		if (remainingMP == 0)
+			moveButton.interactable = false;
+		
+		actionPanel.SetActive(true);
 	}
 
 	private void ClearSelections()
@@ -132,7 +150,7 @@ public sealed class Player : Entity
 
 		EventManager.StopListening("MovePressed", MoveHandler);
 		EventManager.StopListening("AttackPressed", AttackHandler);
-		EventManager.StopListening("PassPressed", PassHandler);
+		EventManager.StopListening("EndTurnPressed", EndTurnHandler);
 		EventManager.StopListening("TileSelected", TileSelected);
 
 		actionPanel.SetActive(false);

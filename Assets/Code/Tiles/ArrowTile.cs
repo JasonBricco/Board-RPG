@@ -57,7 +57,7 @@ public class ArrowTile : OverlayTile
 		Vector2i start = new Vector2i(tX, tY);
 		Vector2i end = Utils.GetLineEnd(start, dir);
 
-		entity.remainingMoves = 0;
+		entity.remainingMP = 0;
 
 		if (end.Equals(start))
 			return;
