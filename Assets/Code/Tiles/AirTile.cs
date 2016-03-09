@@ -2,22 +2,19 @@
 
 public sealed class AirTile : TileType 
 {
-	public AirTile(ushort ID, Map manager) : base(manager)
+	public AirTile(ushort ID)
 	{
 		name = "Air";
 		tileID = ID;
 	}
 
-	public override bool IsPassable(int layer, Tile main, Tile overlay)
+	public override bool IsPassable(int x, int y)
 	{
-		if (layer == 0)
-		{
-			if (overlay.Equals(Tiles.Air))
-				return false;
-			
-			return boardManager.GetTileType(overlay).IsPassable(1, main, overlay);
-		}
-		else
-			return true;
+		Tile main = Map.GetTile(0, x, y); 
+
+		if (main.Equals(Tiles.Air))
+			return false;
+		
+		return Map.GetTileType(main).IsPassable(x, y);
 	}
 }

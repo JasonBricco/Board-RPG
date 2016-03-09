@@ -6,34 +6,28 @@ public sealed class Chunk
 	public const int SizeBits = 4;
 	public const int Size = 1 << SizeBits;
 
-	private Map boardManager;
-
 	private Tile[][] tiles = new Tile[2][];
 
 	private Vector2i chunkPos;
 	private Vector3 worldPos;
+	public Vector3 Position { get { return worldPos; } }
 
 	private static MeshData meshData;
 
 	private Queue<Mesh> unloadQueue = new Queue<Mesh>();
 
 	private Mesh[] meshes;
+	private Material[] materials;
 
-	public bool FlaggedForUpdate { get; set; }
-	 
-	public Vector3 Position
+	public bool flaggedForUpdate;
+
+	public Chunk(int cX, int cY)
 	{
-		get { return worldPos; }
-	}
-
-	public Chunk(int cX, int cY, Map manager)
-	{
-		this.boardManager = manager;
-
 		meshes = new Mesh[Map.MaxMeshes];
+		materials = new Material[Map.MaxMeshes];
 
 		if (meshData == null)
-			meshData = new MeshData(manager);
+			meshData = new MeshData();
 
 		tiles[0] = new Tile[Size * Size];
 		tiles[1] = new Tile[Size * Size];
@@ -49,7 +43,7 @@ public sealed class Chunk
 
 	public void SetTile(int lX, int lY, Tile tile)
 	{
-		int layer = boardManager.GetTileType(tile).Layer;
+		int layer = Map.GetTileType(tile).Layer;
 		tiles[layer][(lY * Size) + lX] = tile;
 	}
 
@@ -59,19 +53,19 @@ public sealed class Chunk
 
 		if (tiles[1][index].ID != 0)
 		{
-			boardManager.GetTileType(tiles[1][index]).OnDeleted(new Vector2i(tX, tY));
+			Map.GetTileType(tiles[1][index]).OnDeleted(new Vector2i(tX, tY));
 			tiles[1][index] = Tiles.Air;
 		}
 		else
 		{
-			boardManager.GetTileType(tiles[0][index]).OnDeleted(new Vector2i(tX, tY));
+			Map.GetTileType(tiles[0][index]).OnDeleted(new Vector2i(tX, tY));
 			tiles[0][index] = Tiles.Air;
 		}
 	}
 
 	public void BuildMesh()
 	{
-		FlaggedForUpdate = false;
+		flaggedForUpdate = false;
 
 		for (int lX = 0; lX < Size; lX++)
 		{
@@ -83,10 +77,10 @@ public sealed class Chunk
 				Tile overlay = GetTile(1, lX, lY);
 
 				if (tile.ID != 0)
-					boardManager.GetTileType(tile).Build(tile, tX, tY, meshData);
+					Map.GetTileType(tile).Build(tile, tX, tY, meshData);
 
 				if (overlay.ID != 0)
-					boardManager.GetTileType(overlay).Build(overlay, tX, tY, meshData);
+					Map.GetTileType(overlay).Build(overlay, tX, tY, meshData);
 			}
 		}
 
@@ -94,6 +88,7 @@ public sealed class Chunk
 		{
 			unloadQueue.Enqueue(meshes[i]);
 			meshes[i] = meshData.GetMesh(i);
+			materials[i] = meshData.GetMaterial(i);
 		}
 
 		meshData.Clear();
@@ -104,7 +99,7 @@ public sealed class Chunk
 		for (int i = 0; i < meshes.Length; i++)
 		{
 			if (meshes[i] != null)
-				Graphics.DrawMesh(meshes[i], worldPos, Quaternion.identity, boardManager.GetMaterial(i), 0);
+				Graphics.DrawMesh(meshes[i], worldPos, Quaternion.identity, materials[i], 0);
 		}
 
 		while (unloadQueue.Count > 0)

@@ -2,6 +2,7 @@
 {
 	Properties 
 	{
+		_ID("ID", Int) = 0
 		_MainTex("Base (RGB) Trans (A)", 2D) = "white" {}
 	}
 	

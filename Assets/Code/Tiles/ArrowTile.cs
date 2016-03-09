@@ -4,22 +4,24 @@ public class ArrowTile : OverlayTile
 {
 	private ushort orientation = 0;
 
-	public ArrowTile(ushort ID, int mesh, Map manager) : base(manager)
+	public ArrowTile(ushort ID)
 	{
 		name = "Arrow";
 		tileID = ID;
-		meshIndex = mesh;
+
+		material = Resources.Load<Material>("TileMaterials/Arrow");
+		meshIndex = material.GetInt("_ID");
 	}
 
 	public override void OnFunction(Vector2i pos)
 	{
-		Tile tile = boardManager.GetTile(1, pos.x, pos.y);
+		Tile tile = Map.GetTile(1, pos.x, pos.y);
 
 		orientation = (ushort)((tile.Data + 1) & 3);
-		boardManager.SetTileFast(pos, new Tile(tileID, orientation));
+		Map.SetTileFast(pos, new Tile(tileID, orientation));
 
-		boardManager.FlagChunkForRebuild(pos);
-		boardManager.RebuildChunks();
+		Map.FlagChunkForRebuild(pos);
+		Map.RebuildChunks();
 	}
 
 	public override Tile Preprocess(Tile tile, Vector2i pos)
@@ -30,7 +32,7 @@ public class ArrowTile : OverlayTile
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		ushort data = boardManager.GetTile(1, tX, tY).Data;
+		ushort data = Map.GetTile(1, tX, tY).Data;
 		Vector2i dir = Vector2i.zero;
 
 		switch (data)
@@ -53,7 +55,7 @@ public class ArrowTile : OverlayTile
 		}
 
 		Vector2i start = new Vector2i(tX, tY);
-		Vector2i end = boardManager.GetLineEnd(start, dir);
+		Vector2i end = Utils.GetLineEnd(start, dir);
 
 		entity.remainingMoves = 0;
 

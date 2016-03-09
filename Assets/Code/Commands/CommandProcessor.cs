@@ -7,8 +7,6 @@ using System.Collections.Generic;
 
 public sealed class CommandProcessor : MonoBehaviour
 {
-	[SerializeField] private Map boardManager;
-
 	private Dictionary<Vector2i, string> triggerData = new Dictionary<Vector2i, string>();
 
 	private Char[] delimiters = new char[] { '[', ':', ',', ']' };
@@ -25,6 +23,8 @@ public sealed class CommandProcessor : MonoBehaviour
 		Serializer.ListenForLoad(LoadCommands);
 
 		EventManager.StartListening("CodeFinished", FinishedHandler);
+		EventManager.StartListening("MapCleared", ClearCommands);
+
 		codeEditor = UIStore.GetGraphic("CodeEditor");
 		editorField = codeEditor.GetComponent<CodeEditor>();
 	}
@@ -48,6 +48,11 @@ public sealed class CommandProcessor : MonoBehaviour
 			triggerData.Add(data.triggerKeys[i], data.triggerValues[i]);
 	}
 
+	private void ClearCommands(Data data)
+	{
+		triggerData.Clear();
+	}
+
 	private string GetCommands(Vector2i pos)
 	{
 		string data;
@@ -58,7 +63,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		return String.Empty;
 	}
 		
-	private void FinishedHandler(int data)
+	private void FinishedHandler(Data data)
 	{
 		CreateTriggerData(currentPos, editorField.text);
 		editorField.text = String.Empty;
@@ -69,11 +74,6 @@ public sealed class CommandProcessor : MonoBehaviour
 	public void DeleteCommands(Vector2i pos)
 	{
 		triggerData.Remove(pos);
-	}
-
-	public void ClearAll()
-	{
-		triggerData.Clear();
 	}
 
 	public void LoadEditor(Vector2i pos)
@@ -150,7 +150,7 @@ public sealed class CommandProcessor : MonoBehaviour
 				string[] args = funcString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
 				Function function;
-				bool success = args.Length == 0 ? false : boardManager.TryGetFunction(args[0], out function);
+				bool success = args.Length == 0 ? false : Function.Library.TryGetFunction(args[0], out function);
 
 				if (success)
 				{
@@ -180,7 +180,7 @@ public sealed class CommandProcessor : MonoBehaviour
 				return;
 			}
 
-			Function mainFunction = boardManager.GetFunction(finalArgs[0]);
+			Function mainFunction = Function.Library.GetFunction(finalArgs[0]);
 			mainFunction.Compute(finalArgs, entity);
 		}
 	}

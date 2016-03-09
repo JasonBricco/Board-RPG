@@ -2,17 +2,18 @@
 
 public class StartTile : OverlayTile 
 {
-	public StartTile(ushort ID, int mesh, Map manager) : base(manager)
+	public StartTile(ushort ID)
 	{
 		name = "Start";
 		tileID = ID;
-		meshIndex = mesh;
-		layer = 1;
+	
+		material = Resources.Load<Material>("TileMaterials/Start");
+		meshIndex = material.GetInt("_ID");
 	}
 
 	public override void OnDeleted(Vector2i pos)
 	{
 		if (StateManager.CurrentState == GameState.Playing)
-			boardManager.RemoveStartTile(pos);
+			EventManager.Notify("RemoveStartTile", new Data(pos.ToVector3()));
 	}
 }

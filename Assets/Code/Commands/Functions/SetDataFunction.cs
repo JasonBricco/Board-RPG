@@ -2,8 +2,6 @@
 
 public class SetDataFunction : Function 
 {
-	public SetDataFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 5, "Usage: [SetData: x, y, data]")) return;
@@ -27,16 +25,16 @@ public class SetDataFunction : Function
 			return;
 		}
 
-		if (!boardManager.InTileBounds(x, y))
+		if (!Map.InTileBounds(x, y))
 		{
 			ErrorHandler.LogText("Command Error: tried to set data to a tile outside of the board.");
 			return;
 		}
 
-		Tile oldTile = boardManager.GetTile(layer, x, y);
+		Tile oldTile = Map.GetTile(layer, x, y);
 		Tile newTile = new Tile(oldTile.ID, (ushort)data);
 
 		Vector2i pos = new Vector2i(x, y);
-		boardManager.SetSingleTile(pos, newTile);
+		Map.SetTile(pos, newTile);
 	}
 }

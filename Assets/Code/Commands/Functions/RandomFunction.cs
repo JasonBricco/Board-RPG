@@ -2,10 +2,7 @@
 
 public sealed class RandomFunction : Function
 {
-	public RandomFunction(Map manager) : base(manager)
-	{
-		type = FunctionType.Value;
-	}
+	public RandomFunction() { type = FunctionType.Value; }
 
 	public override string GetValue(string[] args, Entity entity)
 	{

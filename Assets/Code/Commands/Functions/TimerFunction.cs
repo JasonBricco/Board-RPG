@@ -3,7 +3,7 @@ using System;
 
 public sealed class TimerFunction : Function
 {
-	public TimerFunction(Map manager) : base(manager) {}
+	private WaitForTurns waiter = new WaitForTurns();
 
 	public override void Compute(string[] args, Entity entity)
 	{
@@ -15,21 +15,17 @@ public sealed class TimerFunction : Function
 
 		Function function;
 
-		if (boardManager.TryGetFunction(args[2], out function))
+		if (library.TryGetFunction(args[2], out function))
 		{
 			string[] newArgs = new string[args.Length - 2];
 			Array.Copy(args, 2, newArgs, 0, args.Length - 2);
 
-			Data data = new Data();
-			data.strings = newArgs;
-			data.num0 = entity.EntityID;
-
-			boardManager.WaitForTurns(entity.EntityID, turns + 1, data, RunTimedFunction);
+			waiter.Start(entity.EntityID, turns + 1, new Data(turns, newArgs, entity), RunTimedFunction);
 		}
 	}
 
 	private void RunTimedFunction(Data data)
 	{
-		boardManager.GetFunction(data.strings[0]).Compute(data.strings, boardManager.GetEntity(data.num0));
+		library.GetFunction(data.strings[0]).Compute(data.strings, data.entity);
 	}
 }

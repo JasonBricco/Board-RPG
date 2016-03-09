@@ -2,6 +2,7 @@
 {
 	Properties 
 	{
+		_ID("ID", Int) = 0
 		_MainTex ("Base (RGB)", 2D) = "white" {}
 		_MaskTex ("Mask (RGB)", 2D) = "white" {}
 		_Alpha("Base Alpha", float) = 0.5

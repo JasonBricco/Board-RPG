@@ -2,33 +2,37 @@
 
 public class WaterTile : OverlayTile 
 {
-	private int primaryMeshIndex;
-	private int secondaryMeshIndex;
+	private Material materialA, materialB;
+	private int indexA, indexB;
 
-	public WaterTile(ushort ID, int mesh0, int mesh1, Map manager) : base(manager)
+	public WaterTile(ushort ID)
 	{
 		name = "Water";
 		tileID = ID;
 
-		primaryMeshIndex = mesh0;
-		secondaryMeshIndex = mesh1;
-		meshIndex = primaryMeshIndex;
+		materialA = Resources.Load<Material>("TileMaterials/Water");
+		materialB = Resources.Load<Material>("TileMaterials/StoneWater");
+
+		indexA = materialA.GetInt("_ID");
+		indexB = materialB.GetInt("_ID");
 	}
 
 	public override void Build(Tile tile, int tX, int tY, MeshData data)
 	{
-		meshIndex = tile.Data > 0 ? secondaryMeshIndex : primaryMeshIndex;
+		material = tile.Data > 0 ? materialB : materialA;
+		meshIndex = tile.Data > 0 ? indexB : indexA;
+
 		base.Build(tile, tX, tY, data);
 	}
 
 	public override void OnFunction(Vector2i pos)
 	{
-		ushort data = boardManager.GetTile(1, pos.x, pos.y).Data;
+		ushort data = Map.GetTile(1, pos.x, pos.y).Data;
 		Tile newTile = new Tile(tileID, data == 0 ? (ushort)1 : (ushort)0);
 
-		boardManager.SetTileFast(pos, newTile);
-		boardManager.FlagChunkForRebuild(pos);
-		boardManager.RebuildChunks();
+		Map.SetTileFast(pos, newTile);
+		Map.FlagChunkForRebuild(pos);
+		Map.RebuildChunks();
 	}
 
 	public override bool CanAdd(Vector2i pos)
@@ -36,8 +40,8 @@ public class WaterTile : OverlayTile
 		return true;
 	}
 
-	public override bool IsPassable(int layer, Tile main, Tile overlay)
+	public override bool IsPassable(int x, int y)
 	{
-		return overlay.Data != 0;
+		return Map.GetTile(1, x, y).Data != 0;
 	}
 }

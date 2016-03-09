@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 public class RandomTeleportFunction : Function 
 {
-	public RandomTeleportFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 4, "Usage: [RandomTeleport: entityID, x, y, z, w, ...]")) return;
@@ -39,7 +37,7 @@ public class RandomTeleportFunction : Function
 
 		Vector2i randomPoint = points[Random.Range(0, points.Count)];
 
-		if (!boardManager.IsPassable(randomPoint.x, randomPoint.y)) 
+		if (!Map.GetTileType(1, randomPoint.x, randomPoint.y).IsPassable(randomPoint.x, randomPoint.y))
 		{
 			ErrorHandler.LogText("Command Error: Tried to teleport to an impassable tile (RandomTeleport).");
 			return;
@@ -48,7 +46,9 @@ public class RandomTeleportFunction : Function
 		randomPoint.x *= TileType.Size;
 		randomPoint.y *= TileType.Size;
 
-		if (TryGetEntity(entityID, entity))
-			entity.SetTo(new Vector3(randomPoint.x, randomPoint.y));
+		Data data = new Data(entityID);
+		data.position = new Vector3(randomPoint.x, randomPoint.y);
+
+		EventManager.Notify("Teleport", data);
 	}
 }

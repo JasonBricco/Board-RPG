@@ -6,14 +6,15 @@ public delegate int DiceMod();
 
 public class Entity : MonoBehaviour
 {
+	protected EntityManager manager;
 	protected int entityID; 
-
-	protected Map map;
 
 	private float speed = 160.0f;
 
 	protected bool skipTurn = false;
 	protected bool beingDeleted = false;
+
+	protected Pathfinder pathfinder;
 
 	public Vector2 Position
 	{
@@ -25,14 +26,15 @@ public class Entity : MonoBehaviour
 		get { return entityID; } 
 	}
 
-	public int MP = 6;
+	public int MP = 5;
 	public int remainingMoves;
 	public bool wait;
 
-	public void SetReferences(int entityID, Map map)
+	public void SetReferences(int entityID, EntityManager manager, Pathfinder pathfinder)
 	{
+		this.manager = manager;
 		this.entityID = entityID;
-		this.map = map;
+		this.pathfinder = pathfinder;
 	}
 
 	public virtual void BeginTurn() {}
@@ -47,21 +49,6 @@ public class Entity : MonoBehaviour
 		return (current + (direction * TileType.Size)).ToVector3();
 	}
 
-	protected IEnumerator Move(Vector2i dir, Vector2i current)
-	{
-		if (!dir.Equals(Vector2i.zero))
-		{
-			yield return StartCoroutine(MoveToPosition(transform.position, GetTargetPos(current, dir)));
-
-			remainingMoves--;
-			TriggerTileFunction();
-		}
-		else
-			remainingMoves = 0;
-
-		while (wait) yield return null;
-	}
-
 	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)
 	{
 		while ((transform.position - target).magnitude > 0.05f)
@@ -71,13 +58,17 @@ public class Entity : MonoBehaviour
 		}
 
 		transform.position = target;
+		remainingMoves--;
+		TriggerTileFunction();
+
+		while (wait) yield return null;
 	}
 
 	protected void TriggerTileFunction()
 	{
 		Vector2i tPos = Utils.TileFromWorldPos(transform.position);
-		map.GetTileType(0, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
-		map.GetTileType(1, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		Map.GetTileType(0, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
+		Map.GetTileType(1, tPos.x, tPos.y).OnEnter(tPos.x, tPos.y, this);
 	}
 
 	public void SetTo(Vector3 wPos)

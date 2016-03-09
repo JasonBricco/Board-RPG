@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 public sealed class SetLineFunction : Function 
 {
-	public SetLineFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 6, "Usage: [SetLine: startX, startY, endX, endY, tile]")) return;
@@ -21,7 +19,7 @@ public sealed class SetLineFunction : Function
 		endX = Mathf.Clamp(endX, 0, 255);
 		endY = Mathf.Clamp(endY, 0, 255);
 
-		TileType tile = boardManager.GetTileType(args[5]);
+		TileType tile = Map.GetTileType(args[5]);
 
 		if (tile == null)
 		{
@@ -42,7 +40,7 @@ public sealed class SetLineFunction : Function
 			points.Add(new Vector2i(point));
 		}
 			
-		boardManager.SetMultipleTiles(points, new Tile(tile.ID));
-		boardManager.ValidateEntities();
+		Map.SetMultipleTiles(points, new Tile(tile.ID));
+		EventManager.Notify("ValidateEntities", null);
 	}
 }

@@ -2,10 +2,7 @@
 
 public class DirectionFunction : Function 
 {
-	public DirectionFunction(Map manager) : base(manager)
-	{
-		type = FunctionType.Value;
-	}
+	public DirectionFunction() { type = FunctionType.Value; }
 
 	public override string GetValue(string[] args, Entity entity)
 	{

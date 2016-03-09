@@ -2,6 +2,7 @@
 {
 	Properties 
 	{
+		_ID("ID", Int) = 0
 		_MainTex ("Base (RGB)", 2D) = "white" {}
 		_Alpha("Alpha", float) = 0.5
 		_Speed("Speed", float) = 2.0

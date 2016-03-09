@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 public class RandomArrowTile : OverlayTile 
 {
-	public RandomArrowTile(ushort ID, int mesh, Map manager) : base(manager)
+	public RandomArrowTile(ushort ID)
 	{
 		name = "Random Arrow";
 		tileID = ID;
-		meshIndex = mesh;
+
+		material = Resources.Load<Material>("TileMaterials/RandomArrow");
+		meshIndex = material.GetInt("_ID");
 	}
 
 	public override void OnEnter(int tX, int tY, Entity entity)
@@ -29,7 +31,7 @@ public class RandomArrowTile : OverlayTile
 		{
 			Vector2i next = start + dirs[i];
 
-			if (!boardManager.IsPassable(next.x, next.y))
+			if (!Map.GetTileTypeSafe(1, next.x, next.y).IsPassable(next.x, next.y))
 				dirs.RemoveAt(i);
 			else
 			{
@@ -40,7 +42,7 @@ public class RandomArrowTile : OverlayTile
 
 		if (dir.Equals(Vector2i.zero)) return;
 
-		Vector2i end = boardManager.GetLineEnd(start, dir);
+		Vector2i end = Utils.GetLineEnd(start, dir);
 
 		entity.remainingMoves = 0;
 

@@ -3,8 +3,6 @@ using System;
 
 public sealed class TeleportFunction : Function
 {
-	public TeleportFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 4, "Usage: [Teleport: entityID, x, y]")) return;
@@ -16,7 +14,7 @@ public sealed class TeleportFunction : Function
 		if (!GetInteger(args[2], out x)) return;
 		if (!GetInteger(args[3], out y)) return;
 
-		if (!boardManager.IsPassable(x, y)) 
+		if (!Map.GetTileType(1, x, y).IsPassable(x, y)) 
 		{
 			ErrorHandler.LogText("Command Error: attempted to move the entity to an impassable tile.");
 			return;
@@ -25,6 +23,9 @@ public sealed class TeleportFunction : Function
 		x *= TileType.Size;
 		y *= TileType.Size;
 
-		if (TryGetEntity(entityID, entity)) entity.SetTo(new Vector3(x, y));
+		Data data = new Data(entityID);
+		data.position = new Vector3(x, y);
+
+		EventManager.Notify("Teleport", data);
 	}
 }

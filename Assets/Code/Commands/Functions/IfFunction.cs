@@ -3,8 +3,6 @@ using System;
 
 public class IfFunction : Function 
 {
-	public IfFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 3, "Usage: [If: bool, [function: ...]]")) return;
@@ -17,7 +15,7 @@ public class IfFunction : Function
 		{
 			Function function;
 
-			if (boardManager.TryGetFunction(args[2], out function))
+			if (library.TryGetFunction(args[2], out function))
 			{
 				string[] newArgs = new string[args.Length - 2];
 				Array.Copy(args, 2, newArgs, 0, args.Length - 2);

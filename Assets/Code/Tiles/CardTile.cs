@@ -2,16 +2,18 @@
 
 public class CardTile : OverlayTile 
 {
-	public CardTile(ushort ID, int mesh, Map manager) : base(manager)
+	public CardTile(ushort ID)
 	{
 		name = "Card";
 		tileID = ID;
-		meshIndex = mesh;
+
+		material = Resources.Load<Material>("TileMaterials/Card");
+		meshIndex = material.GetInt("_ID");
 	}
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
 		if (entity.remainingMoves == 0)
-			boardManager.DrawCard(entity);
+			EventManager.Notify("DrawCard", new Data(entity));
 	}
 }

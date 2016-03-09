@@ -15,4 +15,5 @@ public sealed class Tiles
 	public static readonly Tile Stopper = new Tile(9);
 	public static readonly Tile RandomArrow = new Tile(10);
 	public static readonly Tile Water = new Tile(11);
+	public static readonly Tile Border = new Tile(12);
 }

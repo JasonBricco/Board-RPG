@@ -10,7 +10,7 @@ public sealed class BoardSettingsWindow : Window
 		Engine.StartUpdating(this);
 	}
 
-	private void SelectingCards(int data)
+	private void SelectingCards(Data data)
 	{
 		gameObject.SetActive(false);
 		UIStore.GetGraphic("CardSelection").SetActive(true);

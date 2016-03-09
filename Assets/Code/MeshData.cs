@@ -3,15 +3,17 @@ using System.Collections.Generic;
 
 public class MeshData 
 {
+	private Material[] materials;
 	private List<Vector3>[] vertices;
 	private List<Vector2>[] uvs;
 	private List<int>[] indices;
 	private List<Color32>[] colors;
 
-	public MeshData(Map manager)
+	public MeshData()
 	{
 		int count = Map.MaxMeshes;
 
+		materials = new Material[count];
 		vertices = new List<Vector3>[count];
 		uvs = new List<Vector2>[count];
 		indices = new List<int>[count];
@@ -24,6 +26,16 @@ public class MeshData
 			indices[i] = new List<int>(1024);
 			colors[i] = new List<Color32>(512);
 		}
+	}
+
+	public void SetMaterial(Material material, int index)
+	{
+		materials[index] = material;
+	}
+
+	public Material GetMaterial(int index)
+	{
+		return materials[index];
 	}
 
 	public void AddVertex(int index, Vector3 vertex) 
@@ -65,6 +77,7 @@ public class MeshData
 	{
 		for (int i = 0; i < Map.MaxMeshes; i++)
 		{
+			materials[i] = null;
 			vertices[i].Clear();
 			uvs[i].Clear();
 			indices[i].Clear();

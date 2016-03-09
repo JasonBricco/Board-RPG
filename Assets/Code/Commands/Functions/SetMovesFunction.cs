@@ -2,8 +2,6 @@
 
 public sealed class SetMovesFunction : Function
 {
-	public SetMovesFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 3, "Usage: [SetMoves: entityID, moves]")) return;
@@ -15,6 +13,6 @@ public sealed class SetMovesFunction : Function
 
 		moves = Mathf.Clamp(moves, 0, 100);
 
-		if (TryGetEntity(entityID, entity)) entity.remainingMoves = moves;
+		EventManager.Notify("SetEntityMoves", new Data(entityID, moves));
 	}
 }

@@ -37,7 +37,7 @@ public sealed class Engine : MonoBehaviour
 			updateList[i].UpdateFrame();
 	}
 
-	private void ExitPressedHandler(int data)
+	private void ExitPressedHandler(Data data)
 	{
 		Application.Quit();
 	}

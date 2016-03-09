@@ -8,6 +8,6 @@ public static class StateManager
 	public static void ChangeState(GameState newState)
 	{
 		state = newState;
-		EventManager.TriggerEvent("StateChanged", (int)newState);
+		EventManager.Notify("StateChanged", new Data(newState));
 	}
 }

@@ -2,8 +2,6 @@
 
 public class RespawnFunction : Function 
 {
-	public RespawnFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 2, "Usage: [Respawn: entityID]")) return;
@@ -11,6 +9,7 @@ public class RespawnFunction : Function
 		int entityID;
 
 		if (!TryGetEntityID(args[1], entity, out entityID)) return;
-		if (TryGetEntity(entityID, entity)) boardManager.SpawnEntity(entity);
+
+		EventManager.Notify("SpawnEntity", new Data(entityID));
 	}
 }

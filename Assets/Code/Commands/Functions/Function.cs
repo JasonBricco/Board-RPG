@@ -21,18 +21,13 @@ public sealed class WaitingFunction
 
 public class Function
 {
-	protected Map boardManager;
-	private static GameObject engine;
+	protected static FunctionLibrary library = new FunctionLibrary();
+	public static FunctionLibrary Library { get { return library; } }
 
 	protected FunctionType type = FunctionType.Main;
 	public FunctionType Type { get { return type; } }
 
 	protected Char[] bracketSeparators = new char[] { '[', '/', ']' };
-
-	public Function(Map manager)
-	{
-		this.boardManager = manager;
-	}
 
 	public virtual void Compute(string[] args, Entity entity)
 	{
@@ -93,19 +88,6 @@ public class Function
 				ErrorHandler.LogText("Command Error: entity ID must be an integer or \"@\".");
 				return false;
 			}
-		}
-
-		return true;
-	}
-
-	protected bool TryGetEntity(int entityID, Entity entity)
-	{
-		entity = boardManager.GetEntity(entityID);
-
-		if (entity == null)
-		{
-			ErrorHandler.LogText("Command Error: could not find the entity with ID " + entityID + ".");
-			return false;
 		}
 
 		return true;

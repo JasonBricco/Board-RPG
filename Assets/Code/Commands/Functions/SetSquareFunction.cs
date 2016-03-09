@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 public sealed class SetSquareFunction : Function 
 {
-	public SetSquareFunction(Map manager) : base(manager) {}
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 6, "Usage: [SetSquare: startX, startY, endX, endY, tile]")) return;
@@ -21,7 +19,7 @@ public sealed class SetSquareFunction : Function
 		endX = Mathf.Clamp(endX, 0, 255);
 		endY = Mathf.Clamp(endY, 0, 255);
 
-		TileType tile = boardManager.GetTileType(args[5]);
+		TileType tile = Map.GetTileType(args[5]);
 
 		if (tile == null) 
 		{
@@ -57,7 +55,7 @@ public sealed class SetSquareFunction : Function
 		for (int y = startY + 1; y < endY; y++)
 			points.Add(new Vector2i(endX, y));
 		
-		boardManager.SetMultipleTiles(points, new Tile(tile.ID));
-		boardManager.ValidateEntities();
+		Map.SetMultipleTiles(points, new Tile(tile.ID));
+		EventManager.Notify("ValidateEntities", null);
 	}
 }

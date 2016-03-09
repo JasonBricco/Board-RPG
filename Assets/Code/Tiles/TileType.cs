@@ -6,7 +6,7 @@ public class TileType
 	public const int Size = 1 << SizeBits;
 	public const int HalfSize = Size / 2;
 
-	protected Map boardManager;
+	protected Material material;
 
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
 
@@ -20,24 +20,14 @@ public class TileType
 	public int MeshIndex { get { return meshIndex; } }
 	public int Layer { get { return layer; } }
 
-	public TileType(Map manager)
-	{
-		this.boardManager = manager;
-	}
-
 	public virtual void Build(Tile tile, int tX, int tY, MeshData data)
 	{
+		data.SetMaterial(material, meshIndex);
 		meshBuilder.BuildSquare(this, tile, tX, tY, data);
 	}
 
-	public virtual bool IsPassable(int layer, Tile main, Tile overlay)
+	public virtual bool IsPassable(int x, int y)
 	{
-		if (layer == 0)
-		{
-			if (!boardManager.GetTileType(overlay).IsPassable(1, main, overlay))
-				return false;
-		}
-
 		return true;
 	}
 

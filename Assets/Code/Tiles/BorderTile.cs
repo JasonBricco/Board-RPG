@@ -5,24 +5,28 @@ public class BorderTile : OverlayTile
 	private ushort orientation = 0;
 	private int dataIndex = 0;
 
-	private int primaryMeshIndex;
-	private int secondaryMeshIndex;
+	private Material materialA, materialB;
+	private int indexA, indexB;
 
 	private ushort[] dataOrder = { 0, 4, 1, 5, 2, 6, 3, 7 };
 
-	public BorderTile(ushort ID, int mesh0, int mesh1, Map manager) : base(manager)
+	public BorderTile(ushort ID)
 	{
 		name = "Border";
 		tileID = ID;
 
-		primaryMeshIndex = mesh0;
-		secondaryMeshIndex = mesh1;
-		meshIndex = primaryMeshIndex;
+		materialA = Resources.Load<Material>("TileMaterials/BorderSide");
+		materialB = Resources.Load<Material>("TileMaterials/BorderCorner");
+
+		indexA = materialA.GetInt("_ID");
+		indexB = materialB.GetInt("_ID");
 	}
 
 	public override void Build(Tile tile, int tX, int tY, MeshData data)
 	{
-		meshIndex = tile.Data > 3 ? secondaryMeshIndex : primaryMeshIndex;
+		material = tile.Data > 3 ? materialB : materialA;
+		meshIndex = tile.Data > 3 ? indexB : indexA;
+
 		base.Build(tile, tX, tY, data);
 	}
 
@@ -31,10 +35,10 @@ public class BorderTile : OverlayTile
 		dataIndex = (dataIndex + 1) & 7;
 		orientation = dataOrder[dataIndex];
 
-		boardManager.SetTileFast(pos, new Tile(tileID, orientation));
+		Map.SetTileFast(pos, new Tile(tileID, orientation));
 
-		boardManager.FlagChunkForRebuild(pos);
-		boardManager.RebuildChunks();
+		Map.FlagChunkForRebuild(pos);
+		Map.RebuildChunks();
 	}
 
 	public override Tile Preprocess(Tile tile, Vector2i pos)
@@ -43,7 +47,7 @@ public class BorderTile : OverlayTile
 		return tile;
 	}
 
-	public override bool IsPassable(int layer, Tile main, Tile overlay)
+	public override bool IsPassable(int x, int y)
 	{
 		return false;
 	}

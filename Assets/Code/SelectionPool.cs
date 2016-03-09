@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 public sealed class SelectionPool
 {
-	private GameObject selection;
+	private GameObject selectionPrefab;
 	private Queue<GameObject> selections = new Queue<GameObject>(128);
 
 	public SelectionPool()
 	{
-		selection = Resources.Load<GameObject>("Prefabs/Selection");
+		selectionPrefab = Resources.Load<GameObject>("Prefabs/Selection");
 	}
 
 	public GameObject GetSelection()
@@ -21,7 +21,7 @@ public sealed class SelectionPool
 			return selection;
 		}
 
-		return GameObject.Instantiate(this.selection);
+		return GameObject.Instantiate(this.selectionPrefab);
 	}
 
 	public void ReturnSelection(GameObject selection)

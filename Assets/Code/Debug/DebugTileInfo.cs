@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 public class DebugTileInfo : MonoBehaviour 
 {
-	[SerializeField] private Map boardManager;
 	[SerializeField] private Text posLabel;
 
 	private void Awake()
@@ -11,9 +10,9 @@ public class DebugTileInfo : MonoBehaviour
 		EventManager.StartListening("StateChanged", StateChangedHandler);
 	}
 
-	private void StateChangedHandler(int state)
+	private void StateChangedHandler(Data data)
 	{
-		switch ((GameState)state)
+		switch (data.state)
 		{
 		case GameState.Editing:
 			EnableLabels();
@@ -32,7 +31,7 @@ public class DebugTileInfo : MonoBehaviour
 		if (StateManager.CurrentState != GameState.Window && Input.GetKeyDown(KeyCode.Tab))
 			ToggleLabels();
 
-		Vector2i pos = boardManager.GetCursorTilePos();
+		Vector2i pos = Utils.GetCursorTilePos();
 		posLabel.text = "Position: " + pos.x + ", " + pos.y;
 	}
 

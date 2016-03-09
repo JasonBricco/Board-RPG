@@ -4,13 +4,15 @@ public class LandTriggerTile : OverlayTile
 {
 	private CommandProcessor processor;
 
-	public LandTriggerTile(ushort ID, int mesh, Map manager, CommandProcessor processor) : base(manager)
+	public LandTriggerTile(ushort ID)
 	{
-		this.processor = processor;
+		processor = GameObject.FindWithTag("Engine").GetComponent<CommandProcessor>();
 
 		name = "Trigger (L)";
 		tileID = ID;
-		meshIndex = mesh;
+
+		material = Resources.Load<Material>("TileMaterials/LandTrigger");
+		meshIndex = material.GetInt("_ID");
 	}
 
 	public override void OnFunction(Vector2i pos)

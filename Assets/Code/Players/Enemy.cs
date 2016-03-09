@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public sealed class Enemy : Entity 
 {
@@ -8,12 +7,12 @@ public sealed class Enemy : Entity
 		if (skipTurn) 
 		{
 			skipTurn = false;
-			map.NextTurn();
+			manager.NextTurn();
 		}
 		else
 		{
 			if (!beingDeleted)
-				map.NextTurn();
+				manager.NextTurn();
 		}
 	}
 }

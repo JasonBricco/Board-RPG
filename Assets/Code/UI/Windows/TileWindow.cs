@@ -2,17 +2,21 @@
 
 public sealed class TileWindow : Window
 {
+	private MapEditor mapEditor;
+
 	public override void Initialize()
 	{
+		mapEditor = GameObject.FindWithTag("Engine").GetComponent<MapEditor>();
+
 		enableKey = KeyCode.Alpha2;
 		EventManager.StartListening("TileButtonPressed", TileButtonPressed);
 
 		Engine.StartUpdating(this);
 	}
 
-	private void TileButtonPressed(int data)
+	private void TileButtonPressed(Data data)
 	{
-		map.SetActiveTile((ushort)data);
+		mapEditor.SetActiveTile((ushort)data.num);
 		gameObject.SetActive(false);
 	}
 }
