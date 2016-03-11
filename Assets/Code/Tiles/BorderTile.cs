@@ -36,8 +36,6 @@ public class BorderTile : OverlayTile
 		orientation = dataOrder[dataIndex];
 
 		Map.SetTileFast(pos, new Tile(tileID, orientation));
-
-		Map.FlagChunkForRebuild(pos);
 		Map.RebuildChunks();
 	}
 

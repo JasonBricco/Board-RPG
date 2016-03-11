@@ -77,19 +77,19 @@ public sealed class Pathfinder
 		return new List<Vector2i>();
 	}
 
-	public void FillSearchArea()
+	public void FillSearchGrid()
 	{
 		for (int cX = 0; cX < Map.WidthInChunks; cX++)
 		{
 			for (int cY = 0; cY < Map.WidthInChunks; cY++)
 			{
 				if (Map.GetChunkDirect(cX, cY) != null)
-					FillChunk(cX, cY);
+					BuildChunk(cX, cY);
 			}
 		}
 	}
 
-	private void FillChunk(int cX, int cY)
+	public void BuildChunk(int cX, int cY)
 	{
 		Vector2i tPos = Utils.TileFromChunkPos(new Vector2i(cX, cY));
 
@@ -155,19 +155,29 @@ public sealed class Pathfinder
 		openList.Clear();
 		closedList.Clear();
 
-		for (int x = 0; x < searchArea.GetLength(0); x++)
+		for (int cX = 0; cX < Map.WidthInChunks; cX++)
 		{
-			for (int y = 0; y < searchArea.GetLength(1); y++)
+			for (int cY = 0; cY < Map.WidthInChunks; cY++)
+			{
+				if (Map.GetChunkDirect(cX, cY) != null)
+					ResetChunk(cX, cY);
+			}
+		}
+	}
+
+	private void ResetChunk(int cX, int cY)
+	{
+		Vector2i tPos = Utils.TileFromChunkPos(new Vector2i(cX, cY));
+
+		for (int x = tPos.x; x < tPos.x + Chunk.Size; x++)
+		{
+			for (int y = tPos.y; y < tPos.y + Chunk.Size; y++)
 			{
 				PathNode node = searchArea[x, y];
-
-				if (node != null)
-				{
-					node.open = false;
-					node.closed = false;
-					node.distanceToEnd = byte.MaxValue;
-					node.distanceTraveled = byte.MaxValue;
-				}
+				node.open = false;
+				node.closed = false;
+				node.distanceToEnd = byte.MaxValue;
+				node.distanceTraveled = byte.MaxValue;
 			}
 		}
 	}

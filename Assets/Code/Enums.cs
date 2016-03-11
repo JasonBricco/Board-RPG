@@ -4,14 +4,26 @@ public enum GameState
 { 
 	Playing,
 	Editing,
-	Window
+	Window,
+	SelectingCoords
 }
 
-public enum Direction
+public enum EntityType
 {
-	Left,
-	Right,
-	Up,
-	Down
+	Player,
+	Monster
 }
 	
+public enum CameraMode 
+{ 
+	Free, 
+	Follow 
+}
+
+public enum EditMode
+{
+	Normal,
+	MassDelete,
+	SquareFill,
+	AreaFill
+}

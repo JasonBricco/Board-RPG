@@ -14,6 +14,12 @@ public sealed class TeleportFunction : Function
 		if (!GetInteger(args[2], out x)) return;
 		if (!GetInteger(args[3], out y)) return;
 
+		if (!Map.InTileBounds(x, y))
+		{
+			ErrorHandler.LogText("Command Error: cannot teleport outside of the map.");
+			return;
+		}
+
 		if (!Map.GetTileType(1, x, y).IsPassable(x, y)) 
 		{
 			ErrorHandler.LogText("Command Error: attempted to move the entity to an impassable tile.");

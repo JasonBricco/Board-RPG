@@ -9,7 +9,7 @@ public sealed class FunctionLibrary
 	{
 		functions.Add("Teleport", new TeleportFunction());
 		functions.Add("SetTile", new SetTileFunction());
-		functions.Add("SetMoves", new SetMovesFunction());
+		functions.Add("SetMP", new SetMPFunction());
 		functions.Add("Random", new RandomFunction());
 		functions.Add("RandomTeleport", new RandomTeleportFunction());
 		functions.Add("Timer", new TimerFunction());

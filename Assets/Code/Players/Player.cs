@@ -16,6 +16,8 @@ public sealed class Player : Entity
 
 	private void Start()
 	{
+		type = EntityType.Player;
+
 		actionPanel = UIStore.GetGraphic("ActionPanel");
 		moveButton = actionPanel.FindChild("Move").GetComponent<Button>();
 
@@ -23,6 +25,11 @@ public sealed class Player : Entity
 		EventManager.StartListening("AttackPressed", AttackHandler);
 		EventManager.StartListening("EndTurnPressed", EndTurnHandler);
 		EventManager.StartListening("TileSelected", TileSelected);
+	}
+
+	public override Sprite LoadSprite()
+	{
+		return Resources.Load<Sprite>("Entity/Player");
 	}
 
 	public override void BeginTurn()
@@ -36,7 +43,8 @@ public sealed class Player : Entity
 		{
 			if (!beingDeleted)
 			{
-				remainingMP = MP;
+				RemainingMP = MP;
+				ProcessPending(true);
 				actionPanel.SetActive(true);
 				moveButton.interactable = true;
 			}
@@ -46,7 +54,7 @@ public sealed class Player : Entity
 	private void MoveHandler(Data data)
 	{
 		actionPanel.SetActive(false);
-		ShowRange(remainingMP);
+		ShowRange(RemainingMP);
 	}
 		
 	private void AttackHandler(Data data)
@@ -56,6 +64,7 @@ public sealed class Player : Entity
 	private void EndTurnHandler(Data data)
 	{
 		actionPanel.SetActive(false);
+		ProcessPending(false);
 		manager.NextTurn();
 	}
 
@@ -101,7 +110,14 @@ public sealed class Player : Entity
 			}
 		}
 
-		manager.WorldCanvas.SetActive(true);
+		if (activeSelections.Count == 0)
+		{
+			filledPositions.Clear();
+			moveButton.interactable = false;
+			actionPanel.SetActive(true);
+		}
+		else
+			manager.WorldCanvas.SetActive(true);
 	}
 
 	private void TileSelected(Data data)
@@ -120,9 +136,14 @@ public sealed class Player : Entity
 	private IEnumerator FollowPath(List<Vector2i> path)
 	{
 		for (int i = 0; i < path.Count; i++)
+		{
+			if (!PathTargetValid(path[i]))
+				break;
+			
 			yield return StartCoroutine(MoveToPosition(transform.position, Utils.WorldFromTilePos(path[i])));
+		}
 
-		if (remainingMP == 0)
+		if (RemainingMP == 0)
 			moveButton.interactable = false;
 		
 		actionPanel.SetActive(true);

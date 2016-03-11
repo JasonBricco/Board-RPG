@@ -4,6 +4,6 @@ public class SwapFunction : Function
 {
 	public override void Compute(string[] args, Entity entity)
 	{
-		EventManager.Notify("GetEntity", new Data(entity));
+		EventManager.Notify("SwapEntities", new Data(entity));
 	}
 }

@@ -3,8 +3,6 @@ using System;
 
 public sealed class TimerFunction : Function
 {
-	private WaitForTurns waiter = new WaitForTurns();
-
 	public override void Compute(string[] args, Entity entity)
 	{
 		if (!CheckArgCount(args, 3, "Usage: [Timer: turns, [function: ...]]")) return;
@@ -20,7 +18,7 @@ public sealed class TimerFunction : Function
 			string[] newArgs = new string[args.Length - 2];
 			Array.Copy(args, 2, newArgs, 0, args.Length - 2);
 
-			waiter.Start(entity.EntityID, turns + 1, new Data(turns, newArgs, entity), RunTimedFunction);
+			entity.AddPending(turns + 1, new Data(turns, newArgs, entity), RunTimedFunction, false);
 		}
 	}
 

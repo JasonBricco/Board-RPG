@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-public enum CameraMode { Free, Follow }
-
 [RequireComponent(typeof(Camera))]
 public sealed class GameCamera : MonoBehaviour
 {
@@ -67,7 +65,12 @@ public sealed class GameCamera : MonoBehaviour
 		if (StateManager.CurrentState == GameState.Window) return;
 
 		if (mode == CameraMode.Follow)	
-			transform.SetXY(Vector3.Lerp(transform.position, followTarget.Position, Time.deltaTime * 5.0f));
+		{
+			Vector3 pos = transform.position;
+
+			if (Vector3.Distance(pos, followTarget.Position) > 5.0f)
+				transform.SetXY(Vector3.Lerp(pos, followTarget.Position, Time.smoothDeltaTime * 5.0f));
+		}
 		else
 		{
 			float x = Input.GetAxis("Horizontal");

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public sealed class Map : MonoBehaviour, IUpdatable
 {
-	public const int MaxMeshes = 14;
+	public const int MaxMeshes = 15;
 	public const int Size = 256;
 	public const int WidthInChunks = Size / Chunk.Size;
 
@@ -15,9 +15,12 @@ public sealed class Map : MonoBehaviour, IUpdatable
 	private static List<TileType> tilesList = new List<TileType>();
 
 	private static Chunk[,] chunks = new Chunk[WidthInChunks, WidthInChunks];
-	private static List<Chunk> chunksToRebuild = new List<Chunk>();
+	private static List<Chunk> rebuildList = new List<Chunk>();
 
 	private MapRenderer mapRenderer = new MapRenderer();
+
+	private static Pathfinder pathfinder = new Pathfinder();
+	public static Pathfinder Pathfinder { get { return pathfinder; } }
 
 	private void Awake()
 	{
@@ -57,20 +60,14 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		if (InTileBounds(tPos.x, tPos.y))
 		{
 			if (deleting) 
-			{
 				DeleteTile(tPos);
-				FlagChunkForRebuild(tPos);
-			}
 			else 
 			{
 				TileType type = GetTileType(tile);
 				GetTileType(type.Layer, tPos.x, tPos.y).OnDeleted(tPos);
 
 				if (type.CanAdd(tPos))
-				{
 					SetTileFast(tPos, tile);
-					FlagChunkForRebuild(tPos);
-				}
 			}
 		}
 	}
@@ -123,23 +120,26 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		return chunks[chunkX, chunkY];
 	}
 
-	public static void FlagChunkForRebuild(Vector2i tPos)
+	public static void QueueChunkForUpdate(Chunk chunk)
 	{
-		Chunk chunk = GetChunk(tPos.x, tPos.y);
-
-		if (!chunk.flaggedForUpdate)
-		{
-			chunk.flaggedForUpdate = true;
-			chunksToRebuild.Add(chunk);
-		}
+		rebuildList.Add(chunk);
 	}
 
 	public static void RebuildChunks()
 	{
-		for (int i = 0; i < chunksToRebuild.Count; i++)
-			chunksToRebuild[i].BuildMesh();
+		for (int i = 0; i < rebuildList.Count; i++)
+			rebuildList[i].BuildMesh();
 
-		chunksToRebuild.Clear();
+		if (StateManager.CurrentState == GameState.Playing)
+		{
+			for (int i = 0; i < rebuildList.Count; i++)
+			{
+				Vector2i chunkPos = rebuildList[i].ChunkPos;
+				pathfinder.BuildChunk(chunkPos.x, chunkPos.y);
+			}
+		}
+
+		rebuildList.Clear();
 	}
 
 	public static bool InTileBounds(int tX, int tY)
@@ -236,6 +236,7 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		tilesList.Add(new RandomArrowTile(Tiles.RandomArrow.ID));
 		tilesList.Add(new WaterTile(Tiles.Water.ID));
 		tilesList.Add(new BorderTile(Tiles.Border.ID));
+		tilesList.Add(new MonsterTile(Tiles.Monster.ID));
 
 		for (int i = 0; i < tilesList.Count; i++)
 			tilesByName.Add(tilesList[i].Name, tilesList[i]);

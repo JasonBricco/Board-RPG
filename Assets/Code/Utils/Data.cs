@@ -3,6 +3,7 @@
 public sealed class Data
 {
 	public int num, secondNum;
+	public bool mode;
 	public GameState state;
 	public string[] strings;
 	public Entity entity, secondEntity;

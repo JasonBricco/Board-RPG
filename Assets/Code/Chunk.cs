@@ -9,8 +9,10 @@ public sealed class Chunk
 	private Tile[][] tiles = new Tile[2][];
 
 	private Vector2i chunkPos;
+	public Vector2i ChunkPos { get { return chunkPos; } }
+
 	private Vector3 worldPos;
-	public Vector3 Position { get { return worldPos; } }
+	public Vector3 WorldPos { get { return worldPos; } }
 
 	private static MeshData meshData;
 
@@ -19,7 +21,7 @@ public sealed class Chunk
 	private Mesh[] meshes;
 	private Material[] materials;
 
-	public bool flaggedForUpdate;
+	private bool flaggedForUpdate;
 
 	public Chunk(int cX, int cY)
 	{
@@ -36,6 +38,15 @@ public sealed class Chunk
 		worldPos = Utils.WorldFromChunkPos(chunkPos);
 	}
 
+	private void FlagForUpdate()
+	{
+		if (!flaggedForUpdate)
+		{
+			flaggedForUpdate = true;
+			Map.QueueChunkForUpdate(this);
+		}
+	}
+
 	public Tile GetTile(int layer, int lX, int lY)
 	{
 		return tiles[layer][(lY * Size) + lX];
@@ -44,7 +55,13 @@ public sealed class Chunk
 	public void SetTile(int lX, int lY, Tile tile)
 	{
 		int layer = Map.GetTileType(tile).Layer;
-		tiles[layer][(lY * Size) + lX] = tile;
+		int index = (lY * Size) + lX;
+
+		if (tiles[layer][index].Equals(tile))
+			return;
+		
+		tiles[layer][index] = tile;
+		FlagForUpdate();
 	}
 
 	public void DeleteTile(int lX, int lY, int tX, int tY)
@@ -61,10 +78,13 @@ public sealed class Chunk
 			Map.GetTileType(tiles[0][index]).OnDeleted(new Vector2i(tX, tY));
 			tiles[0][index] = Tiles.Air;
 		}
+
+		FlagForUpdate();
 	}
 
 	public void BuildMesh()
 	{
+		Debug.Log("Building mesh.");
 		flaggedForUpdate = false;
 
 		for (int lX = 0; lX < Size; lX++)

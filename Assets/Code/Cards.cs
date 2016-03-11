@@ -16,13 +16,13 @@ public class Card
 	}
 }
 
-public sealed class ForwardFiveCard : Card
+public sealed class ExtraMP : Card
 {
-	public ForwardFiveCard(Sprite sprite) : base(sprite) {}
+	public ExtraMP(Sprite sprite) : base(sprite) {}
 
 	public override void RunFunction(Entity entity)
 	{
-		// TODO
+		entity.RemainingMP += 3;
 	}
 }
 
@@ -36,33 +36,13 @@ public sealed class SwapCard : Card
 	}
 }
 	
-public sealed class ExtraRollCard : Card 
+public sealed class ExtraRandomMP : Card 
 {
-	public ExtraRollCard(Sprite sprite) : base(sprite) {}
+	public ExtraRandomMP(Sprite sprite) : base(sprite) {}
 
 	public override void RunFunction(Entity entity)
 	{
-		// TODO
-	}
-}
-
-public sealed class DoubleRollsCard : Card 
-{
-	public DoubleRollsCard(Sprite sprite) : base(sprite) {}
-
-	public override void RunFunction(Entity entity)
-	{
-		// TODO
-	}
-}
-
-public sealed class HalfRollsCard : Card 
-{
-	public HalfRollsCard(Sprite sprite) : base(sprite) {}
-
-	public override void RunFunction(Entity entity)
-	{
-		// TODO
+		entity.RemainingMP += Random.Range(1, 7);
 	}
 }
 
@@ -73,5 +53,20 @@ public sealed class SkipTurnCard : Card
 	public override void RunFunction(Entity entity)
 	{
 		entity.SkipNextTurn();
+	}
+}
+
+public sealed class LoseMPCard : Card
+{
+	public LoseMPCard(Sprite sprite) : base(sprite) {}
+
+	public override void RunFunction(Entity entity)
+	{
+		entity.AddPending(1, new Data(entity), DoEffect, true);
+	}
+
+	private void DoEffect(Data data)
+	{
+		data.entity.RemainingMP -= 2;
 	}
 }

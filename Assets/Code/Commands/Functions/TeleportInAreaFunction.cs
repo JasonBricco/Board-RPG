@@ -17,17 +17,16 @@ public class TeleportInAreaFunction : Function
 		if (!GetInteger(args[4], out endX)) return;
 		if (!GetInteger(args[5], out endY)) return;
 
+		startX = Mathf.Clamp(startX, 0, 255);
+		startY = Mathf.Clamp(startY, 0, 255);
+		endX = Mathf.Clamp(endX, 0, 255);
+		endY = Mathf.Clamp(endY, 0, 255);
+
 		int totalX = Mathf.Abs(endX - startX);
 		int totalY = Mathf.Abs(endY - startY);
 		int checkAmount = (totalX * totalY) * 2;
 			
 		Tile tile = Tiles.Air;
-
-		if (!Map.InTileBounds(startX, startY) || (!Map.InTileBounds(endX, endY)))
-		{
-			ErrorHandler.LogText("Command Error: coordinates are out of bounds of the board (TeleportInArea).");
-			return;
-		}
 	
 		for (int i = 0; i < checkAmount; i++)
 		{

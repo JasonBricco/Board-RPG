@@ -35,19 +35,35 @@ public class RandomTeleportFunction : Function
 			return;
 		}
 
-		Vector2i randomPoint = points[Random.Range(0, points.Count)];
+		Utils.ShuffleList<Vector2i>(points);
 
-		if (!Map.GetTileType(1, randomPoint.x, randomPoint.y).IsPassable(randomPoint.x, randomPoint.y))
+		Vector2i target = new Vector2i(-1, 0);
+
+		for (int i = 0; i < points.Count; i++)
 		{
-			ErrorHandler.LogText("Command Error: Tried to teleport to an impassable tile (RandomTeleport).");
+			Vector2i next = points[i];
+
+			if (!Map.InTileBounds(next.x, next.y))
+				continue;
+
+			if (!Map.GetTileType(1, next.x, next.y).IsPassable(next.x, next.y))
+				continue;
+
+			target = next;
+			break;
+		}
+
+		if (target.x == -1)
+		{
+			ErrorHandler.LogText("Command Error: No passable tiles supplied (RandomTeleport).");
 			return;
 		}
 
-		randomPoint.x *= TileType.Size;
-		randomPoint.y *= TileType.Size;
+		target.x *= TileType.Size;
+		target.y *= TileType.Size;
 
 		Data data = new Data(entityID);
-		data.position = new Vector3(randomPoint.x, randomPoint.y);
+		data.position = new Vector3(target.x, target.y);
 
 		EventManager.Notify("Teleport", data);
 	}

@@ -21,12 +21,12 @@ public class EntityManager : MonoBehaviour
 
 	private Entity currentEntity;
 
-	private Sprite playerSprite, enemySprite;
-
-	private Pathfinder pathfinder = new Pathfinder();
+	private Pathfinder pathfinder;
 
 	private void Awake()
 	{
+		pathfinder = Map.Pathfinder;
+
 		EventManager.StartListening("StateChanged", StateChangedHandler);
 		EventManager.StartListening("SwapEntities", SwapEntities);
 		EventManager.StartListening("Teleport", TeleportEntity);
@@ -42,9 +42,6 @@ public class EntityManager : MonoBehaviour
 	{
 		turnDisplayPanel = UIStore.GetGraphic("TurnDisplayPanel");
 		turnText = UIStore.GetGraphic<Text>("TurnText");
-
-		playerSprite = Resources.Load<Sprite>("Sprites/Player");
-		enemySprite = Resources.Load<Sprite>("Sprites/Enemy");
 	}
 
 	private void StateChangedHandler(Data data)
@@ -57,14 +54,24 @@ public class EntityManager : MonoBehaviour
 		}
 	}
 
+	public Entity GetEntity(int ID)
+	{
+		if (ID >= 0 && ID < entityList.Count)
+			return entityList[ID];
+
+		return null;
+	}
+
 	private void SwapEntities(Data data)
 	{
+		if (entityList.Count == 1)
+			return;
+		
 		Entity a, b;
 
 		if (data.entity != null)
 		{
 			a = data.entity;
-			b = entityList[(a.EntityID + 1) & 1];
 		}
 		else
 		{
@@ -72,8 +79,10 @@ public class EntityManager : MonoBehaviour
 				return;
 
 			a = entityList[data.num];
-			b = entityList[data.secondNum];
 		}
+
+		do { b = entityList[Random.Range(0, entityList.Count)]; }
+		while (b.EntityID == a.EntityID);
 			
 		Vector3 otherPos = b.Position;
 		b.SetTo(a.Position);
@@ -95,15 +104,22 @@ public class EntityManager : MonoBehaviour
 
 	private void SetEntityMoves(Data data)
 	{
+		Entity entity;
+
 		if (data.entity != null)
-			data.entity.remainingMP = data.num;
+			entity = data.entity;
 		else
 		{
 			if (!IsValidEntity(data.num))
 				return;
 
-			entityList[data.num].remainingMP = data.secondNum;
+			entity = entityList[data.num];
 		}
+
+		if (!data.mode)
+			entity.MP = data.secondNum;
+
+		entity.RemainingMP = data.secondNum;
 	}
 
 	private void SkipEntityTurn(Data data)
@@ -123,36 +139,36 @@ public class EntityManager : MonoBehaviour
 	{
 		Serializer.Save();
 
-		pathfinder.FillSearchArea();
-		SetStartPositions();
+		Entity player = CreateEntity("Player", typeof(Player));
+		currentEntity = player;
+
+		pathfinder.FillSearchGrid();
+		Initialize();
 
 		if (startPositions.Count == 0)
 			CreateDefaultStartTile();
 
-		entityList.Add(CreateEntity("Player", typeof(Player), playerSprite, 0));
-		entityList.Add(CreateEntity("Enemy", typeof(Enemy), enemySprite, 1));
-
-		for (int i = 0; i < entityList.Count; i++)
-			SpawnEntity(entityList[i]);
-
-		int turnIndex = Random.Range(0, entityList.Count);
-		currentEntity = entityList[turnIndex];
+		SpawnEntity(player);
 
 		StateManager.ChangeState(GameState.Playing);
-		NextTurn(turnIndex);
+		NextTurn(0);
 	}
 
-	private Entity CreateEntity(string name, System.Type type, Sprite sprite, int ID)
+	private Entity CreateEntity(string name, System.Type type)
 	{
 		GameObject entityObj = new GameObject(name);
 		entityObj.transform.localScale = new Vector3(32.0f, 32.0f);
 		entityObj.transform.SetParent(this.transform);
 		SpriteRenderer rend = entityObj.AddComponent<SpriteRenderer>();
 		entityObj.AddComponent(type);
-		rend.sprite = sprite;
 
 		Entity entity = entityObj.GetComponent<Entity>();
-		entity.SetReferences(ID, this, pathfinder);
+		entityList.Add(entity);
+
+		rend.sprite = entity.LoadSprite();
+
+		entity.SetReferences(entityList.Count - 1, this, pathfinder);
+
 		return entity;
 	}
 
@@ -172,10 +188,13 @@ public class EntityManager : MonoBehaviour
 			return;
 		}
 
-		SpawnEntity(entityList[data.num]);
+		Entity entity = entityList[data.num];
+
+		if (entity.Type == EntityType.Player)
+			SpawnEntity(entity);
 	}
 
-	private void SetStartPositions()
+	private void Initialize()
 	{
 		startPositions.Clear();
 
@@ -192,9 +211,16 @@ public class EntityManager : MonoBehaviour
 						for (int cY = 0; cY < Chunk.Size; cY++)
 						{
 							Tile tile = chunk.GetTile(1, cX, cY);
+							Vector2i tPos = new Vector2i((x * Chunk.Size) + cX, (y * Chunk.Size) + cY);
 
 							if (tile.Equals(Tiles.Start))
-								startPositions.Add(new Vector2i((x * Chunk.Size) + cX, (y * Chunk.Size) + cY));
+								startPositions.Add(tPos);
+
+							if (tile.Equals(Tiles.Monster))
+							{
+								Entity monster = CreateEntity("Monster", typeof(DefaultMonster));
+								monster.SetTo(tPos);
+							}
 						}
 					}
 				}
@@ -213,7 +239,6 @@ public class EntityManager : MonoBehaviour
 		Map.SetTileFast(midPos, Tiles.Start);
 		startPositions.Add(midPos);
 
-		Map.FlagChunkForRebuild(midPos);
 		Map.RebuildChunks();
 	}
 
@@ -224,9 +249,6 @@ public class EntityManager : MonoBehaviour
 
 	public void NextTurn(int forcedTurn = -1)
 	{
-		if (lastTurn != -1) 
-			EventManager.Notify("TurnEnded", new Data(entityList[lastTurn].EntityID));
-
 		int turnIndex = forcedTurn == -1 ? (lastTurn + 1) % entityList.Count : forcedTurn;
 		lastTurn = turnIndex;
 
@@ -256,13 +278,21 @@ public class EntityManager : MonoBehaviour
 
 	private void ValidateEntities(Data data)
 	{
-		for (int i = 0; i < entityList.Count; i++)
+		for (int i = entityList.Count - 1; i >= 0; i--)
 		{
 			Entity entity = entityList[i];
 			Vector2i tPos = Utils.TileFromWorldPos(entity.Position);
 
-			if (Map.GetTile(0, tPos.x, tPos.y).ID == 0)
-				SpawnEntity(entityList[i]);
+			if (!Map.GetTileType(1, tPos.x, tPos.y).IsPassable(tPos.x, tPos.y))
+			{
+				if (entity.Type == EntityType.Player)
+					SpawnEntity(entityList[i]);
+				else
+				{
+					entity.Delete();
+					entityList.RemoveAt(i);
+				}
+			}
 		}
 	}
 

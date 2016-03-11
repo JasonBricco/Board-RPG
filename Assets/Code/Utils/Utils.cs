@@ -66,8 +66,12 @@ public static class Utils
 		for (int i = 0; i < Map.Size; i++)
 		{
 			Vector2i next = current + dir;
-			Tile nextTile = Map.GetTileSafe(0, next.x, next.y);
-			Tile nextOverlay = Map.GetTileSafe(1, next.x, next.y);
+
+			if (!Map.InTileBounds(next.x, next.y))
+				return current;
+			
+			Tile nextTile = Map.GetTile(0, next.x, next.y);
+			Tile nextOverlay = Map.GetTile(1, next.x, next.y);
 
 			if (nextTile.Equals(Tiles.Stopper) || nextOverlay.Equals(Tiles.Arrow) || nextOverlay.Equals(Tiles.RandomArrow))
 				return next;

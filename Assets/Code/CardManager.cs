@@ -7,7 +7,7 @@ public sealed class CardManager : MonoBehaviour
 {
 	[SerializeField] private Sprite[] cardSprites;
 
-	private Card[] cards = new Card[6];
+	private Card[] cards = new Card[5];
 	private List<Card> allowedCards = new List<Card>();
 
 	private Image currentCardImage;
@@ -51,6 +51,7 @@ public sealed class CardManager : MonoBehaviour
 		entity.wait = true;
 
 		Card card = allowedCards[Random.Range(0, allowedCards.Count)];
+		
 		currentCardImage.sprite = card.sprite;
 		currentCardImage.enabled = true;
 
@@ -73,12 +74,11 @@ public sealed class CardManager : MonoBehaviour
 
 	private void CreateCards()
 	{
-		cards[0] = new ForwardFiveCard(cardSprites[0]);
+		cards[0] = new ExtraMP(cardSprites[0]);
 		cards[1] = new SwapCard(cardSprites[1]);
-		cards[2] = new ExtraRollCard(cardSprites[2]);
-		cards[3] = new DoubleRollsCard(cardSprites[3]);
-		cards[4] = new HalfRollsCard(cardSprites[4]);
-		cards[5] = new SkipTurnCard(cardSprites[5]);
+		cards[2] = new ExtraRandomMP(cardSprites[2]);
+		cards[3] = new SkipTurnCard(cardSprites[3]);
+		cards[4] = new LoseMPCard(cardSprites[4]);
 
 		for (int i = 0; i < cards.Length; i++)
 			allowedCards.Add(cards[i]);

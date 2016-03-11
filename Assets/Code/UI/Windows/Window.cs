@@ -21,16 +21,20 @@ public class Window : MonoBehaviour, IUpdatable
 
 	public void UpdateFrame()
 	{
+		GameState state = StateManager.CurrentState;
+
+		if (state == GameState.SelectingCoords) return;
+
 		if (Input.GetKeyDown(enableKey))
 		{
-			if (StateManager.CurrentState == GameState.Window)
+			if (state == GameState.Window)
 			{
 				if (gameObject.activeSelf)
 					gameObject.SetActive(false);
 			}
 			else
 			{
-				if (StateManager.CurrentState == GameState.Editing)
+				if (state == GameState.Editing)
 					gameObject.SetActive(true);
 			}
 		}

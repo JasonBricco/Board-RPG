@@ -16,6 +16,8 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 	private GameObject reticle;
 	private Text selectedText;
 
+	private EditMode editMode = EditMode.Normal;
+
 	private void Awake()
 	{
 		Engine.StartUpdating(this);
@@ -42,6 +44,11 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 			reticle.SetActive(true);
 			if (selectedText != null) 
 				selectedText.enabled = true;
+			break;
+
+		case GameState.SelectingCoords:
+			mainButtons.SetActive(false);
+			selectedText.enabled = false;
 			break;
 
 		default:
@@ -76,14 +83,12 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 			}
 		}
 
-		if (StateManager.CurrentState != GameState.Editing || EventSystem.current.IsPointerOverGameObject())
-		{
-			DisableReticle();
-			return;
-		}
+		bool overUI = EventSystem.current.IsPointerOverGameObject();
 
-		DisplayReticle();
-		HandleEditInput();
+		ProcessReticle(overUI);
+
+		if (!overUI && StateManager.CurrentState == GameState.Editing)
+			HandleEditInput();
 	}
 
 	private void HandleEditInput()
@@ -95,14 +100,8 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 
 		if (Input.GetKeyDown(KeyCode.Q))
 			PickTile();
-
-		if (Input.GetMouseButtonDown(0))
-			Map.SetTile(Utils.GetCursorTilePos(), activeTile);
-
-		if (Input.GetMouseButtonDown(1))
-			Map.SetTile(Utils.GetCursorTilePos(), Tiles.Air);
-
-		if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
+			
+		if (Input.GetMouseButton(0))
 		{
 			if (time >= PlaceLimit)
 			{
@@ -111,13 +110,28 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 			}
 		}
 
-		if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(1))
+		if (Input.GetMouseButton(1))
 		{
 			if (time >= PlaceLimit)
 			{
 				Map.SetTile(Utils.GetCursorTilePos(), Tiles.Air);
 				time -= PlaceLimit;
 			}
+		}
+
+		switch (editMode)
+		{
+		case EditMode.Normal:
+			break;
+
+		case EditMode.MassDelete:
+			break;
+
+		case EditMode.SquareFill:
+			break;
+
+		case EditMode.AreaFill:
+			break;
 		}
 	}
 
@@ -151,14 +165,25 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 		reticle = new GameObject("Reticle");
 		reticle.transform.localScale = new Vector3(32.0f, 32.0f);
 		SpriteRenderer rend = reticle.AddComponent<SpriteRenderer>();
-		rend.sprite = Resources.Load<Sprite>("Sprites/Reticle");
+		rend.sprite = Resources.Load<Sprite>("General/Reticle");
 	}
 
-	private void DisplayReticle()
+	private void ProcessReticle(bool overUI)
 	{
-		EnableReticle();
-		Vector2i tilePos = Utils.GetCursorWorldPos();
-		reticle.transform.position = new Vector3(tilePos.x, tilePos.y);
+		if (StateManager.CurrentState == GameState.Editing || StateManager.CurrentState == GameState.SelectingCoords)
+		{
+			if (overUI)
+			{
+				DisableReticle();
+				return;
+			}
+
+			EnableReticle();
+			Vector2i tilePos = Utils.GetCursorWorldPos();
+			reticle.transform.position = new Vector3(tilePos.x, tilePos.y);
+		}
+		else
+			DisableReticle();
 	}
 
 	private void EnableReticle()

@@ -26,9 +26,11 @@ public class DebugTileInfo : MonoBehaviour
 
 	private void Update()
 	{
-		if (StateManager.CurrentState != GameState.Editing) return;
+		GameState state = StateManager.CurrentState;
 
-		if (StateManager.CurrentState != GameState.Window && Input.GetKeyDown(KeyCode.Tab))
+		if (state != GameState.Editing && state != GameState.SelectingCoords) return;
+
+		if (state != GameState.Window && Input.GetKeyDown(KeyCode.Tab))
 			ToggleLabels();
 
 		Vector2i pos = Utils.GetCursorTilePos();

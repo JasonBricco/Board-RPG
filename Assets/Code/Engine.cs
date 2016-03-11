@@ -18,6 +18,13 @@ public sealed class Engine : MonoBehaviour
 	{
 		StateManager.ChangeState(GameState.Editing);
 		EventManager.StartListening("ExitPressed", ExitPressedHandler);
+		EventManager.StartListening("StateChanged", StateChangedHandler);
+	}
+
+	private void StateChangedHandler(Data data)
+	{
+		if (data.state == GameState.Window)
+			System.GC.Collect();
 	}
 
 	public static void StartUpdating(IUpdatable item)

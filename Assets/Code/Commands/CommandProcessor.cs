@@ -17,13 +17,17 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private Vector2i currentPos;
 
+	private int caretPos;
+	private string selectedText;
+
 	private void Awake()
 	{
 		Serializer.ListenForSave(SaveCommands);
 		Serializer.ListenForLoad(LoadCommands);
 
-		EventManager.StartListening("CodeFinished", FinishedHandler);
+		EventManager.StartListening("CodeFinished", SaveCode);
 		EventManager.StartListening("MapCleared", ClearCommands);
+		EventManager.StartListening("GetCommandCoords", GetCommandCoords);
 
 		codeEditor = UIStore.GetGraphic("CodeEditor");
 		editorField = codeEditor.GetComponent<CodeEditor>();
@@ -48,6 +52,34 @@ public sealed class CommandProcessor : MonoBehaviour
 			triggerData.Add(data.triggerKeys[i], data.triggerValues[i]);
 	}
 
+	private void GetCommandCoords(Data data)
+	{
+		// TODO: Support when we figure out how caret position works.
+		//caretPos = editorField.caretPosition; 
+		SaveCode(null);
+		StateManager.ChangeState(GameState.SelectingCoords);
+
+		StartCoroutine(WaitForCoords());
+	}
+
+	private IEnumerator WaitForCoords()
+	{
+		while (!codeEditor.activeSelf)
+		{
+			if (Input.GetMouseButtonDown(0))
+			{
+				Vector2i tilePos = Utils.GetCursorTilePos();
+				// TODO: Support when we figure out how caret position works.
+				//string result = triggerData[currentPos].Insert(caretPos, tilePos.x + ", " + tilePos.y);
+				string result = triggerData[currentPos] + tilePos.x + ", " + tilePos.y;
+				triggerData[currentPos] = result;
+				LoadEditor(currentPos);
+			}
+
+			yield return null;
+		}
+	}
+
 	private void ClearCommands(Data data)
 	{
 		triggerData.Clear();
@@ -63,7 +95,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		return String.Empty;
 	}
 		
-	private void FinishedHandler(Data data)
+	private void SaveCode(Data data)
 	{
 		CreateTriggerData(currentPos, editorField.text);
 		editorField.text = String.Empty;
@@ -92,12 +124,6 @@ public sealed class CommandProcessor : MonoBehaviour
 		string input = GetCommands(new Vector2i(tX, tY));
 
 		if (input.Length == 0) return;
-
-		if (input[0] != '[') 
-		{
-			ErrorHandler.LogText("Command Error: invalid command format. Commands must start with \"[\".");
-			return;
-		}
 
 		List<string> commands = new List<string>();
 		StringBuilder current = new StringBuilder();
@@ -149,7 +175,8 @@ public sealed class CommandProcessor : MonoBehaviour
 				string funcString = input.Substring(startIndex, (endIndex - startIndex) + 1);
 				string[] args = funcString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
-				Function function;
+				Function function = null;
+
 				bool success = args.Length == 0 ? false : Function.Library.TryGetFunction(args[0], out function);
 
 				if (success)

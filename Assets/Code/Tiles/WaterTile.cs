@@ -31,7 +31,6 @@ public class WaterTile : OverlayTile
 		Tile newTile = new Tile(tileID, data == 0 ? (ushort)1 : (ushort)0);
 
 		Map.SetTileFast(pos, newTile);
-		Map.FlagChunkForRebuild(pos);
 		Map.RebuildChunks();
 	}
 

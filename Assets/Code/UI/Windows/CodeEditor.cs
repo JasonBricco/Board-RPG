@@ -22,7 +22,7 @@ public sealed class CodeEditor : InputField
 	{
 		base.OnDisable();
 
-		if (!Engine.IsQuitting)
+		if (!Engine.IsQuitting && Application.isPlaying)
 			StateManager.ChangeState(GameState.Editing);
 	}
 
