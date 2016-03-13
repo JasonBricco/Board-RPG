@@ -13,6 +13,12 @@ public sealed class GameCamera : MonoBehaviour
 
 	private CameraMode mode = CameraMode.Free;
 
+	private void Awake()
+	{
+		Serializer.ListenForLoad(LoadData);
+		Serializer.ListenForSave(SaveData);
+	}
+
 	private void Start()
 	{
 		float vertical = Camera.main.orthographicSize;
@@ -45,6 +51,22 @@ public sealed class GameCamera : MonoBehaviour
 		}
 	}
 
+	public void LoadData(MapData data)
+	{
+		if (data.cameraPos.x == -1)
+		{
+			Vector3 worldMid = Utils.WorldFromTilePos(new Vector2i(Map.Size >> 1, Map.Size >> 1));
+			transform.position = new Vector3(worldMid.x, worldMid.y, -10.0f);
+		}
+		else
+			transform.position = data.cameraPos;
+	}
+
+	public void SaveData(MapData data)
+	{
+		data.cameraPos = transform.position;
+	}
+
 	private void CameraToggledHandler(Data data)
 	{
 		switch (mode)
@@ -64,9 +86,11 @@ public sealed class GameCamera : MonoBehaviour
 	{
 		if (StateManager.CurrentState == GameState.Window) return;
 
+		Vector3 pos;
+
 		if (mode == CameraMode.Follow)	
 		{
-			Vector3 pos = transform.position;
+			pos = transform.position;
 
 			if (Vector3.Distance(pos, followTarget.Position) > 5.0f)
 				transform.SetXY(Vector3.Lerp(pos, followTarget.Position, Time.smoothDeltaTime * 5.0f));
@@ -78,11 +102,11 @@ public sealed class GameCamera : MonoBehaviour
 
 			Vector3 move = new Vector3(x, y, 0.0f) * speed * Time.deltaTime;
 			transform.Translate(move);
-
-			Vector3 pos = transform.position;
-			pos.x = Mathf.Clamp(pos.x, minX, maxX);
-			pos.y = Mathf.Clamp(pos.y, minZ, maxZ);
-			transform.position = pos;
 		}
+
+		pos = transform.position;
+		pos.x = Mathf.Clamp(pos.x, minX, maxX);
+		pos.y = Mathf.Clamp(pos.y, minZ, maxZ);
+		transform.position = pos;
 	}
 }

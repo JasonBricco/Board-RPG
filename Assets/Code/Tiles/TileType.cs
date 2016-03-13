@@ -10,12 +10,14 @@ public class TileType
 	protected ushort tileID = 0;
 	protected int meshIndex = 0;
 	protected int layer = 0;
+	protected byte pathCost = 1;
 
 	public Texture2D Texture { get { return (Texture2D)material.mainTexture; } }
 	public string Name { get { return name; } }
 	public ushort ID { get { return tileID; } }
 	public int MeshIndex { get { return meshIndex; } }
 	public int Layer { get { return layer; } }
+	public byte PathCost { get { return pathCost; } }
 
 	public virtual void Build(Tile tile, int tX, int tY, MeshData data)
 	{

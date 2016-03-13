@@ -21,7 +21,7 @@ public sealed class Pathfinder
 		startNode.open = true;
 
 		startNode.distanceToEnd = Heuristic(start, end);
-		startNode.distanceTraveled = 0;
+		startNode.accumCost = 0;
 
 		openList.Add(startNode);
 
@@ -47,23 +47,23 @@ public sealed class Pathfinder
 				if (neighbor == null || !neighbor.passable)
 					continue;
 
-				byte distanceTraveled = (byte)(current.distanceTraveled + 1);
+				byte cost = (byte)(current.accumCost + neighbor.tileCost);
 				byte heuristic = Heuristic(neighbor.tilePos, end);
 
 				if (!neighbor.open && !neighbor.closed)
 				{
-					neighbor.distanceTraveled = distanceTraveled;
-					neighbor.distanceToEnd = (byte)(distanceTraveled + heuristic);
+					neighbor.accumCost = cost;
+					neighbor.distanceToEnd = (byte)(cost + heuristic);
 					neighbor.parent = current;
 					neighbor.open = true;
 					openList.Add(neighbor);
 				}
 				else
 				{
-					if (neighbor.distanceTraveled > distanceTraveled)
+					if (neighbor.accumCost > cost)
 					{
-						neighbor.distanceTraveled = distanceTraveled;
-						neighbor.distanceToEnd = (byte)(distanceTraveled + heuristic);
+						neighbor.accumCost = cost;
+						neighbor.distanceToEnd = (byte)(cost + heuristic);
 
 						neighbor.parent = current;
 					}
@@ -99,7 +99,12 @@ public sealed class Pathfinder
 			{
 				PathNode node = new PathNode();
 				node.tilePos = new Vector2i(x, y);
-				node.passable = Map.GetTileType(1, x, y).IsPassable(x, y);
+
+				TileType l0 = Map.GetTileType(0, x, y);
+				TileType l1 = Map.GetTileType(1, x, y);
+
+				node.tileCost = (byte)Mathf.Max(l0.PathCost, l1.PathCost);
+				node.passable = l1.IsPassable(x, y);
 
 				searchArea[x, y] = node;
 			}
@@ -177,7 +182,7 @@ public sealed class Pathfinder
 				node.open = false;
 				node.closed = false;
 				node.distanceToEnd = byte.MaxValue;
-				node.distanceTraveled = byte.MaxValue;
+				node.accumCost = byte.MaxValue;
 			}
 		}
 	}

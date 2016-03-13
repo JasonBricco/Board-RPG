@@ -7,6 +7,7 @@ public class RandomArrowTile : OverlayTile
 	{
 		name = "Random Arrow";
 		tileID = ID;
+		pathCost = 5;
 
 		material = Resources.Load<Material>("TileMaterials/RandomArrow");
 		meshIndex = material.GetInt("_ID");

@@ -8,6 +8,7 @@ public class ArrowTile : OverlayTile
 	{
 		name = "Arrow";
 		tileID = ID;
+		pathCost = 5;
 
 		material = Resources.Load<Material>("TileMaterials/Arrow");
 		meshIndex = material.GetInt("_ID");

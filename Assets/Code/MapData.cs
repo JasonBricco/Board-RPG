@@ -5,6 +5,8 @@ using System.Collections.Generic;
 [Serializable]
 public class MapData
 {
+	public Vector3 cameraPos = -Vector3.one;
+
 	public List<int> savedChunks = new List<int>();
 	public List<string> chunkData = new List<string>();
 

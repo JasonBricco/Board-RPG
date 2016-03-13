@@ -10,6 +10,7 @@ public class TriggerTile : OverlayTile
 
 		name = "Trigger (F)";
 		tileID = ID;
+		pathCost = 5;
 
 		material = Resources.Load<Material>("TileMaterials/Trigger");
 		meshIndex = material.GetInt("_ID");
