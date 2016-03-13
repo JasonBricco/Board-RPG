@@ -5,10 +5,7 @@ using System.Collections.Generic;
 
 public class EntityManager : MonoBehaviour 
 {
-	[SerializeField] private GameCamera cam;
-	[SerializeField] private GameObject worldCanvas;
-
-	public GameObject WorldCanvas { get { return worldCanvas; } }
+	private GameCamera cam;
 
 	private List<Entity> entityList = new List<Entity>();
 
@@ -40,8 +37,9 @@ public class EntityManager : MonoBehaviour
 
 	private void Start()
 	{
-		turnDisplayPanel = UIStore.GetGraphic("TurnDisplayPanel");
-		turnText = UIStore.GetGraphic<Text>("TurnText");
+		cam = SceneItems.GetItem<GameCamera>("GameCamera");
+		turnDisplayPanel = SceneItems.GetItem("TurnDisplayPanel");
+		turnText = SceneItems.GetItem<Text>("TurnText");
 	}
 
 	private void StateChangedHandler(Data data)

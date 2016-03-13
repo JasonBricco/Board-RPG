@@ -6,7 +6,7 @@ public class TriggerTile : OverlayTile
 
 	public TriggerTile(ushort ID)
 	{
-		processor = GameObject.FindWithTag("Engine").GetComponent<CommandProcessor>();
+		processor = SceneItems.GetItem<CommandProcessor>("CommandProcessor");
 
 		name = "Trigger (F)";
 		tileID = ID;

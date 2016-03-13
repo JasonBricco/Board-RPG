@@ -19,13 +19,14 @@ public sealed class CardManager : MonoBehaviour
 
 	private void Start()
 	{
-		currentCardImage = UIStore.GetGraphic<Image>("Card");
+		currentCardImage = SceneItems.GetItem<Image>("DisplayedCard");
 		EventManager.StartListening("DrawCard", DrawCard);
+		EventManager.StartListening("CardToggled", ToggleCard);
 	}
 
-	public void ToggleCard(int cardID)
+	public void ToggleCard(Data data)
 	{
-		Card card = cards[cardID];
+		Card card = cards[data.num];
 		card.allowed = !card.allowed;
 	}
 

@@ -75,6 +75,9 @@ public sealed class Chunk
 		}
 		else
 		{
+			if (tiles[0][index].Equals(Tiles.Air))
+				return;
+			
 			Map.GetTileType(tiles[0][index]).OnDeleted(new Vector2i(tX, tY));
 			tiles[0][index] = Tiles.Air;
 		}
@@ -82,16 +85,21 @@ public sealed class Chunk
 		FlagForUpdate();
 	}
 
+	public void ChangeData(int layer, int lX, int lY, ushort data)
+	{
+		tiles[layer][(lY * Size) + lX].Data = data;
+		FlagForUpdate();
+	}
+
 	public void BuildMesh()
 	{
-		Debug.Log("Building mesh.");
 		flaggedForUpdate = false;
 
 		for (int lX = 0; lX < Size; lX++)
 		{
 			for (int lY = 0; lY < Size; lY++)
 			{
-				int tX = lX * TileType.Size, tY = lY * TileType.Size;
+				int tX = lX * Tile.Size, tY = lY * Tile.Size;
 
 				Tile tile = GetTile(0, lX, lY);
 				Tile overlay = GetTile(1, lX, lY);

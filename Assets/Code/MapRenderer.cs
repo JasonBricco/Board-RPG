@@ -2,7 +2,7 @@
 
 public sealed class MapRenderer 
 {
-	private const int WToXShift = Chunk.SizeBits + TileType.SizeBits;
+	private const int WToXShift = Chunk.SizeBits + Tile.SizeBits;
 
 	public void RenderChunks()
 	{

@@ -31,10 +31,6 @@ public class SetDataFunction : Function
 			return;
 		}
 
-		Tile oldTile = Map.GetTile(layer, x, y);
-		Tile newTile = new Tile(oldTile.ID, (ushort)data);
-
-		Vector2i pos = new Vector2i(x, y);
-		Map.SetTile(pos, newTile);
+		Map.ChangeData(layer, x, y, (ushort)data);
 	}
 }

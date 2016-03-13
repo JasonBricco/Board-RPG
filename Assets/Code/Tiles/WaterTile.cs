@@ -13,6 +13,8 @@ public class WaterTile : OverlayTile
 		materialA = Resources.Load<Material>("TileMaterials/Water");
 		materialB = Resources.Load<Material>("TileMaterials/StoneWater");
 
+		material = materialA;
+
 		indexA = materialA.GetInt("_ID");
 		indexB = materialB.GetInt("_ID");
 	}
@@ -28,9 +30,7 @@ public class WaterTile : OverlayTile
 	public override void OnFunction(Vector2i pos)
 	{
 		ushort data = Map.GetTile(1, pos.x, pos.y).Data;
-		Tile newTile = new Tile(tileID, data == 0 ? (ushort)1 : (ushort)0);
-
-		Map.SetTileFast(pos, newTile);
+		Map.ChangeData(1, pos.x, pos.y, data == 0 ? (ushort)1 : (ushort)0);
 		Map.RebuildChunks();
 	}
 

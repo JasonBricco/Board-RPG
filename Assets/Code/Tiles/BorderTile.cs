@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BorderTile : OverlayTile 
+public class BorderTile : TileType 
 {
 	private ushort orientation = 0;
 	private int dataIndex = 0;
@@ -17,6 +17,8 @@ public class BorderTile : OverlayTile
 
 		materialA = Resources.Load<Material>("TileMaterials/BorderSide");
 		materialB = Resources.Load<Material>("TileMaterials/BorderCorner");
+
+		material = materialA;
 
 		indexA = materialA.GetInt("_ID");
 		indexB = materialB.GetInt("_ID");
@@ -35,7 +37,7 @@ public class BorderTile : OverlayTile
 		dataIndex = (dataIndex + 1) & 7;
 		orientation = dataOrder[dataIndex];
 
-		Map.SetTileFast(pos, new Tile(tileID, orientation));
+		Map.ChangeData(0, pos.x, pos.y, orientation);
 		Map.RebuildChunks();
 	}
 
@@ -48,11 +50,6 @@ public class BorderTile : OverlayTile
 	public override bool IsPassable(int x, int y)
 	{
 		return false;
-	}
-
-	public override bool CanAdd(Vector2i pos)
-	{
-		return true;
 	}
 
 	public override void SetUVs(Tile tile, MeshData data)

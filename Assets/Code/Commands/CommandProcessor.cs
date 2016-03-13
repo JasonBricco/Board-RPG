@@ -17,10 +17,7 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private Vector2i currentPos;
 
-	private int caretPos;
-	private string selectedText;
-
-	private void Awake()
+	private void Start()
 	{
 		Serializer.ListenForSave(SaveCommands);
 		Serializer.ListenForLoad(LoadCommands);
@@ -29,7 +26,7 @@ public sealed class CommandProcessor : MonoBehaviour
 		EventManager.StartListening("MapCleared", ClearCommands);
 		EventManager.StartListening("GetCommandCoords", GetCommandCoords);
 
-		codeEditor = UIStore.GetGraphic("CodeEditor");
+		codeEditor = SceneItems.GetItem("CodeEditor");
 		editorField = codeEditor.GetComponent<CodeEditor>();
 	}
 
@@ -54,8 +51,6 @@ public sealed class CommandProcessor : MonoBehaviour
 
 	private void GetCommandCoords(Data data)
 	{
-		// TODO: Support when we figure out how caret position works.
-		//caretPos = editorField.caretPosition; 
 		SaveCode(null);
 		StateManager.ChangeState(GameState.SelectingCoords);
 
@@ -69,10 +64,7 @@ public sealed class CommandProcessor : MonoBehaviour
 			if (Input.GetMouseButtonDown(0))
 			{
 				Vector2i tilePos = Utils.GetCursorTilePos();
-				// TODO: Support when we figure out how caret position works.
-				//string result = triggerData[currentPos].Insert(caretPos, tilePos.x + ", " + tilePos.y);
-				string result = triggerData[currentPos] + tilePos.x + ", " + tilePos.y;
-				triggerData[currentPos] = result;
+				triggerData[currentPos] += tilePos.x + ", " + tilePos.y;
 				LoadEditor(currentPos);
 			}
 

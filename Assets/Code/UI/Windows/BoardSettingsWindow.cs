@@ -13,6 +13,6 @@ public sealed class BoardSettingsWindow : Window
 	private void SelectingCards(Data data)
 	{
 		gameObject.SetActive(false);
-		UIStore.GetGraphic("CardSelection").SetActive(true);
+		SceneItems.GetItem("CardSelection").SetActive(true);
 	}
 }

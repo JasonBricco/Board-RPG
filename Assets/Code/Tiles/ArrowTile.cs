@@ -18,7 +18,7 @@ public class ArrowTile : OverlayTile
 		Tile tile = Map.GetTile(1, pos.x, pos.y);
 
 		orientation = (ushort)((tile.Data + 1) & 3);
-		Map.SetTileFast(pos, new Tile(tileID, orientation));
+		Map.ChangeData(1, pos.x, pos.y, orientation);
 
 		Map.RebuildChunks();
 	}

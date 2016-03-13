@@ -8,6 +8,8 @@ public sealed class Player : Entity
 	private GameObject actionPanel;
 	private Button moveButton;
 
+	private GameObject worldCanvas;
+
 	private Queue<PossibleTile> floodQueue = new Queue<PossibleTile>();
 	private HashSet<Vector2i> filledPositions = new HashSet<Vector2i>();
 	private List<GameObject> activeSelections = new List<GameObject>();
@@ -18,7 +20,9 @@ public sealed class Player : Entity
 	{
 		type = EntityType.Player;
 
-		actionPanel = UIStore.GetGraphic("ActionPanel");
+		worldCanvas = SceneItems.GetItem("WorldCanvas");
+
+		actionPanel = SceneItems.GetItem("ActionPanel");
 		moveButton = actionPanel.FindChild("Move").GetComponent<Button>();
 
 		EventManager.StartListening("MovePressed", MoveHandler);
@@ -103,7 +107,7 @@ public sealed class Player : Entity
 					filledPositions.Add(nextPos);
 
 					GameObject selection = selectionPool.GetSelection();
-					selection.transform.SetParent(manager.WorldCanvas.transform);
+					selection.transform.SetParent(worldCanvas.transform);
 					selection.transform.position = Utils.WorldFromTilePos(nextPos);
 					activeSelections.Add(selection);
 				}
@@ -116,8 +120,6 @@ public sealed class Player : Entity
 			moveButton.interactable = false;
 			actionPanel.SetActive(true);
 		}
-		else
-			manager.WorldCanvas.SetActive(true);
 	}
 
 	private void TileSelected(Data data)
@@ -151,18 +153,11 @@ public sealed class Player : Entity
 
 	private void ClearSelections()
 	{
-		GameObject canvas = manager.WorldCanvas;
-
-		if (canvas.activeSelf)
-		{
-			canvas.SetActive(false);
-
-			for (int i = 0; i < activeSelections.Count; i++)
+		for (int i = 0; i < activeSelections.Count; i++)
 				selectionPool.ReturnSelection(activeSelections[i]);
 
-			activeSelections.Clear();
-			filledPositions.Clear();
-		}
+		activeSelections.Clear();
+		filledPositions.Clear();
 	}
 
 	public override void Delete()

@@ -10,7 +10,7 @@ public static class Utils
 
 	public static Vector3 WorldFromTilePos(Vector2i tPos)
 	{
-		return new Vector3(tPos.x * TileType.Size, tPos.y * TileType.Size);
+		return new Vector3(tPos.x * Tile.Size, tPos.y * Tile.Size);
 	}
 
 	public static Vector3 WorldFromChunkPos(Vector2i cPos)
@@ -20,7 +20,7 @@ public static class Utils
 
 	public static Vector2i TileFromWorldPos(Vector3 wPos)
 	{
-		return new Vector2i((int)wPos.x >> TileType.SizeBits, (int)wPos.y >> TileType.SizeBits);
+		return new Vector2i((int)wPos.x >> Tile.SizeBits, (int)wPos.y >> Tile.SizeBits);
 	}
 
 	public static Vector2i TileFromChunkPos(Vector2i cPos)
@@ -45,15 +45,15 @@ public static class Utils
 	public static Vector2i GetCursorTilePos()
 	{
 		Vector2i wPos = GetCursorWorldPos();
-		return new Vector2i(wPos.x >> TileType.SizeBits, wPos.y >> TileType.SizeBits);
+		return new Vector2i(wPos.x >> Tile.SizeBits, wPos.y >> Tile.SizeBits);
 	}
 
 	public static Vector2i GetCursorWorldPos()
 	{
 		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-		int x = Utils.RoundToNearest(pos.x, TileType.Size);
-		int y = Utils.RoundToNearest(pos.y, TileType.Size);
+		int x = Utils.RoundToNearest(pos.x, Tile.Size);
+		int y = Utils.RoundToNearest(pos.y, Tile.Size);
 
 		return new Vector2i(x, y);
 	}

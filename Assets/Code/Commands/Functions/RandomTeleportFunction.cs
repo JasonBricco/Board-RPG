@@ -59,8 +59,8 @@ public class RandomTeleportFunction : Function
 			return;
 		}
 
-		target.x *= TileType.Size;
-		target.y *= TileType.Size;
+		target.x *= Tile.Size;
+		target.y *= Tile.Size;
 
 		Data data = new Data(entityID);
 		data.position = new Vector3(target.x, target.y);

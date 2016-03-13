@@ -2,10 +2,6 @@
 
 public class TileType  
 {
-	public const int SizeBits = 5;
-	public const int Size = 1 << SizeBits;
-	public const int HalfSize = Size / 2;
-
 	protected Material material;
 
 	protected static MeshBuilder meshBuilder = new MeshBuilder();
@@ -15,6 +11,7 @@ public class TileType
 	protected int meshIndex = 0;
 	protected int layer = 0;
 
+	public Texture2D Texture { get { return (Texture2D)material.mainTexture; } }
 	public string Name { get { return name; } }
 	public ushort ID { get { return tileID; } }
 	public int MeshIndex { get { return meshIndex; } }

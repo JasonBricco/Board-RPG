@@ -4,12 +4,17 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Text))]
 public sealed class FPS : MonoBehaviour 
 {
-	[SerializeField] private float updateInterval = 0.5f; 
-	[SerializeField] private Text myLabel;
+	private float updateInterval = 0.5f; 
+	private Text myLabel;
 
 	private float accum = 0; 
 	private int frames = 0;
 	private float timeleft = 0.5f;
+
+	private void Start()
+	{
+		myLabel = SceneItems.GetItem<Text>("DebugFPS");
+	}
 
 	private void Update()
 	{

@@ -6,7 +6,7 @@ public sealed class TileWindow : Window
 
 	public override void Initialize()
 	{
-		mapEditor = GameObject.FindWithTag("Engine").GetComponent<MapEditor>();
+		mapEditor = SceneItems.GetItem<MapEditor>("Map");
 
 		enableKey = KeyCode.Alpha2;
 		EventManager.StartListening("TileButtonPressed", TileButtonPressed);

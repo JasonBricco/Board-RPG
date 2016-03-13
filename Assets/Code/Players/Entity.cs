@@ -87,7 +87,7 @@ public class Entity : MonoBehaviour
 
 	protected Vector3 GetTargetPos(Vector2i current, Vector2i direction)
 	{
-		return (current + (direction * TileType.Size)).ToVector3();
+		return (current + (direction * Tile.Size)).ToVector3();
 	}
 
 	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)

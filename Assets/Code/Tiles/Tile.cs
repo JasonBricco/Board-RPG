@@ -3,6 +3,10 @@ using System;
 
 public struct Tile : IEquatable<Tile>
 {
+	public const int SizeBits = 5;
+	public const int Size = 1 << SizeBits;
+	public const int HalfSize = Size / 2;
+
 	private ushort tileID;
 	public ushort Data { get; set; }
 

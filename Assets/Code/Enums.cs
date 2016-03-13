@@ -23,7 +23,7 @@ public enum CameraMode
 public enum EditMode
 {
 	Normal,
-	MassDelete,
+	MassEdit,
 	SquareFill,
 	AreaFill
 }

@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
-public sealed class MapEditor : MonoBehaviour, IUpdatable 
+public sealed class MapEditor : MonoBehaviour, IUpdatable
 {
-	public const float PlaceLimit = 0.03f;
-	private float time = 0.0f;
-
 	private float startTime = 0.0f;
 	private float exitDelay = 0.0f;
 
@@ -14,9 +12,15 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 
 	private GameObject mainButtons;
 	private GameObject reticle;
+	private RectTransform dragRect;
 	private Text selectedText;
 
 	private EditMode editMode = EditMode.Normal;
+
+	private List<Vector2i> massEditList = new List<Vector2i>(16);
+
+	private Vector2 initialClickPos = Vector3.zero;
+	private bool initialIsLeft;
 
 	private void Awake()
 	{
@@ -26,13 +30,15 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 
 	private void Start()
 	{
-		mainButtons = UIStore.GetGraphic("MainButtons");
+		mainButtons = SceneItems.GetItem("MainButtons");
 		ShowMainButtons();
 
 		EventManager.StartListening("StateChanged", StateChangedHandler);
 
-		selectedText = UIStore.GetGraphic<Text>("SelectedTileText");
+		selectedText = SceneItems.GetItem<Text>("SelectedTileText");
 		selectedText.text = Map.GetTileType(activeTile).Name;
+
+		dragRect = SceneItems.GetItem<RectTransform>("DragRect");
 	}
 
 	private void StateChangedHandler(Data data)
@@ -87,52 +93,189 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 
 		ProcessReticle(overUI);
 
-		if (!overUI && StateManager.CurrentState == GameState.Editing)
-			HandleEditInput();
+		if (StateManager.CurrentState == GameState.Editing)
+			HandleEditInput(overUI);
 	}
 
-	private void HandleEditInput()
+	public void SetEditMode(int mode)
 	{
-		time += Time.deltaTime;
+		editMode = (EditMode)mode;
+	}
+
+	private void HandleEditInput(bool overUI)
+	{
+		if (editMode == EditMode.SquareFill)
+			FillSquare(overUI);
+
+		if (overUI) return;
 
 		if (Input.GetKeyDown(KeyCode.F))
 			GetFunction();
 
 		if (Input.GetKeyDown(KeyCode.Q))
 			PickTile();
-			
-		if (Input.GetMouseButton(0))
-		{
-			if (time >= PlaceLimit)
-			{
-				Map.SetTile(Utils.GetCursorTilePos(), activeTile);
-				time -= PlaceLimit;
-			}
-		}
-
-		if (Input.GetMouseButton(1))
-		{
-			if (time >= PlaceLimit)
-			{
-				Map.SetTile(Utils.GetCursorTilePos(), Tiles.Air);
-				time -= PlaceLimit;
-			}
-		}
 
 		switch (editMode)
 		{
 		case EditMode.Normal:
+			NormalEdit();
 			break;
 
-		case EditMode.MassDelete:
-			break;
-
-		case EditMode.SquareFill:
+		case EditMode.MassEdit:
+			MassEdit();
 			break;
 
 		case EditMode.AreaFill:
+			FillArea();
 			break;
 		}
+	}
+
+	private void NormalEdit()
+	{
+		if (Input.GetMouseButtonDown(0) || (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0)))
+			Map.SetTile(Utils.GetCursorTilePos(), activeTile);
+
+		if (Input.GetMouseButtonDown(1) || (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(1)))
+			Map.SetTile(Utils.GetCursorTilePos(), Tiles.Air);
+	}
+
+	private void MassEdit()
+	{
+		Tile? tile = null;
+
+		if (Input.GetMouseButton(0)) tile = activeTile;
+		if (Input.GetMouseButton(1)) tile = Tiles.Air;
+
+		if (tile == null) return;
+
+		Vector2i cursorPos = Utils.GetCursorTilePos();
+
+		for (int x = cursorPos.x - 1; x <= cursorPos.x + 1; x++)
+		{
+			for (int y = cursorPos.y - 1; y <= cursorPos.y + 1; y++)
+				massEditList.Add(new Vector2i(x, y));
+		}
+
+		Map.SetMultipleTiles(massEditList, tile.Value);
+		massEditList.Clear();
+	}
+
+	private void FillSquare(bool overUI)
+	{
+		DisableReticle();
+
+		GameObject dragObj = dragRect.gameObject;
+
+		if (overUI)
+		{
+			if (dragObj.activeSelf) dragObj.SetActive(false);
+			return;
+		}
+
+		bool leftDown = Input.GetMouseButtonDown(0);
+		bool rightDown = Input.GetMouseButtonDown(1);
+
+		if (leftDown || rightDown)
+		{
+			initialIsLeft = leftDown;
+			Vector2i wPos = Utils.GetCursorWorldPos();
+			initialClickPos = new Vector2(wPos.x - Tile.HalfSize, wPos.y + Tile.HalfSize);
+			dragRect.anchoredPosition = initialClickPos;
+			dragRect.gameObject.SetActive(true);
+		}
+
+		if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+		{
+			if (!dragObj.activeSelf) dragObj.SetActive(true);
+
+			Vector2i wPos = Utils.GetCursorWorldPos();
+			Vector2 currentMouse = new Vector2(wPos.x - Tile.HalfSize, wPos.y + Tile.HalfSize);
+
+			Vector2 difference = currentMouse - initialClickPos;
+			Vector2 startPoint = initialClickPos;
+
+			if (difference.x < 0)
+			{
+				startPoint.x = currentMouse.x;
+				difference.x = -difference.x;
+			}
+
+			if (difference.y < 0)
+			{
+				startPoint.y = currentMouse.y;
+				difference.y = -difference.y;
+			}
+
+			dragRect.anchoredPosition = startPoint;
+
+			difference.x = Utils.RoundToNearest(difference.x, Tile.Size);
+			difference.y = Utils.RoundToNearest(difference.y, Tile.Size);
+
+			dragRect.sizeDelta = difference;
+		}
+
+		if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
+		{
+			dragRect.gameObject.SetActive(false);
+			initialClickPos = Vector2.zero;
+
+			Vector2i tPos = Utils.TileFromWorldPos(dragRect.position);
+			tPos.x += 1;
+
+			List<Vector2i> tiles = new List<Vector2i>();
+
+			int offsetX = (int)dragRect.sizeDelta.x >> Tile.SizeBits;
+			int offsetY = (int)dragRect.sizeDelta.y >> Tile.SizeBits;
+
+			for (int x = tPos.x; x < tPos.x + offsetX; x++)
+			{
+				for (int y = tPos.y + offsetY; y > tPos.y; y--)
+					tiles.Add(new Vector2i(x, y));
+			}
+	
+			Map.SetMultipleTiles(tiles, initialIsLeft ? activeTile : Tiles.Air);
+		}
+	}
+
+	private void FillArea()
+	{
+		if (Input.GetMouseButtonDown(0))
+		{
+			List<Vector2i> tiles = new List<Vector2i>();
+			HashSet<Vector2i> checkSet = new HashSet<Vector2i>();
+
+			Vector2i first = Utils.GetCursorTilePos();
+
+			if (!Map.InTileBounds(first.x, first.y)) return;
+
+			tiles.Add(first);
+			checkSet.Add(first);
+
+			for (int i = 0; i < tiles.Count; i++)
+			{
+				Vector2i current = tiles[i];
+
+				for (int j = 0; j < 4; j++)
+				{
+					Vector2i next = current + Vector2i.directions[j];
+
+					if (!Map.InTileBounds(next.x, next.y) || checkSet.Contains(next))
+						continue;
+					
+					if (Map.GetTile(0, next.x, next.y).Equals(Tiles.Air) && Map.GetTile(1, next.x, next.y).Equals(Tiles.Air))
+					{
+						tiles.Add(next);
+						checkSet.Add(next);
+					}
+				}
+			}
+	
+			Map.SetMultipleTiles(tiles, activeTile);
+		}
+
+		if (Input.GetMouseButtonDown(1) || (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(1)))
+			Map.SetTile(Utils.GetCursorTilePos(), Tiles.Air);
 	}
 
 	public void SetActiveTile(ushort ID)
@@ -144,7 +287,12 @@ public sealed class MapEditor : MonoBehaviour, IUpdatable
 	private void GetFunction()
 	{
 		Vector2i tPos = Utils.GetCursorTilePos();
-		Map.GetTileTypeSafe(1, tPos.x, tPos.y).OnFunction(tPos);
+
+		if (Map.InTileBounds(tPos.x, tPos.y))
+		{
+			Map.GetTileType(0, tPos.x, tPos.y).OnFunction(tPos);
+			Map.GetTileType(1, tPos.x, tPos.y).OnFunction(tPos);
+		}
 	}
 
 	private void PickTile()

@@ -96,6 +96,12 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		GetChunkSafe(tPos.x, tPos.y).DeleteTile(localX, localY, tPos.x, tPos.y);
 	}
 
+	public static void ChangeData(int layer, int tX, int tY, ushort data)
+	{
+		int localX = tX & Chunk.Size - 1, localY = tY & Chunk.Size - 1;
+		GetChunk(tX, tY).ChangeData(layer, localX, localY, data);
+	}
+
 	public static Chunk GetChunk(int tX, int tY)
 	{
 		return chunks[tX >> Chunk.SizeBits, tY >> Chunk.SizeBits];
@@ -190,6 +196,12 @@ public sealed class Map : MonoBehaviour, IUpdatable
 	public static TileType GetTileTypeSafe(int layer, int x, int y)
 	{
 		return tilesList[GetTileSafe(layer, x, y).ID];
+	}
+
+	public static void OperateOnTiles(UnityAction<TileType> callback)
+	{
+		for (int i = 0; i < tilesList.Count; i++)
+			callback(tilesList[i]);
 	}
 
 	private void SaveTiles(MapData data)

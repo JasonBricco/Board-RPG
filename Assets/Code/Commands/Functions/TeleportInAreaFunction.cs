@@ -35,8 +35,8 @@ public class TeleportInAreaFunction : Function
 
 			if (Map.GetTileType(1, randX, randY).IsPassable(randX, randY))
 			{
-				randX *= TileType.Size;
-				randY *= TileType.Size;
+				randX *= Tile.Size;
+				randY *= Tile.Size;
 
 				Data data = new Data(entityID);
 				data.position = new Vector3(randX, randY);

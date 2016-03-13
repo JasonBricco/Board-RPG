@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public delegate void Method();
-
 public sealed class Engine : MonoBehaviour
 {
 	private static List<IUpdatable> updateList = new List<IUpdatable>();

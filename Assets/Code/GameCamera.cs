@@ -8,7 +8,7 @@ public sealed class GameCamera : MonoBehaviour
 
 	public Entity followTarget;
 
-	private float speed = 10.0f * TileType.Size;
+	private float speed = 10.0f * Tile.Size;
 	private float minX, maxX, minZ, maxZ;
 
 	private CameraMode mode = CameraMode.Free;
@@ -18,12 +18,12 @@ public sealed class GameCamera : MonoBehaviour
 		float vertical = Camera.main.orthographicSize;
 		float horizontal = vertical * Screen.width / Screen.height;
 
-		minX = horizontal - TileType.HalfSize;
-		maxX = (Map.Size * TileType.Size) - horizontal - TileType.HalfSize;
-		minZ = vertical - TileType.HalfSize;
-		maxZ = (Map.Size * TileType.Size) - vertical - TileType.HalfSize;
+		minX = horizontal - Tile.HalfSize;
+		maxX = (Map.Size * Tile.Size) - horizontal - Tile.HalfSize;
+		minZ = vertical - Tile.HalfSize;
+		maxZ = (Map.Size * Tile.Size) - vertical - Tile.HalfSize;
 
-		cameraToggle = UIStore.GetGraphic("CameraToggle");
+		cameraToggle = SceneItems.GetItem("CameraToggle");
 
 		EventManager.StartListening("StateChanged", StateChangedHandler);
 		EventManager.StartListening("CameraTogglePressed", CameraToggledHandler);

@@ -26,8 +26,8 @@ public sealed class TeleportFunction : Function
 			return;
 		}
 
-		x *= TileType.Size;
-		y *= TileType.Size;
+		x *= Tile.Size;
+		y *= Tile.Size;
 
 		Data data = new Data(entityID);
 		data.position = new Vector3(x, y);

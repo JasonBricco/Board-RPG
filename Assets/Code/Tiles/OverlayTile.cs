@@ -9,7 +9,9 @@ public class OverlayTile : TileType
 
 	public override bool CanAdd(Vector2i pos)
 	{
-		if (Map.GetTile(0, pos.x, pos.y).Equals(Tiles.Air))
+		Tile tile = Map.GetTile(0, pos.x, pos.y);
+
+		if (tile.Equals(Tiles.Air) || tile.Equals(Tiles.Border))
 			return false;
 
 		return true;

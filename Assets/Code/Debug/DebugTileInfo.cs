@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 public class DebugTileInfo : MonoBehaviour 
 {
-	[SerializeField] private Text posLabel;
+	private Text posLabel;
 
-	private void Awake()
+	private void Start()
 	{
+		posLabel = SceneItems.GetItem<Text>("DebugPosition");
 		EventManager.StartListening("StateChanged", StateChangedHandler);
 	}
 

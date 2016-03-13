@@ -11,10 +11,10 @@ public sealed class MeshBuilder
 
 		float z = type.Layer == 1 ? 1.0f : 2.0f;
 
-		meshData.AddVertex(meshIndex, new Vector3(tX + TileType.HalfSize, tY - TileType.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(tX + TileType.HalfSize, tY + TileType.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(tX - TileType.HalfSize, tY + TileType.HalfSize, z));
-		meshData.AddVertex(meshIndex, new Vector3(tX - TileType.HalfSize, tY - TileType.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX + Tile.HalfSize, tY - Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX + Tile.HalfSize, tY + Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX - Tile.HalfSize, tY + Tile.HalfSize, z));
+		meshData.AddVertex(meshIndex, new Vector3(tX - Tile.HalfSize, tY - Tile.HalfSize, z));
 
 		type.SetUVs(tile, meshData);
 	}
