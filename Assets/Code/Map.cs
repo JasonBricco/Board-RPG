@@ -241,7 +241,6 @@ public sealed class Map : MonoBehaviour, IUpdatable
 		tilesList.Add(new StoneTile(Tiles.Stone.ID));
 		tilesList.Add(new SandTile(Tiles.Sand.ID));
 		tilesList.Add(new TriggerTile(Tiles.Trigger.ID));
-		tilesList.Add(new LandTriggerTile(Tiles.LandTrigger.ID));
 		tilesList.Add(new CardTile(Tiles.Card.ID));
 		tilesList.Add(new ArrowTile(Tiles.Arrow.ID));
 		tilesList.Add(new StopperTile(Tiles.Stopper.ID));

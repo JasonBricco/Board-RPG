@@ -9,12 +9,11 @@ public sealed class Tiles
 	public static readonly Tile Stone = new Tile(3);
 	public static readonly Tile Sand = new Tile(4);
 	public static readonly Tile Trigger = new Tile(5);
-	public static readonly Tile LandTrigger = new Tile(6);
-	public static readonly Tile Card = new Tile(7);
-	public static readonly Tile Arrow = new Tile(8);
-	public static readonly Tile Stopper = new Tile(9);
-	public static readonly Tile RandomArrow = new Tile(10);
-	public static readonly Tile Water = new Tile(11);
-	public static readonly Tile Border = new Tile(12);
-	public static readonly Tile Monster = new Tile(13);
+	public static readonly Tile Card = new Tile(6);
+	public static readonly Tile Arrow = new Tile(7);
+	public static readonly Tile Stopper = new Tile(8);
+	public static readonly Tile RandomArrow = new Tile(9);
+	public static readonly Tile Water = new Tile(10);
+	public static readonly Tile Border = new Tile(11);
+	public static readonly Tile Monster = new Tile(12);
 }

@@ -21,7 +21,6 @@ public sealed class FunctionLibrary
 		functions.Add("Swap", new SwapFunction());
 		functions.Add("Skip", new SkipFunction());
 		functions.Add("SetData", new SetDataFunction());
-		functions.Add("Direction", new DirectionFunction());
 		functions.Add("Respawn", new RespawnFunction());
 	}
 

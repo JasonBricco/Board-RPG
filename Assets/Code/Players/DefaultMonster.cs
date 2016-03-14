@@ -38,8 +38,6 @@ public sealed class DefaultMonster : Entity
 		Vector2i end = Utils.TileFromWorldPos(target);
 
 		List<Vector2i> path = pathfinder.FindPath(start, end);
-		targetMP = path.Count > RemainingMP ? RemainingMP : path.Count;
-
 		StartCoroutine(FollowPath(path));
 	}
 

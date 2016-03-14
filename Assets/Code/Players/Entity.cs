@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
-public class Entity : MonoBehaviour
+public class Entity : MonoBehaviour, IEquatable<Entity>
 {
 	protected EntityManager manager;
+	protected GameCamera cam;
 
 	protected int entityID;
 	public int EntityID { get { return entityID; } }
@@ -31,19 +33,23 @@ public class Entity : MonoBehaviour
 		set { remainingMP = Mathf.Clamp(value, 0, 20); }
 	}
 
-	protected int targetMP;
-	public int TargetMP { get { return targetMP; } }
-
 	public bool wait;
+	protected bool isMoving;
 
 	private List<PendingFunction> pendingEnd = new List<PendingFunction>();
 	private List<PendingFunction> pendingBegin = new List<PendingFunction>();
 
-	public void SetReferences(int entityID, EntityManager manager, Pathfinder pathfinder)
+	public void SetReferences(int entityID, EntityManager manager, GameCamera cam, Pathfinder pathfinder)
 	{
 		this.manager = manager;
 		this.entityID = entityID;
+		this.cam = cam;
 		this.pathfinder = pathfinder;
+	}
+
+	public bool Equals(Entity other)
+	{
+		return entityID == other.entityID;
 	}
 
 	public virtual Sprite LoadSprite()
@@ -92,6 +98,8 @@ public class Entity : MonoBehaviour
 
 	protected IEnumerator MoveToPosition(Vector3 current, Vector3 target)
 	{
+		isMoving = true;
+
 		while ((transform.position - target).magnitude > 0.05f)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * speed);
@@ -100,10 +108,11 @@ public class Entity : MonoBehaviour
 
 		transform.position = target;
 		RemainingMP--;
-		targetMP--;
 		TriggerTileFunction();
 
 		while (wait) yield return null;
+
+		isMoving = false;
 	}
 
 	protected void TriggerTileFunction()
@@ -115,6 +124,9 @@ public class Entity : MonoBehaviour
 
 	public void SetTo(Vector3 wPos)
 	{
+		if (this.Equals(manager.CurrentEntity))
+			cam.MoveToTarget(wPos);
+		
 		transform.position = wPos;
 	}
 
@@ -126,6 +138,7 @@ public class Entity : MonoBehaviour
 	public IEnumerator SlideTo(Vector2i tPos, Vector2i dir)
 	{
 		Vector3 wPos = Utils.WorldFromTilePos(tPos);
+		cam.MoveTowardsTarget(wPos, speed);
 
 		while ((transform.position - wPos).magnitude > 0.05f)
 		{

@@ -8,7 +8,7 @@ public class TriggerTile : OverlayTile
 	{
 		processor = SceneItems.GetItem<CommandProcessor>("CommandProcessor");
 
-		name = "Trigger (F)";
+		name = "Trigger";
 		tileID = ID;
 		pathCost = 5;
 

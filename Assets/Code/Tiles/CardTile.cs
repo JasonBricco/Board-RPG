@@ -13,7 +13,6 @@ public class CardTile : OverlayTile
 
 	public override void OnEnter(int tX, int tY, Entity entity)
 	{
-		if (entity.TargetMP == 0)
-			EventManager.Notify("DrawCard", new Data(entity));
+		EventManager.Notify("DrawCard", new Data(entity));
 	}
 }

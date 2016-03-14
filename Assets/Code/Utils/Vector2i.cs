@@ -64,6 +64,11 @@ public struct Vector2i : System.IEquatable<Vector2i>
 		return "(" + x + ", " + y + ")";
 	}
 
+	public Vector2 ToVector2()
+	{
+		return new Vector2(x, y);
+	}
+
 	public Vector3 ToVector3()
 	{
 		return new Vector3(x, y);

@@ -17,6 +17,7 @@ public class EntityManager : MonoBehaviour
 	private List<Vector2i> startPositions = new List<Vector2i>();
 
 	private Entity currentEntity;
+	public Entity CurrentEntity { get { return currentEntity; } }
 
 	private Pathfinder pathfinder;
 
@@ -165,7 +166,7 @@ public class EntityManager : MonoBehaviour
 
 		rend.sprite = entity.LoadSprite();
 
-		entity.SetReferences(entityList.Count - 1, this, pathfinder);
+		entity.SetReferences(entityList.Count - 1, this, cam, pathfinder);
 
 		return entity;
 	}
@@ -256,10 +257,10 @@ public class EntityManager : MonoBehaviour
 
 	private IEnumerator CallTurn(Entity entity)
 	{
-		cam.followTarget = entity;
 		turnText.text = entity.name + "'s Turn";
 
 		turnDisplayPanel.SetActive(true);
+		cam.MoveToTarget(entity.Position);
 		yield return new WaitForSeconds(1.5f);
 		turnDisplayPanel.SetActive(false);
 

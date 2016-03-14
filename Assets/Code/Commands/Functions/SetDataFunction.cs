@@ -32,5 +32,6 @@ public class SetDataFunction : Function
 		}
 
 		Map.ChangeData(layer, x, y, (ushort)data);
+		Map.RebuildChunks();
 	}
 }
